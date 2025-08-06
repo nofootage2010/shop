@@ -79,7 +79,6 @@
   <script>
     const progressBar = document.querySelector(".progress");
     const stepDiv = document.getElementById("step");
-
     let currentStep = 0;
 
     const steps = [
@@ -171,6 +170,11 @@
         stepDiv.appendChild(btn);
       } else if (step.duration > 0) {
         setTimeout(() => nextStep(), step.duration);
+      } else {
+        // Final step
+        if (currentStep === steps.length - 1) {
+          localStorage.setItem("win7Installed", "true");
+        }
       }
     }
 
@@ -181,8 +185,26 @@
       }
     }
 
-    window.onload = () => {
+    function showInstalledScreen() {
+      stepDiv.innerHTML = `
+        <h1>Welcome back to Windows 7</h1>
+        <p>You’ve already completed setup.</p>
+        <button onclick="resetInstall()">Reinstall</button>
+      `;
+    }
+
+    function resetInstall() {
+      localStorage.removeItem("win7Installed");
+      currentStep = 0;
       showStep(currentStep);
+    }
+
+    window.onload = () => {
+      if (localStorage.getItem("win7Installed") === "true") {
+        showInstalledScreen();
+      } else {
+        showStep(currentStep);
+      }
     };
   </script>
 </body>
