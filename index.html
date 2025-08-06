@@ -2,85 +2,166 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Windows 7 Installation Emulator</title>
+  <title>Windows 7 Installation & Auth with Language Pref</title>
   <style>
     body {
       margin: 0;
       background-color: #000;
       color: white;
       font-family: "Segoe UI", sans-serif;
-    }
-
-    #emulator {
-      width: 100vw;
-      height: 100vh;
-      background-color: #000;
       display: flex;
-      align-items: center;
       justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+      box-sizing: border-box;
     }
-
-    #screen {
+    #emulator, #auth-container {
       width: 800px;
-      height: 600px;
       background: radial-gradient(#002244, #000);
       border: 2px solid #666;
       box-shadow: 0 0 20px #00aaff;
       padding: 20px;
-      position: relative;
+      border-radius: 6px;
     }
-
-    .centered {
+    #emulator {
+      height: 600px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
       text-align: center;
-      margin-top: 150px;
     }
-
+    #auth-container {
+      display: none;
+      color: white;
+    }
     .progress-bar {
       width: 80%;
       height: 20px;
       border: 1px solid #fff;
       margin: 20px auto;
       background-color: #222;
+      border-radius: 5px;
+      overflow: hidden;
     }
-
     .progress {
       height: 100%;
       width: 0%;
       background-color: #00f;
       transition: width 0.1s linear;
     }
-
+    input, select, button {
+      font-size: 1rem;
+      padding: 8px;
+      margin: 8px 0;
+      width: 100%;
+      box-sizing: border-box;
+      border-radius: 4px;
+      border: none;
+    }
+    input, select {
+      background: #222;
+      color: white;
+    }
     button {
-      margin-top: 20px;
-      padding: 10px 30px;
       background-color: #0078D7;
       color: white;
-      border: none;
-      font-size: 16px;
-      border-radius: 4px;
       cursor: pointer;
+      border: none;
     }
-
     button:hover {
       background-color: #005fa3;
+    }
+    #message {
+      margin-top: 10px;
+      min-height: 20px;
     }
   </style>
 </head>
 <body>
+
   <div id="emulator">
-    <div id="screen">
-      <div id="step" class="centered">
-        <h1>Loading...</h1>
-        <div class="progress-bar"><div class="progress"></div></div>
-      </div>
+    <div id="step">
+      <h1>Loading...</h1>
+      <div class="progress-bar"><div class="progress"></div></div>
     </div>
   </div>
 
-  <script>
-    const progressBar = document.querySelector(".progress");
-    const stepDiv = document.getElementById("step");
-    let currentStep = 0;
+  <div id="auth-container">
+    <h2>Create Account / Login</h2>
+    <input type="text" id="username" placeholder="Username (letters, numbers, _ only, max 20 chars)" maxlength="20" />
+    <input type="password" id="password" placeholder="Password (max 30 chars)" maxlength="30" />
+    
+    <label for="language-select">Choose Language:</label>
+    <select id="language-select">
+      <option value="en-US">English (US)</option>
+      <option value="fr-FR">French</option>
+      <option value="es-ES">Spanish</option>
+      <option value="de-DE">German</option>
+      <option value="zh-CN">Chinese</option>
+    </select>
+    
+    <button id="savePrefBtn">Save Preferences</button>
+    <button id="signupBtn">Sign Up</button>
+    <button id="loginBtn">Log In</button>
+    <div id="message"></div>
+  </div>
 
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+
+    // Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyABT1dlkE7m0k9pLtP_l5mhk10NRlNoDb8",
+      authDomain: "nofootage2010.firebaseapp.com",
+      projectId: "nofootage2010",
+      storageBucket: "nofootage2010.firebasestorage.app",
+      messagingSenderId: "1098446374131",
+      appId: "1:1098446374131:web:499c1e6a2d5d781adae386"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // UI Elements
+    const emulator = document.getElementById("emulator");
+    const stepDiv = document.getElementById("step");
+    const progressBar = document.querySelector(".progress");
+
+    const authContainer = document.getElementById("auth-container");
+    const usernameInput = document.getElementById("username");
+    const passwordInput = document.getElementById("password");
+    const signupBtn = document.getElementById("signupBtn");
+    const loginBtn = document.getElementById("loginBtn");
+    const savePrefBtn = document.getElementById("savePrefBtn");
+    const languageSelect = document.getElementById("language-select");
+    const messageDiv = document.getElementById("message");
+
+    // Username validation regex
+    const usernameRegex = /^[a-zA-Z0-9_]{1,20}$/;
+
+    function validateInputs(username, password) {
+      if (!usernameRegex.test(username)) {
+        messageDiv.textContent = "Invalid username. Use letters, numbers, underscore only, max 20 chars.";
+        return false;
+      }
+      if (password.length === 0 || password.length > 30) {
+        messageDiv.textContent = "Password must be 1-30 characters.";
+        return false;
+      }
+      return true;
+    }
+
+    function usernameToEmail(username) {
+      return `${username}@nofootage.local`;
+    }
+
+    // Installation steps (same as before)
+    let currentStep = 0;
     const steps = [
       { text: "Windows is loading files...", duration: 3000, showProgress: true },
       { text: "Starting Windows...", duration: 2000, showProgress: false },
@@ -101,11 +182,6 @@
 
       if (step.showProgress) {
         progressBar.style.width = "0%";
-        const progressBarWrapper = document.createElement("div");
-        progressBarWrapper.className = "progress-bar";
-        progressBarWrapper.appendChild(progressBar);
-        stepDiv.appendChild(progressBarWrapper);
-
         let progress = 0;
         const interval = setInterval(() => {
           progress += 1;
@@ -130,36 +206,111 @@
       if (currentStep < steps.length) {
         showStep(currentStep);
       } else {
-        // Final step: set installed flag & redirect
+        // Installation done
         localStorage.setItem("win7Installed", "true");
-        window.location.href = "home.html";
+        showAuth();
       }
     }
 
-    window.onload = () => {
-      if (localStorage.getItem("win7Installed") === "true") {
-        // Already installed → redirect immediately
-        window.location.href = "home.html";
-      } else {
-        showStep(currentStep);
+    function showAuth() {
+      emulator.style.display = "none";
+      authContainer.style.display = "block";
+    }
+
+    // Save language preference to Firestore
+    async function saveLanguagePref(uid, languageCode) {
+      await setDoc(doc(db, "users", uid), { language: languageCode }, { merge: true });
+    }
+
+    // Load language preference from Firestore
+    async function loadLanguagePref(uid) {
+      const docRef = doc(db, "users", uid);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        return docSnap.data().language;
+      }
+      return null;
+    }
+
+    // Save Preferences button
+    savePrefBtn.onclick = async () => {
+      const user = auth.currentUser;
+      if (!user) {
+        messageDiv.textContent = "You must be logged in to save preferences.";
+        return;
+      }
+      try {
+        await saveLanguagePref(user.uid, languageSelect.value);
+        messageDiv.textContent = "Preferences saved!";
+      } catch (e) {
+        messageDiv.textContent = "Error saving preferences: " + e.message;
       }
     };
-  </script>
 
-  <!-- Firebase Initialization -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+    // Signup/Login handlers with language loading on success
+    async function postLoginSetup() {
+      const user = auth.currentUser;
+      if (!user) return;
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyABT1dlkE7m0k9pLtP_l5mhk10NRlNoDb8",
-      authDomain: "nofootage2010.firebaseapp.com",
-      projectId: "nofootage2010",
-      storageBucket: "nofootage2010.firebasestorage.app",
-      messagingSenderId: "1098446374131",
-      appId: "1:1098446374131:web:499c1e6a2d5d781adae386"
+      // Load saved language preference
+      const savedLang = await loadLanguagePref(user.uid);
+      if (savedLang) {
+        languageSelect.value = savedLang;
+      }
+
+      messageDiv.textContent = "Logged in! Redirecting to Home...";
+      setTimeout(() => window.location.href = "home.html", 1500);
+    }
+
+    signupBtn.onclick = async () => {
+      const username = usernameInput.value.trim();
+      const password = passwordInput.value;
+
+      if (!validateInputs(username, password)) return;
+
+      const email = usernameToEmail(username);
+      messageDiv.textContent = "Signing up...";
+
+      try {
+        await createUserWithEmailAndPassword(auth, email, password);
+        await postLoginSetup();
+      } catch (error) {
+        messageDiv.textContent = "Sign up error: " + error.message;
+      }
     };
 
-    const app = initializeApp(firebaseConfig);
+    loginBtn.onclick = async () => {
+      const username = usernameInput.value.trim();
+      const password = passwordInput.value;
+
+      if (!validateInputs(username, password)) return;
+
+      const email = usernameToEmail(username);
+      messageDiv.textContent = "Logging in...";
+
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        await postLoginSetup();
+      } catch (error) {
+        messageDiv.textContent = "Login error: " + error.message;
+      }
+    };
+
+    // On page load: check if already installed and user logged in
+    onAuthStateChanged(auth, async (user) => {
+      if (localStorage.getItem("win7Installed") === "true" && user) {
+        // Load saved language pref and redirect directly
+        const savedLang = await loadLanguagePref(user.uid);
+        if (savedLang) languageSelect.value = savedLang;
+        window.location.href = "home.html";
+      } else if (localStorage.getItem("win7Installed") === "true") {
+        // Installed but not logged in, show auth form
+        showAuth();
+      } else {
+        // Not installed yet, start installer
+        showStep(currentStep);
+      }
+    });
   </script>
 </body>
 </html>
