@@ -92,8 +92,7 @@
       { text: "Installing features...", duration: 2000, showProgress: true },
       { text: "Installing updates...", duration: 2000, showProgress: true },
       { text: "Completing installation...", duration: 3000, showProgress: true },
-      { text: "Restarting...", duration: 2000, showProgress: false },
-      { text: "Installation complete. Welcome to Windows 7!", duration: 0 }
+      { text: "Restarting...", duration: 2000, showProgress: false }
     ];
 
     function showStep(index) {
@@ -123,11 +122,6 @@
         stepDiv.appendChild(btn);
       } else if (step.duration > 0) {
         setTimeout(() => nextStep(), step.duration);
-      } else {
-        // Final step
-        if (currentStep === steps.length - 1) {
-          localStorage.setItem("win7Installed", "true");
-        }
       }
     }
 
@@ -135,26 +129,24 @@
       currentStep++;
       if (currentStep < steps.length) {
         showStep(currentStep);
+      } else {
+        // Final step: set installed flag & redirect
+        localStorage.setItem("win7Installed", "true");
+        window.location.href = "home.html";
       }
-    }
-
-    function showInstalledScreen() {
-      stepDiv.innerHTML = `
-        <h1>Welcome back to Windows 7</h1>
-        <p>You’ve already completed the installation.</p>
-      `;
     }
 
     window.onload = () => {
       if (localStorage.getItem("win7Installed") === "true") {
-        showInstalledScreen();
+        // Already installed → redirect immediately
+        window.location.href = "home.html";
       } else {
         showStep(currentStep);
       }
     };
   </script>
 
-  <!-- Firebase Initialization (unchanged) -->
+  <!-- Firebase Initialization -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
 
