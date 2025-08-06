@@ -1,0 +1,88 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NOFOOTAGE2010</title>
+  <style>
+    /* Reset + base */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: black;
+      color: white;
+      font-family: monospace;
+      text-transform: uppercase;
+      overflow-x: hidden;
+      padding: 40px;
+      line-height: 2;
+    }
+
+    .marquee {
+      white-space: nowrap;
+      overflow: hidden;
+      width: 100%;
+      border-top: 1px solid white;
+      border-bottom: 1px solid white;
+      padding: 10px 0;
+      margin-bottom: 40px;
+      position: relative;
+    }
+
+    .marquee span {
+      display: inline-block;
+      padding-left: 100%;
+      animation: scroll 12s linear infinite;
+    }
+
+    @keyframes scroll {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-100%); }
+    }
+
+    .content {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .content p {
+      margin-bottom: 20px;
+      font-size: 1.5em;
+    }
+
+    /* Optional hover effect */
+    .content p:hover {
+      color: red;
+      letter-spacing: 2px;
+      transition: 0.2s;
+    }
+
+    /* Optional glitch-like bold */
+    .content p:nth-child(odd) {
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="marquee">
+    <span> // NOFOOTAGE2010 // </span>
+  </div>
+
+  <div class="content">
+    <p>NOFOOTAGE2010 IS NOT A BRAND</p>
+    <p>1</p>
+    <p>2</p>
+    <p>3</p>
+    <p>4</p>
+    <p>5</p>
+    <p>NOFOOTAGE2010</p>
+  </div>
+
+</body>
+</html>
