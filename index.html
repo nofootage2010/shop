@@ -2,55 +2,188 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>NOFOOTAGE2010 - Terminal</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Windows 7 Installation Emulator</title>
   <style>
-    /* Reset + base */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
     body {
-      background-color: black;
-      color: #00FF00;
-      font-family: 'Courier New', Courier, monospace;
-      font-size: 16px;
-      line-height: 1.6;
+      margin: 0;
+      background-color: #000;
+      color: white;
+      font-family: "Segoe UI", sans-serif;
+    }
+
+    #emulator {
+      width: 100vw;
+      height: 100vh;
+      background-color: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #screen {
+      width: 800px;
+      height: 600px;
+      background: radial-gradient(#002244, #000);
+      border: 2px solid #666;
+      box-shadow: 0 0 20px #00aaff;
       padding: 20px;
-      white-space: pre-wrap;
-      text-shadow: 0 0 1px #00FF00;
-      cursor: default;
+      position: relative;
     }
 
-    .console {
-      max-width: 100%;
-      overflow: hidden;
+    .centered {
+      text-align: center;
+      margin-top: 150px;
     }
 
-    .line::after {
-      content: "_";
-      animation: blink 1s step-end infinite;
+    .progress-bar {
+      width: 80%;
+      height: 20px;
+      border: 1px solid #fff;
+      margin: 20px auto;
+      background-color: #222;
     }
 
-    @keyframes blink {
-      50% { opacity: 0; }
+    .progress {
+      height: 100%;
+      width: 0%;
+      background-color: #00f;
+      transition: width 0.1s linear;
     }
 
-    ::selection {
-      background: rgba(0, 255, 0, 0.3);
+    button {
+      margin-top: 20px;
+      padding: 10px 30px;
+      background-color: #0078D7;
+      color: white;
+      border: none;
+      font-size: 16px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #005fa3;
     }
   </style>
 </head>
 <body>
-  <div class="console">
-    <div class="line">NOFOOTAGE2010 SYSTEM INITIALIZED</div>
-    <div class="line">LOADING MANIFESTO...</div>
-    <br />
-    <div class="line">> NOFOOTAGE2010</div>
-    <br />
-    <div class="line">C:\NOFOOTAGE2010&gt; █</div>
+  <div id="emulator">
+    <div id="screen">
+      <div id="step" class="centered">
+        <h1>Loading...</h1>
+        <div class="progress-bar"><div class="progress"></div></div>
+      </div>
+    </div>
   </div>
+
+  <script>
+    const progressBar = document.querySelector(".progress");
+    const stepDiv = document.getElementById("step");
+
+    let currentStep = 0;
+
+    const steps = [
+      {
+        text: "Windows is loading files...",
+        duration: 3000,
+        showProgress: true
+      },
+      {
+        text: "Starting Windows...",
+        duration: 2000,
+        showProgress: false
+      },
+      {
+        text: "Select your language and preferences.",
+        duration: 0,
+        button: "Next"
+      },
+      {
+        text: "Install Now",
+        duration: 0,
+        button: "Install"
+      },
+      {
+        text: "Setup is starting...",
+        duration: 2000,
+        showProgress: false
+      },
+      {
+        text: "Copying Windows files...",
+        duration: 3000,
+        showProgress: true
+      },
+      {
+        text: "Expanding Windows files...",
+        duration: 3000,
+        showProgress: true
+      },
+      {
+        text: "Installing features...",
+        duration: 2000,
+        showProgress: true
+      },
+      {
+        text: "Installing updates...",
+        duration: 2000,
+        showProgress: true
+      },
+      {
+        text: "Completing installation...",
+        duration: 3000,
+        showProgress: true
+      },
+      {
+        text: "Restarting...",
+        duration: 2000,
+        showProgress: false
+      },
+      {
+        text: "Installation complete. Welcome to Windows 7!",
+        duration: 0
+      }
+    ];
+
+    function showStep(index) {
+      const step = steps[index];
+      stepDiv.innerHTML = `<h1>${step.text}</h1>`;
+
+      if (step.showProgress) {
+        progressBar.style.width = "0%";
+        const progressBarWrapper = document.createElement("div");
+        progressBarWrapper.className = "progress-bar";
+        progressBarWrapper.appendChild(progressBar);
+        stepDiv.appendChild(progressBarWrapper);
+
+        let progress = 0;
+        const interval = setInterval(() => {
+          progress += 1;
+          progressBar.style.width = `${progress}%`;
+          if (progress >= 100) {
+            clearInterval(interval);
+            nextStep();
+          }
+        }, step.duration / 100);
+      } else if (step.button) {
+        const btn = document.createElement("button");
+        btn.textContent = step.button;
+        btn.onclick = () => nextStep();
+        stepDiv.appendChild(btn);
+      } else if (step.duration > 0) {
+        setTimeout(() => nextStep(), step.duration);
+      }
+    }
+
+    function nextStep() {
+      currentStep++;
+      if (currentStep < steps.length) {
+        showStep(currentStep);
+      }
+    }
+
+    window.onload = () => {
+      showStep(currentStep);
+    };
+  </script>
 </body>
 </html>
