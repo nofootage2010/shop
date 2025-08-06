@@ -1,1 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Windows 7 Desktop</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: 'Segoe UI', sans-serif;
+      overflow: hidden;
+    }
+    body {
+      background: url('https://wallpapercave.com/wp/7yyNMFk.jpg') no-repeat center center fixed;
+      background-size: cover;
+      color: white;
+    }
+    #taskbar {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      height: 40px;
+      background: linear-gradient(to top, #2c2c2c, #444);
+      display: flex;
+      align-items: center;
+      padding: 0 10px;
+      box-sizing: border-box;
+    }
+    #start-button {
+      width: 32px;
+      height: 32px;
+      background: url('https://upload.wikimedia.org/wikipedia/commons/thumb/0/00/Windows_logo_-_2006.svg/32px-Windows_logo_-_2006.svg.png') no-repeat center center;
+      background-size: contain;
+      border: none;
+      margin-right: 10px;
+      cursor: pointer;
+    }
+    #start-menu {
+      position: absolute;
+      bottom: 45px;
+      left: 10px;
+      width: 200px;
+      background: #1e1e1e;
+      border: 1px solid #333;
+      display: none;
+      z-index: 10;
+    }
+    #start-menu button {
+      width: 100%;
+      background: none;
+      color: white;
+      border: none;
+      padding: 10px;
+      text-align: left;
+      cursor: pointer;
+    }
+    #start-menu button:hover {
+      background: #333;
+    }
+    #desktop-icons {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .icon {
+      text-align: center;
+      cursor: pointer;
+    }
+    .icon img {
+      width: 48px;
+      height: 48px;
+    }
+    #username-label {
+      margin-left: auto;
+      font-size: 0.9rem;
+      color: #ccc;
+    }
+  </style>
+</head>
+<body>
+  <div id="desktop-icons">
+    <div class="icon">
+      <img src="https://icons.iconarchive.com/icons/papirus-team/papirus-places/512/user-desktop-icon.png" />
+      <div>My Computer</div>
+    </div>
+    <div class="icon">
+      <img src="https://icons.iconarchive.com/icons/guillendesign/variations-3/512/Recycle-Bin-icon.png" />
+      <div>Recycle Bin</div>
+    </div>
+  </div>
 
+  <div id="taskbar">
+    <button id="start-button" title="Start"></button>
+    <div id="username-label">Welcome</div>
+  </div>
+
+  <div id="start-menu">
+    <button id="logoutBtn">Log Out</button>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+    import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyABT1dlkE7m0k9pLtP_l5mhk10NRlNoDb8",
+      authDomain: "nofootage2010.firebaseapp.com",
+      projectId: "nofootage2010",
+      storageBucket: "nofootage2010.firebasestorage.app",
+      messagingSenderId: "1098446374131",
+      appId: "1:1098446374131:web:499c1e6a2d5d781adae386"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    const usernameLabel = document.getElementById("username-label");
+    const startBtn = document.getElementById("start-button");
+    const startMenu = document.getElementById("start-menu");
+    const logoutBtn = document.getElementById("logoutBtn");
+
+    // Toggle start menu
+    startBtn.onclick = () => {
+      startMenu.style.display = startMenu.style.display === "block" ? "none" : "block";
+    };
+
+    // Logout
+    logoutBtn.onclick = async () => {
+      await signOut(auth);
+      window.location.href = "index.html";
+    };
+
+    // Show username if logged in
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        const email = user.email;
+        const username = email ? email.split("@")[0] : "User";
+        usernameLabel.textContent = `Welcome, ${username}`;
+      } else {
+        window.location.href = "index.html";
+      }
+    });
+  </script>
+</body>
+</html>
