@@ -107,23 +107,22 @@
 
   <div id="desktop-icons">
     <div class="icon">
-      <img src="https://icons.iconarchive.com/icons/papirus-team/papirus-places/512/user-desktop-icon.png" alt="My Computer" />
+      <img src="https://icons.iconarchive.com/icons/papirus-team/papirus-places/512/user-desktop-icon.png" />
       <div>My Computer</div>
     </div>
     <div class="icon">
-      <img src="https://icons.iconarchive.com/icons/guillendesign/variations-3/512/Recycle-Bin-icon.png" alt="Recycle Bin" />
+      <img src="https://icons.iconarchive.com/icons/guillendesign/variations-3/512/Recycle-Bin-icon.png" />
       <div>Recycle Bin</div>
     </div>
   </div>
 
   <div id="taskbar">
-    <button id="start-button" title="Start Menu"></button>
+    <button id="start-button" title="Start"></button>
     <div id="username-label">Loading...</div>
   </div>
 
   <div id="start-menu">
     <button id="logoutBtn">🔒 Log Out</button>
-    <!-- You can add more fake apps here -->
   </div>
 
   <script type="module">
@@ -147,26 +146,23 @@
     const startMenu = document.getElementById("start-menu");
     const logoutBtn = document.getElementById("logoutBtn");
 
-    // Toggle start menu on click
-    startButton.addEventListener("click", () => {
-      startMenu.style.display = (startMenu.style.display === "block") ? "none" : "block";
-    });
+    // Toggle menu
+    startButton.onclick = () => {
+      startMenu.style.display = startMenu.style.display === "block" ? "none" : "block";
+    };
 
-    // Close start menu when clicking outside
     document.addEventListener("click", (e) => {
       if (!startMenu.contains(e.target) && e.target !== startButton) {
         startMenu.style.display = "none";
       }
     });
 
-    // Log out
-    logoutBtn.addEventListener("click", async () => {
+    logoutBtn.onclick = async () => {
       await signOut(auth);
-      localStorage.removeItem("win7Installed");
+      // Keep 'installed' flag to skip installer
       window.location.href = "index.html";
-    });
+    };
 
-    // Get logged-in user info
     onAuthStateChanged(auth, (user) => {
       if (user) {
         const email = user.email || "";
