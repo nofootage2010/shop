@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Windows 7 Desktop</title>
   <style>
     html, body {
@@ -10,12 +10,14 @@
       height: 100%;
       font-family: 'Segoe UI', sans-serif;
       overflow: hidden;
+      user-select: none;
     }
     body {
       background: url('https://wallpapercave.com/wp/7yyNMFk.jpg') no-repeat center center fixed;
       background-size: cover;
       color: white;
     }
+
     #taskbar {
       position: absolute;
       bottom: 0;
@@ -26,16 +28,20 @@
       align-items: center;
       padding: 0 10px;
       box-sizing: border-box;
+      z-index: 1000;
     }
+
     #start-button {
-      width: 32px;
-      height: 32px;
-      background: url('https://upload.wikimedia.org/wikipedia/commons/thumb/0/00/Windows_logo_-_2006.svg/32px-Windows_logo_-_2006.svg.png') no-repeat center center;
+      width: 36px;
+      height: 36px;
+      background: url('https://upload.wikimedia.org/wikipedia/commons/5/55/Windows_start_button.png') no-repeat center center;
       background-size: contain;
       border: none;
       margin-right: 10px;
       cursor: pointer;
+      outline: none;
     }
+
     #start-menu {
       position: absolute;
       bottom: 45px;
@@ -44,20 +50,25 @@
       background: #1e1e1e;
       border: 1px solid #333;
       display: none;
-      z-index: 10;
+      z-index: 1001;
+      box-shadow: 0 0 10px black;
     }
+
     #start-menu button {
       width: 100%;
       background: none;
       color: white;
       border: none;
-      padding: 10px;
+      padding: 12px;
       text-align: left;
       cursor: pointer;
+      font-size: 1rem;
     }
+
     #start-menu button:hover {
       background: #333;
     }
+
     #desktop-icons {
       position: absolute;
       top: 20px;
@@ -65,15 +76,26 @@
       display: flex;
       flex-direction: column;
       gap: 20px;
+      z-index: 1;
     }
+
     .icon {
       text-align: center;
       cursor: pointer;
     }
+
     .icon img {
       width: 48px;
       height: 48px;
     }
+
+    .icon div {
+      font-size: 14px;
+      color: white;
+      margin-top: 4px;
+      text-shadow: 1px 1px black;
+    }
+
     #username-label {
       margin-left: auto;
       font-size: 0.9rem;
@@ -82,24 +104,26 @@
   </style>
 </head>
 <body>
+
   <div id="desktop-icons">
     <div class="icon">
-      <img src="https://icons.iconarchive.com/icons/papirus-team/papirus-places/512/user-desktop-icon.png" />
+      <img src="https://icons.iconarchive.com/icons/papirus-team/papirus-places/512/user-desktop-icon.png" alt="My Computer" />
       <div>My Computer</div>
     </div>
     <div class="icon">
-      <img src="https://icons.iconarchive.com/icons/guillendesign/variations-3/512/Recycle-Bin-icon.png" />
+      <img src="https://icons.iconarchive.com/icons/guillendesign/variations-3/512/Recycle-Bin-icon.png" alt="Recycle Bin" />
       <div>Recycle Bin</div>
     </div>
   </div>
 
   <div id="taskbar">
-    <button id="start-button" title="Start"></button>
-    <div id="username-label">Welcome</div>
+    <button id="start-button" title="Start Menu"></button>
+    <div id="username-label">Loading...</div>
   </div>
 
   <div id="start-menu">
-    <button id="logoutBtn">Log Out</button>
+    <button id="logoutBtn">🔒 Log Out</button>
+    <!-- You can add more fake apps here -->
   </div>
 
   <script type="module">
@@ -119,26 +143,34 @@
     const auth = getAuth(app);
 
     const usernameLabel = document.getElementById("username-label");
-    const startBtn = document.getElementById("start-button");
+    const startButton = document.getElementById("start-button");
     const startMenu = document.getElementById("start-menu");
     const logoutBtn = document.getElementById("logoutBtn");
 
-    // Toggle start menu
-    startBtn.onclick = () => {
-      startMenu.style.display = startMenu.style.display === "block" ? "none" : "block";
-    };
+    // Toggle start menu on click
+    startButton.addEventListener("click", () => {
+      startMenu.style.display = (startMenu.style.display === "block") ? "none" : "block";
+    });
 
-    // Logout
-    logoutBtn.onclick = async () => {
+    // Close start menu when clicking outside
+    document.addEventListener("click", (e) => {
+      if (!startMenu.contains(e.target) && e.target !== startButton) {
+        startMenu.style.display = "none";
+      }
+    });
+
+    // Log out
+    logoutBtn.addEventListener("click", async () => {
       await signOut(auth);
+      localStorage.removeItem("win7Installed");
       window.location.href = "index.html";
-    };
+    });
 
-    // Show username if logged in
+    // Get logged-in user info
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        const email = user.email;
-        const username = email ? email.split("@")[0] : "User";
+        const email = user.email || "";
+        const username = email.split("@")[0];
         usernameLabel.textContent = `Welcome, ${username}`;
       } else {
         window.location.href = "index.html";
