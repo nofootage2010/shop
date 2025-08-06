@@ -82,65 +82,18 @@
     let currentStep = 0;
 
     const steps = [
-      {
-        text: "Windows is loading files...",
-        duration: 3000,
-        showProgress: true
-      },
-      {
-        text: "Starting Windows...",
-        duration: 2000,
-        showProgress: false
-      },
-      {
-        text: "Select your language and preferences.",
-        duration: 0,
-        button: "Next"
-      },
-      {
-        text: "Install Now",
-        duration: 0,
-        button: "Install"
-      },
-      {
-        text: "Setup is starting...",
-        duration: 2000,
-        showProgress: false
-      },
-      {
-        text: "Copying Windows files...",
-        duration: 3000,
-        showProgress: true
-      },
-      {
-        text: "Expanding Windows files...",
-        duration: 3000,
-        showProgress: true
-      },
-      {
-        text: "Installing features...",
-        duration: 2000,
-        showProgress: true
-      },
-      {
-        text: "Installing updates...",
-        duration: 2000,
-        showProgress: true
-      },
-      {
-        text: "Completing installation...",
-        duration: 3000,
-        showProgress: true
-      },
-      {
-        text: "Restarting...",
-        duration: 2000,
-        showProgress: false
-      },
-      {
-        text: "Installation complete. Welcome to Windows 7!",
-        duration: 0
-      }
+      { text: "Windows is loading files...", duration: 3000, showProgress: true },
+      { text: "Starting Windows...", duration: 2000, showProgress: false },
+      { text: "Select your language and preferences.", duration: 0, button: "Next" },
+      { text: "Install Now", duration: 0, button: "Install" },
+      { text: "Setup is starting...", duration: 2000, showProgress: false },
+      { text: "Copying Windows files...", duration: 3000, showProgress: true },
+      { text: "Expanding Windows files...", duration: 3000, showProgress: true },
+      { text: "Installing features...", duration: 2000, showProgress: true },
+      { text: "Installing updates...", duration: 2000, showProgress: true },
+      { text: "Completing installation...", duration: 3000, showProgress: true },
+      { text: "Restarting...", duration: 2000, showProgress: false },
+      { text: "Installation complete. Welcome to Windows 7!", duration: 0 }
     ];
 
     function showStep(index) {
@@ -188,15 +141,8 @@
     function showInstalledScreen() {
       stepDiv.innerHTML = `
         <h1>Welcome back to Windows 7</h1>
-        <p>You’ve already completed setup.</p>
-        <button onclick="resetInstall()">Reinstall</button>
+        <p>You’ve already completed the installation.</p>
       `;
-    }
-
-    function resetInstall() {
-      localStorage.removeItem("win7Installed");
-      currentStep = 0;
-      showStep(currentStep);
     }
 
     window.onload = () => {
@@ -206,6 +152,22 @@
         showStep(currentStep);
       }
     };
+  </script>
+
+  <!-- Firebase Initialization (unchanged) -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyABT1dlkE7m0k9pLtP_l5mhk10NRlNoDb8",
+      authDomain: "nofootage2010.firebaseapp.com",
+      projectId: "nofootage2010",
+      storageBucket: "nofootage2010.firebasestorage.app",
+      messagingSenderId: "1098446374131",
+      appId: "1:1098446374131:web:499c1e6a2d5d781adae386"
+    };
+
+    const app = initializeApp(firebaseConfig);
   </script>
 </body>
 </html>
