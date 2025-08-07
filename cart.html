@@ -12,7 +12,6 @@
       serverTimestamp
     } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
-    // Your Firebase config
     const firebaseConfig = {
       apiKey: "AIzaSyABT1dlkE7m0k9pLtP_l5mhk10NRlNoDb8",
       authDomain: "nofootage2010.firebaseapp.com",
@@ -42,9 +41,8 @@
       cartItems.forEach(item => {
         const div = document.createElement("div");
         div.className = "item";
-        const itemTotal = item.price * item.quantity;
-        totalCost += itemTotal;
-        div.textContent = `${item.name} × ${item.quantity} = ${itemTotal} Coins`;
+        totalCost += item.price * item.quantity;
+        div.textContent = `${item.name} × ${item.quantity}`;
         cartContainer.appendChild(div);
       });
 
