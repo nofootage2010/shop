@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Item Page</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #e9f0f7;
+      padding: 40px;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    img {
+      width: 300px;
+      border-radius: 10px;
+    }
+    h1 {
+      margin: 20px 0 10px;
+    }
+    .price {
+      color: green;
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+    .meta {
+      color: #555;
+      font-size: 14px;
+    }
+    .description {
+      margin-top: 20px;
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="item-container">Loading...</div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+    import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyABT1dlkE7m0k9pLtP_l5mhk10NRlNoDb8",
+      authDomain: "nofootage2010.firebaseapp.com",
+      projectId: "nofootage2010",
+      storageBucket: "nofootage2010.firebasestorage.app",
+      messagingSenderId: "1098446374131",
+      appId: "1:1098446374131:web:499c1e6a2d5d781adae386"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const params = new URLSearchParams(window.location.search);
+    const itemName = params.get("name");
+    const container = document.getElementById("item-container");
+
+    if (!itemName) {
+      container.innerHTML = "<p>Item name not provided.</p>";
+    } else {
+      const q = query(collection(db, "catalog"), where("name", "==", itemName));
+      const snapshot = await getDocs(q);
+      if (snapshot.empty) {
+        container.innerHTML = `<p>No item found with name "${itemName}".</p>`;
+      } else {
+        const data = snapshot.docs[0].data();
+        const imgPath = `assets/${itemName}/icon.png`;
+
+        container.innerHTML = `
+          <img src="${imgPath}" alt="${data.name}">
+          <h1>${data.name}</h1>
+          <div class="price">${data.price} Coins</div>
+          <div class="meta">Creator: ${data.creator || 'Unknown'} | Quantity: ${data.quantity || 0}</div>
+          <div class="description"><strong>Description:</strong> ${data.description}</div>
+        `;
+      }
+    }
+  </script>
+</body>
+</html>
