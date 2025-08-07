@@ -28,25 +28,33 @@
     window.addEventListener("DOMContentLoaded", () => {
       const cartItems = JSON.parse(localStorage.getItem("cart")) || [];
       const cartContainer = document.getElementById("cart-items");
+      const totalCostElem = document.getElementById("total-cost");
       const checkoutBtn = document.getElementById("checkoutBtn");
 
       if (cartItems.length === 0) {
         cartContainer.innerHTML = "<p>Your cart is empty.</p>";
+        totalCostElem.textContent = "";
         checkoutBtn.disabled = true;
         return;
       }
 
+      let totalCost = 0;
       cartItems.forEach(item => {
         const div = document.createElement("div");
         div.className = "item";
-        div.textContent = `${item.name} × ${item.quantity} = ${item.price * item.quantity} Coins`;
+        const itemTotal = item.price * item.quantity;
+        totalCost += itemTotal;
+        div.textContent = `${item.name} × ${item.quantity} = ${itemTotal} Coins`;
         cartContainer.appendChild(div);
       });
+
+      totalCostElem.textContent = `Total Cost: ${totalCost} Coins`;
 
       checkoutBtn.addEventListener("click", async () => {
         try {
           await addDoc(collection(db, "orders"), {
             cart: cartItems,
+            totalCost: totalCost,
             timestamp: serverTimestamp()
           });
           alert("Order placed! Thank you for your purchase.");
@@ -81,6 +89,12 @@
       padding: 10px;
       border-bottom: 1px solid #ddd;
     }
+    #total-cost {
+      margin-top: 20px;
+      font-weight: bold;
+      font-size: 18px;
+      text-align: right;
+    }
     .checkout {
       margin-top: 20px;
       text-align: center;
@@ -103,6 +117,7 @@
   <div class="container">
     <h1>Your Cart</h1>
     <div id="cart-items"></div>
+    <div id="total-cost"></div>
     <div class="checkout">
       <button id="checkoutBtn">Check Out</button>
     </div>
