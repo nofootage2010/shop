@@ -1,247 +1,111 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Item Page</title>
   <style>
     body {
-      margin: 0;
       font-family: Arial, sans-serif;
-      background: #f2f2f2;
-    }
-
-    #homeBtn {
-      position: fixed;
-      top: 15px;
-      left: 15px;
-      padding: 8px 14px;
-      background: #555;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: bold;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-      z-index: 1000;
-    }
-
-    #homeBtn:hover {
-      background: #333;
-    }
-
-    .product-page {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 40px;
-      max-width: 1100px;
-      margin: 80px auto;
+      background: #f8f8f8;
+      margin: 0;
       padding: 20px;
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
     }
 
-    .product-image {
-      flex: 1;
-      min-width: 300px;
-    }
-
-    .product-image img {
-      width: 100%;
-      max-width: 500px;
+    .item-container {
+      max-width: 900px;
+      margin: auto;
+      background: #fff;
+      padding: 20px;
       border-radius: 8px;
     }
 
-    .product-info {
-      flex: 1;
-      min-width: 300px;
-    }
-
-    .product-info h1 {
-      text-transform: uppercase;
-      font-size: 28px;
-      font-weight: bold;
-      margin-bottom: 10px;
-    }
-
-    .product-info p {
-      margin: 10px 0;
-      font-size: 15px;
-    }
-
-    .product-info .price {
-      font-size: 22px;
-      font-weight: bold;
-      margin: 15px 0;
-    }
-
-    .count {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin: 15px 0;
-    }
-
-    .count button {
-      width: 32px;
-      height: 32px;
-      font-size: 18px;
-      background: #ddd;
-      border: none;
-      cursor: pointer;
-    }
-
-    .buy-btn {
+    .main-image {
       width: 100%;
-      padding: 14px;
-      font-size: 16px;
-      background: black;
-      color: white;
-      border: none;
-      border-radius: 6px;
+      max-height: 500px;
+      object-fit: contain;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    .thumbnail-container {
+      display: flex;
+      overflow-x: auto;
+      margin-top: 15px;
+      gap: 10px;
+    }
+
+    .thumbnail-container img {
+      height: 100px;
       cursor: pointer;
+      border-radius: 4px;
+      border: 2px solid transparent;
+      transition: border-color 0.3s;
     }
 
-    .buy-btn:hover {
-      background: #222;
+    .thumbnail-container img:hover {
+      border-color: #333;
     }
 
-    #popup {
-      display: none;
-      position: fixed;
-      top: 30%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: white;
-      padding: 20px 30px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.2);
-      text-align: center;
-      z-index: 1000;
-      width: 320px;
+    .item-title {
+      font-size: 24px;
+      margin-top: 20px;
     }
 
-    #popup p {
-      margin-bottom: 20px;
-      font-size: 16px;
-    }
-
-    #popup button {
-      margin: 5px 8px 0 8px;
-      padding: 8px 16px;
-      background: dodgerblue;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      min-width: 90px;
-      font-weight: bold;
-    }
-
-    #popup button:hover {
-      background: deepskyblue;
+    .item-price {
+      color: green;
+      font-size: 18px;
+      margin-bottom: 10px;
     }
   </style>
 </head>
 <body>
-  <button id="homeBtn">Home</button>
 
-  <div class="product-page">
-    <div class="product-image">
-      <img id="item-img" src="https://via.placeholder.com/500x500" alt="Item Image">
-    </div>
-
-    <div class="product-info">
-      <h1 id="item-name">ITEM NAME</h1>
-      <p><strong>Creator:</strong> <span id="item-creator">Loading...</span></p>
-      <p class="price" id="item-price">$0.00 USD</p>
-      <p><strong>Description:</strong> <span id="item-desc">Loading...</span></p>
-      <p><strong>Available:</strong> <span id="item-quantity">0</span></p>
-
-      <div class="count">
-        <button id="decrease">-</button>
-        <span id="count">1</span>
-        <button id="increase">+</button>
-      </div>
-
-      <button class="buy-btn" id="buyBtn">Add to Cart</button>
-    </div>
-  </div>
-
-  <div id="popup">
-    <p id="popup-message"></p>
-    <button id="continueBtn">Continue Shopping</button>
-    <button id="viewCartBtn">View Cart</button>
-    <button id="checkOutBtn">Check Out</button>
+  <div class="item-container">
+    <img id="mainImage" class="main-image" src="" alt="Main Image" />
+    <div class="thumbnail-container" id="thumbnails"></div>
+    <h2 class="item-title" id="itemTitle"></h2>
+    <div class="item-price" id="itemPrice"></div>
   </div>
 
   <script>
-    const item = JSON.parse(localStorage.getItem("selectedItem"));
-    if (!item) {
-      alert("No item selected.");
-      location.href = "index.html";
-    }
+    // EXAMPLE VARIABLES (replace with dynamic source)
+    const itemName = "CoolShirt"; // This should match the folder name in /assets/
+    const price = 100;
 
-    document.getElementById("item-name").textContent = item.name;
-    document.getElementById("item-creator").textContent = item.creator || "Unknown";
-    document.getElementById("item-price").textContent = `$${parseFloat(item.price).toFixed(2)} USD`;
-    document.getElementById("item-desc").textContent = item.description || "No description.";
-    document.getElementById("item-quantity").textContent = item.quantity;
-    if (item.image) {
-      document.getElementById("item-img").src = item.image;
-    }
+    // Set item title and price
+    document.getElementById("itemTitle").textContent = itemName;
+    document.getElementById("itemPrice").textContent = `$${parseFloat(price).toFixed(2)} USD`;
 
-    let count = 1;
-    const countDisplay = document.getElementById("count");
+    // Load images
+    const thumbnailsDiv = document.getElementById("thumbnails");
+    const mainImage = document.getElementById("mainImage");
+    let firstImageSet = false;
 
-    document.getElementById("increase").onclick = () => {
-      if (count < item.quantity) {
-        count++;
-        countDisplay.textContent = count;
-      }
-    };
+    for (let i = 1; i <= 20; i++) {
+      const imagePath = `assets/${itemName}/images/image${i}.jpg`;
+      const img = new Image();
+      img.src = imagePath;
 
-    document.getElementById("decrease").onclick = () => {
-      if (count > 1) {
-        count--;
-        countDisplay.textContent = count;
-      }
-    };
+      img.onload = () => {
+        // First image becomes the main preview
+        if (!firstImageSet) {
+          mainImage.src = img.src;
+          firstImageSet = true;
+        }
 
-    document.getElementById("buyBtn").onclick = () => {
-      const cart = JSON.parse(localStorage.getItem("cart")) || [];
-      const existing = cart.find(i => i.name === item.name);
-      if (existing) {
-        existing.quantity = Math.min(existing.quantity + count, item.quantity);
-      } else {
-        cart.push({
-          name: item.name,
-          price: item.price,
-          quantity: count,
-          max: item.quantity
+        // Create thumbnail
+        const thumb = document.createElement("img");
+        thumb.src = img.src;
+        thumb.addEventListener("click", () => {
+          mainImage.src = thumb.src;
         });
-      }
+        thumbnailsDiv.appendChild(thumb);
+      };
 
-      localStorage.setItem("cart", JSON.stringify(cart));
-      document.getElementById("popup-message").textContent = `✅ Added ${count}x ${item.name} to cart`;
-      document.getElementById("popup").style.display = "block";
-    };
-
-    document.getElementById("continueBtn").onclick = () => {
-      document.getElementById("popup").style.display = "none";
-    };
-
-    document.getElementById("viewCartBtn").onclick = () => {
-      location.href = "viewcart.html";
-    };
-
-    document.getElementById("checkOutBtn").onclick = () => {
-      location.href = "cart.html";
-    };
-
-    document.getElementById("homeBtn").onclick = () => {
-      location.href = "index.html";
-    };
+      // Don't show broken images
+      img.onerror = () => {};
+    }
   </script>
+
 </body>
 </html>
