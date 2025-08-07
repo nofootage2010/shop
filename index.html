@@ -22,12 +22,15 @@
     .item {
       background: white;
       padding: 15px;
-      border-radius: 10px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
       width: 200px;
       cursor: pointer;
-      transition: transform 0.2s;
+      transition: transform 0.2s ease;
       text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
     .item:hover {
       transform: scale(1.05);
@@ -36,13 +39,22 @@
       width: 100%;
       border-radius: 8px;
       transition: opacity 0.3s ease;
+      margin-bottom: 12px;
+      object-fit: cover;
+      height: 150px;
     }
     .item-name {
       font-weight: bold;
-      margin: 10px 0 5px;
+      margin-bottom: 6px;
+      font-size: 16px;
+      color: #222;
+      text-transform: uppercase;
     }
     .item-price {
       color: green;
+      font-weight: bold;
+      font-size: 18px;
+      margin-top: auto;
     }
 
     #view-cart-button {
@@ -53,10 +65,13 @@
       color: white;
       padding: 10px 15px;
       border: none;
-      border-radius: 5px;
+      border-radius: 6px;
       cursor: pointer;
       font-size: 14px;
       text-decoration: none;
+      box-shadow: 0 3px 7px rgba(0,123,255,0.6);
+      transition: background-color 0.3s ease;
+      user-select: none;
     }
 
     #view-cart-button:hover {
@@ -120,10 +135,10 @@
           nameElem.className = "item-name";
           nameElem.textContent = name;
 
-         const priceElem = document.createElement('div');
-         priceElem.className = "item-price";
-         priceElem.textContent = `$${parseFloat(price).toFixed(2)} USD`;
-          
+          const priceElem = document.createElement('div');
+          priceElem.className = "item-price";
+          priceElem.textContent = `$${parseFloat(price).toFixed(2)} USD`;
+
           div.appendChild(img);
           div.appendChild(nameElem);
           div.appendChild(priceElem);
