@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Catalog</title>
   <style>
     body {
@@ -11,6 +11,7 @@
     }
     h1 {
       text-align: center;
+      margin-bottom: 30px;
     }
     #catalog {
       display: flex;
@@ -26,6 +27,7 @@
       width: 200px;
       cursor: pointer;
       transition: transform 0.2s;
+      text-align: center;
     }
     .item:hover {
       transform: scale(1.05);
@@ -67,45 +69,61 @@
     const catalogContainer = document.getElementById('catalog');
     catalogContainer.innerHTML = '';
 
-    const querySnapshot = await getDocs(collection(db, "catalog"));
-    querySnapshot.forEach((doc) => {
-      const item = doc.data();
-      const itemName = item.name;
-      const imagePath = `assets/${itemName}/icon.png`;
-      const hoverPath = `assets/${itemName}/icon2.png`;
+    async function loadCatalog() {
+      try {
+        const snapshot = await getDocs(collection(db, "catalog"));
+        if (snapshot.empty) {
+          catalogContainer.innerHTML = "<p>No items found.</p>";
+          return;
+        }
 
-      const div = document.createElement('div');
-      div.className = 'item';
+        snapshot.forEach(doc => {
+          const item = doc.data();
+          const name = item.name;
+          const price = item.price;
 
-      const img = document.createElement('img');
-      img.src = imagePath;
-      img.alt = itemName;
+          const div = document.createElement('div');
+          div.className = "item";
 
-      div.addEventListener('mouseenter', () => {
-        img.src = hoverPath;
-      });
-      div.addEventListener('mouseleave', () => {
-        img.src = imagePath;
-      });
+          const img = document.createElement('img');
+          img.src = `assets/${name}/icon.png`;
+          img.alt = name;
 
-      const nameElem = document.createElement('div');
-      nameElem.className = 'item-name';
-      nameElem.textContent = itemName;
+          // hover image swap
+          div.addEventListener('mouseenter', () => {
+            img.src = `assets/${name}/icon2.png`;
+          });
+          div.addEventListener('mouseleave', () => {
+            img.src = `assets/${name}/icon.png`;
+          });
 
-      const priceElem = document.createElement('div');
-      priceElem.className = 'item-price';
-      priceElem.textContent = `${item.price} Coins`;
+          const nameElem = document.createElement('div');
+          nameElem.className = "item-name";
+          nameElem.textContent = name;
 
-      div.appendChild(img);
-      div.appendChild(nameElem);
-      div.appendChild(priceElem);
+          const priceElem = document.createElement('div');
+          priceElem.className = "item-price";
+          priceElem.textContent = `${price} Coins`;
 
-      div.addEventListener('click', () => {
-        window.location.href = `itempage.html?name=${encodeURIComponent(itemName)}`;
-      });
+          div.appendChild(img);
+          div.appendChild(nameElem);
+          div.appendChild(priceElem);
 
-      catalogContainer.appendChild(div);
-    });
+          div.addEventListener('click', () => {
+            // save full item data for itempage use
+            localStorage.setItem('selectedItem', JSON.stringify(item));
+            window.location.href = 'itempage.html';
+          });
+
+          catalogContainer.appendChild(div);
+        });
+      } catch (err) {
+        console.error("Failed to load catalog:", err);
+        catalogContainer.innerHTML = "<p>Failed to load catalog data.</p>";
+      }
+    }
+
+    loadCatalog();
   </script>
 </body>
 </html>
