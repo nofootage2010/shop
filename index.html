@@ -69,20 +69,21 @@
     const querySnapshot = await getDocs(collection(db, "catalog"));
     querySnapshot.forEach((doc) => {
       const item = doc.data();
+      const itemName = item.name;
+      const localImagePath = `assets/${itemName}/icon.png`;
 
       const div = document.createElement('div');
       div.className = 'item';
 
       div.innerHTML = `
-        <img src="${item.image}" alt="${item.name}">
-        <div class="item-name">${item.name}</div>
+        <img src="${localImagePath}" alt="${itemName}">
+        <div class="item-name">${itemName}</div>
         <div>${item.description}</div>
         <div class="item-price">${item.price} Coins</div>
       `;
 
       div.addEventListener('click', () => {
-        alert(`You clicked on ${item.name}`);
-        // You can redirect, open a modal, or trigger a purchase here
+        alert(`You clicked on ${itemName}`);
       });
 
       catalogContainer.appendChild(div);
