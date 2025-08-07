@@ -122,8 +122,8 @@
 
           const priceElem = document.createElement('div');
           priceElem.className = "item-price";
-          priceElem.textContent = `${price} Coins`;
-
+          priceElem.textContent = `$${parseFloat(price).toFixed(2)}`;
+          
           div.appendChild(img);
           div.appendChild(nameElem);
           div.appendChild(priceElem);
