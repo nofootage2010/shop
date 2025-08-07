@@ -28,9 +28,8 @@
 
     .product-page {
       display: flex;
-      flex-wrap: wrap;
-      gap: 40px;
-      max-width: 1100px;
+      flex-direction: column;
+      max-width: 800px;
       margin: 80px auto;
       padding: 20px;
       background: white;
@@ -38,32 +37,22 @@
       box-shadow: 0 4px 12px rgba(0,0,0,0.05);
     }
 
-    /* Image gallery */
     .product-image-gallery {
-      flex: 1;
-      min-width: 300px;
-      max-width: 500px;
       display: flex;
-      overflow-x: auto;
-      gap: 10px;
-      padding-bottom: 10px;
+      flex-direction: column;
+      gap: 20px;
+      overflow-y: auto;
+      max-height: 500px;
+      margin-bottom: 30px;
     }
 
     .product-image-gallery img {
-      width: 100px;
-      height: 100px;
+      width: 100%;
+      height: auto;
       object-fit: cover;
-      cursor: pointer;
-      border-radius: 4px;
-      border: 2px solid transparent;
-      transition: border 0.2s;
+      border-radius: 8px;
     }
 
-    .product-image-gallery img:hover {
-      border: 2px solid black;
-    }
-
-    /* Modal for full image */
     .image-modal {
       display: none;
       position: fixed;
@@ -84,8 +73,7 @@
     }
 
     .product-info {
-      flex: 1;
-      min-width: 300px;
+      padding: 10px 0;
     }
 
     .product-info h1 {
@@ -170,35 +158,26 @@
   </style>
 </head>
 <body>
-
   <button id="homeBtn">Home</button>
-
   <div class="product-page">
     <div class="product-image-gallery" id="imageGallery"></div>
-
     <div class="product-info">
       <h1 id="item-name">ITEM NAME</h1>
       <p><strong>Creator:</strong> <span id="item-creator">Loading...</span></p>
       <p class="price" id="item-price">$0.00 USD</p>
       <p><strong>Description:</strong> <span id="item-desc">Loading...</span></p>
       <p><strong>Available:</strong> <span id="item-quantity">0</span></p>
-
       <div class="count">
         <button id="decrease">-</button>
         <span id="count">1</span>
         <button id="increase">+</button>
       </div>
-
       <button class="buy-btn" id="buyBtn">Add to Cart</button>
     </div>
   </div>
-
-  <!-- Modal for full image -->
   <div class="image-modal" id="imageModal">
     <img id="modalImage" src="" alt="Large preview" />
   </div>
-
-  <!-- Popup -->
   <div id="popup">
     <p id="popup-message"></p>
     <button id="continueBtn">Continue Shopping</button>
@@ -207,106 +186,91 @@
   </div>
 
 <script>
-  const item = JSON.parse(localStorage.getItem("selectedItem"));
-  if (!item) {
-    alert("No item selected.");
-    location.href = "index.html";
-  }
+const item = JSON.parse(localStorage.getItem("selectedItem"));
+if (!item) {
+  alert("No item selected.");
+  location.href = "index.html";
+}
 
-  // Fill text data
-  document.getElementById("item-name").textContent = item.name;
-  document.getElementById("item-creator").textContent = item.creator || "Unknown";
-  document.getElementById("item-price").textContent = `$${parseFloat(item.price).toFixed(2)} USD`;
-  document.getElementById("item-desc").textContent = item.description || "No description.";
-  document.getElementById("item-quantity").textContent = item.quantity;
+document.getElementById("item-name").textContent = item.name;
+document.getElementById("item-creator").textContent = item.creator || "Unknown";
+document.getElementById("item-price").textContent = `$${parseFloat(item.price).toFixed(2)} USD`;
+document.getElementById("item-desc").textContent = item.description || "No description.";
+document.getElementById("item-quantity").textContent = item.quantity;
 
-  // Load images
-  const gallery = document.getElementById("imageGallery");
-  const basePath = `assets/${item.name}/images/`;
+const gallery = document.getElementById("imageGallery");
+const basePath = `assets/${item.name}/images/`;
 
-  const maxImages = 20;
-  let loadedImages = 0;
-
-  function addImage(src) {
-    const img = document.createElement("img");
-    img.src = src;
-    img.alt = item.name + " image";
+for (let i = 1; i <= 20; i++) {
+  const path = `${basePath}image${i}.jpg`;
+  const img = new Image();
+  img.onload = () => {
     img.onclick = () => {
-      document.getElementById("modalImage").src = src;
+      document.getElementById("modalImage").src = path;
       document.getElementById("imageModal").style.display = "flex";
     };
     gallery.appendChild(img);
-    loadedImages++;
+  };
+  img.onerror = () => {};
+  img.src = path;
+}
+
+document.getElementById("imageModal").onclick = () => {
+  document.getElementById("imageModal").style.display = "none";
+};
+
+let count = 1;
+const countDisplay = document.getElementById("count");
+
+document.getElementById("increase").onclick = () => {
+  if (count < item.quantity) {
+    count++;
+    countDisplay.textContent = count;
+  }
+};
+
+document.getElementById("decrease").onclick = () => {
+  if (count > 1) {
+    count--;
+    countDisplay.textContent = count;
+  }
+};
+
+document.getElementById("buyBtn").onclick = () => {
+  const cart = JSON.parse(localStorage.getItem("cart")) || [];
+  const existing = cart.find(i => i.name === item.name);
+
+  if (existing) {
+    existing.quantity = Math.min(existing.quantity + count, item.quantity);
+  } else {
+    cart.push({
+      name: item.name,
+      price: item.price,
+      quantity: count,
+      max: item.quantity
+    });
   }
 
-  for (let i = 1; i <= maxImages; i++) {
-    const path = basePath + `image${i}.jpg`;
-    const testImg = new Image();
-    testImg.onload = () => addImage(path);
-    testImg.onerror = () => {}; // fail silently
-    testImg.src = path;
-  }
+  localStorage.setItem("cart", JSON.stringify(cart));
+  document.getElementById("popup-message").textContent = `✅ Added ${count}x ${item.name} to cart`;
+  document.getElementById("popup").style.display = "block";
+};
 
-  // Modal close
-  document.getElementById("imageModal").onclick = () => {
-    document.getElementById("imageModal").style.display = "none";
-  };
+document.getElementById("continueBtn").onclick = () => {
+  document.getElementById("popup").style.display = "none";
+};
 
-  // Quantity buttons
-  let count = 1;
-  const countDisplay = document.getElementById("count");
+document.getElementById("viewCartBtn").onclick = () => {
+  location.href = "viewcart.html";
+};
 
-  document.getElementById("increase").onclick = () => {
-    if (count < item.quantity) {
-      count++;
-      countDisplay.textContent = count;
-    }
-  };
+document.getElementById("checkOutBtn").onclick = () => {
+  location.href = "cart.html";
+};
 
-  document.getElementById("decrease").onclick = () => {
-    if (count > 1) {
-      count--;
-      countDisplay.textContent = count;
-    }
-  };
-
-  // Add to cart button
-  document.getElementById("buyBtn").onclick = () => {
-    const cart = JSON.parse(localStorage.getItem("cart")) || [];
-    const existing = cart.find(i => i.name === item.name);
-
-    if (existing) {
-      existing.quantity = Math.min(existing.quantity + count, item.quantity);
-    } else {
-      cart.push({
-        name: item.name,
-        price: item.price,
-        quantity: count,
-        max: item.quantity
-      });
-    }
-
-    localStorage.setItem("cart", JSON.stringify(cart));
-    document.getElementById("popup-message").textContent = `✅ Added ${count}x ${item.name} to cart`;
-    document.getElementById("popup").style.display = "block";
-  };
-
-  // Popup buttons
-  document.getElementById("continueBtn").onclick = () => {
-    document.getElementById("popup").style.display = "none";
-  };
-
-  document.getElementById("viewCartBtn").onclick = () => {
-    location.href = "viewcart.html";
-  };
-
-  document.getElementById("checkOutBtn").onclick = () => {
-    location.href = "cart.html";
-  };
-
-  document.getElementById("homeBtn").onclick = () => {
-    location.href = "index.html";
-  };
+document.getElementById("homeBtn").onclick = () => {
+  location.href = "index.html";
+};
 </script>
 
 </body>
