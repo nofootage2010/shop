@@ -25,10 +25,9 @@
       background: transparent; /* Transparent background */
       padding: 15px;
       border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      /* box-shadow removed */
       width: 200px;
       cursor: pointer;
-      /* Removed transform transition to avoid resizing */
       text-align: center;
       display: flex;
       flex-direction: column;
@@ -89,7 +88,7 @@
       cursor: pointer;
       font-size: 14px;
       text-decoration: none;
-      box-shadow: 0 3px 7px rgba(0,123,255,0.6);
+      /* box-shadow removed */
       transition: background-color 0.3s ease;
       user-select: none;
       z-index: 1000;
@@ -166,7 +165,6 @@
           div.appendChild(priceElem);
 
           div.addEventListener('click', () => {
-            // save full item data for itempage use
             localStorage.setItem('selectedItem', JSON.stringify(item));
             window.location.href = 'itempage.html';
           });
