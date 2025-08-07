@@ -29,11 +29,13 @@
       const cartContainer = document.getElementById("cart-items");
       const totalCostElem = document.getElementById("total-cost");
       const checkoutBtn = document.getElementById("checkoutBtn");
+      const contactInput = document.getElementById("contactInput");
 
       if (cartItems.length === 0) {
         cartContainer.innerHTML = "<p>Your cart is empty.</p>";
         totalCostElem.textContent = "";
         checkoutBtn.disabled = true;
+        contactInput.disabled = true;
         return;
       }
 
@@ -48,11 +50,41 @@
 
       totalCostElem.textContent = `Total Cost: ${totalCost} Coins`;
 
+      // Validate contact input and enable/disable checkout button
+      const validateContact = () => {
+        if (contactInput.value.trim() === "" || contactInput.value.length > 20) {
+          checkoutBtn.disabled = true;
+        } else {
+          checkoutBtn.disabled = false;
+        }
+      };
+
+      contactInput.addEventListener("input", () => {
+        if (contactInput.value.length > 20) {
+          alert("Contact info must be 20 characters or less.");
+          contactInput.value = contactInput.value.slice(0, 20);
+        }
+        validateContact();
+      });
+
+      validateContact(); // initial check
+
       checkoutBtn.addEventListener("click", async () => {
+        const contact = contactInput.value.trim();
+        if (!contact) {
+          alert("Please provide a form of contact before purchasing.");
+          return;
+        }
+        if (contact.length > 20) {
+          alert("Contact info must be 20 characters or less.");
+          return;
+        }
+
         try {
           await addDoc(collection(db, "orders"), {
             cart: cartItems,
             totalCost: totalCost,
+            contact: contact,
             timestamp: serverTimestamp()
           });
           alert("Order placed! Thank you for your purchase.");
@@ -93,6 +125,20 @@
       font-size: 18px;
       text-align: right;
     }
+    label {
+      display: block;
+      margin-top: 20px;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 8px 10px;
+      font-size: 14px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
     .checkout {
       margin-top: 20px;
       text-align: center;
@@ -106,7 +152,11 @@
       border-radius: 8px;
       cursor: pointer;
     }
-    .checkout button:hover {
+    .checkout button:disabled {
+      background: grey;
+      cursor: not-allowed;
+    }
+    .checkout button:hover:not(:disabled) {
       background: darkgreen;
     }
   </style>
@@ -116,8 +166,12 @@
     <h1>Your Cart</h1>
     <div id="cart-items"></div>
     <div id="total-cost"></div>
+
+    <label for="contactInput">Form of Contact (required, max 20 chars)</label>
+    <input type="text" id="contactInput" placeholder="Email, phone, etc." autocomplete="off" maxlength="20" />
+
     <div class="checkout">
-      <button id="checkoutBtn">Check Out</button>
+      <button id="checkoutBtn" disabled>Check Out</button>
     </div>
   </div>
 </body>
