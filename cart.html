@@ -48,26 +48,24 @@
         cartContainer.appendChild(div);
       });
 
-      totalCostElem.textContent = `Total Cost: ${totalCost} Coins`;
+      // Format total to show $ with two decimal places
+      totalCostElem.textContent = `Total Cost: $${totalCost.toFixed(2)} USD`;
 
-      // Validate contact input and enable/disable checkout button
+      // Validate contact input
       const validateContact = () => {
-        if (contactInput.value.trim() === "" || contactInput.value.length > 20) {
-          checkoutBtn.disabled = true;
-        } else {
-          checkoutBtn.disabled = false;
-        }
+        const trimmed = contactInput.value.trim();
+        checkoutBtn.disabled = trimmed === "" || trimmed.length > 20;
       };
 
       contactInput.addEventListener("input", () => {
         if (contactInput.value.length > 70) {
           alert("Contact info must be 70 characters or less.");
-          contactInput.value = contactInput.value.slice(0, 20);
+          contactInput.value = contactInput.value.slice(0, 70);
         }
         validateContact();
       });
 
-      validateContact(); // initial check
+      validateContact();
 
       checkoutBtn.addEventListener("click", async () => {
         const contact = contactInput.value.trim();
@@ -89,7 +87,7 @@
           });
           alert("Order placed! Thank you for your purchase.");
           localStorage.removeItem("cart");
-          location.reload();
+          location.href = "index.html"; // Redirect to home after purchase
         } catch (err) {
           alert("Error placing order. Please try again.");
           console.error(err);
@@ -110,6 +108,7 @@
       padding: 20px;
       border-radius: 12px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      position: relative;
     }
     h1 {
       text-align: center;
@@ -159,10 +158,29 @@
     .checkout button:hover:not(:disabled) {
       background: darkgreen;
     }
+
+    #homeBtn {
+      position: absolute;
+      top: 15px;
+      left: 20px;
+      background-color: #007bff;
+      color: white;
+      padding: 8px 14px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    #homeBtn:hover {
+      background-color: #0056b3;
+    }
   </style>
 </head>
 <body>
   <div class="container">
+    <a id="homeBtn" href="index.html">Home</a>
     <h1>Your Cart</h1>
     <div id="cart-items"></div>
     <div id="total-cost"></div>
