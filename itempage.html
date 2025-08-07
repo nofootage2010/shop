@@ -117,6 +117,8 @@
       cursor: pointer;
       font-size: 16px;
       font-weight: bold;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+      transition: background 0.3s ease;
     }
 
     .buy-btn:hover {
@@ -144,16 +146,17 @@
       transition: transform 0.2s;
     }
 
-    /* Popup styles with tween and offscreen start */
+    /* Popup styles with drop-down animation and random offset */
     #popup {
       position: fixed;
-      top: 25%;
+      /* Initial offscreen above viewport */
+      top: 15%;
       left: 70%;
-      transform: translate(-50%, -50%);
+      transform: translate(-50%, -150%);
       background: white;
       padding: 20px 30px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
       text-align: center;
       z-index: 1000;
       width: 320px;
@@ -161,19 +164,23 @@
       opacity: 0;
       pointer-events: none;
 
-      transition: top 0.5s ease, left 0.5s ease, opacity 0.5s ease;
+      /* Animate top, left, opacity, and transform */
+      transition: top 0.5s ease, left 0.5s ease, opacity 0.5s ease, transform 0.5s ease;
+      font-family: Arial, sans-serif;
+      font-weight: 600;
+      color: #222;
     }
 
     #popup.show {
       opacity: 1;
       pointer-events: auto;
-      top: 25%;
-      left: 70%;
-      transform: translate(-50%, -50%);
+      /* Drop down near 25% top + left ~70% with random offset added by JS */
+      transform: translate(-50%, 0);
     }
 
     #popup p {
       margin-bottom: 20px;
+      font-size: 16px;
     }
 
     #popup button {
@@ -182,10 +189,17 @@
       background: dodgerblue;
       color: white;
       border: none;
-      border-radius: 6px;
+      border-radius: 8px;
       cursor: pointer;
       min-width: 90px;
-      font-weight: bold;
+      font-weight: 700;
+      box-shadow: 0 4px 8px rgba(30, 144, 255, 0.5);
+      transition: background-color 0.3s ease;
+      font-family: Arial, sans-serif;
+    }
+
+    #popup button:hover {
+      background: #1e90ffcc;
     }
   </style>
 </head>
@@ -295,6 +309,11 @@ document.getElementById("decrease").onclick = () => {
   }
 };
 
+function getRandomOffset(max) {
+  // returns a number between -max and +max
+  return (Math.random() * 2 - 1) * max;
+}
+
 document.getElementById("buyBtn").onclick = () => {
   const cart = JSON.parse(localStorage.getItem("cart")) || [];
   const existing = cart.find(i => i.name === item.name);
@@ -311,12 +330,46 @@ document.getElementById("buyBtn").onclick = () => {
   }
 
   localStorage.setItem("cart", JSON.stringify(cart));
+  const popup = document.getElementById("popup");
   document.getElementById("popup-message").textContent = `✅ Added ${count}x ${item.name} to cart`;
-  document.getElementById("popup").classList.add("show");
+
+  // Randomize popup position with small offsets (+-10px horizontally and vertically)
+  const baseTopPercent = 25;
+  const baseLeftPercent = 70;
+
+  // Convert to px based on viewport size
+  const vpWidth = window.innerWidth;
+  const vpHeight = window.innerHeight;
+
+  // Calculate randomized position with max ~10px offset
+  const offsetX = getRandomOffset(10);
+  const offsetY = getRandomOffset(10);
+
+  // Calculate final top and left in px and then convert back to percent (approximate)
+  let topPx = (baseTopPercent / 100) * vpHeight + offsetY;
+  let leftPx = (baseLeftPercent / 100) * vpWidth + offsetX;
+
+  // Clamp topPx and leftPx within viewport boundaries for safety
+  topPx = Math.min(Math.max(50, topPx), vpHeight - 50);
+  leftPx = Math.min(Math.max(100, leftPx), vpWidth - 100);
+
+  // Convert back to % for CSS positioning
+  const topPercent = (topPx / vpHeight) * 100;
+  const leftPercent = (leftPx / vpWidth) * 100;
+
+  popup.style.top = topPercent + '%';
+  popup.style.left = leftPercent + '%';
+
+  popup.classList.add("show");
 };
 
 document.getElementById("continueBtn").onclick = () => {
-  document.getElementById("popup").classList.remove("show");
+  const popup = document.getElementById("popup");
+  popup.classList.remove("show");
+
+  // Reset popup position to default base so next time it can randomize again
+  popup.style.top = '25%';
+  popup.style.left = '70%';
 };
 
 document.getElementById("viewCartBtn").onclick = () => {
