@@ -38,6 +38,21 @@
       margin-top: 20px;
       text-align: left;
     }
+    .quantity {
+      margin: 20px 0;
+    }
+    .buy-btn {
+      padding: 10px 20px;
+      background: green;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .buy-btn:hover {
+      background: darkgreen;
+    }
   </style>
 </head>
 <body>
@@ -73,14 +88,41 @@
       } else {
         const data = snapshot.docs[0].data();
         const imgPath = `assets/${itemName}/icon.png`;
+        const maxQty = data.quantity || 1;
 
         container.innerHTML = `
           <img src="${imgPath}" alt="${data.name}">
           <h1>${data.name}</h1>
           <div class="price">${data.price} Coins</div>
-          <div class="meta">Creator: ${data.creator || 'Unknown'} | Quantity: ${data.quantity || 0}</div>
+          <div class="meta">Creator: ${data.creator || 'Unknown'} | Quantity: ${maxQty}</div>
           <div class="description"><strong>Description:</strong> ${data.description}</div>
+          <div class="quantity">
+            <label for="qty">Count: </label>
+            <input type="number" id="qty" value="1" min="1" max="${maxQty}">
+          </div>
+          <button class="buy-btn" id="buyBtn">Buy</button>
         `;
+
+        const qtyInput = document.getElementById("qty");
+        const buyBtn = document.getElementById("buyBtn");
+
+        // Clamp input to quantity range
+        qtyInput.addEventListener("input", () => {
+          if (qtyInput.value < 1) qtyInput.value = 1;
+          if (qtyInput.value > maxQty) qtyInput.value = maxQty;
+        });
+
+        buyBtn.addEventListener("click", () => {
+          const cart = JSON.parse(localStorage.getItem("cart")) || [];
+          cart.push({
+            name: data.name,
+            price: data.price,
+            quantity: parseInt(qtyInput.value)
+          });
+          localStorage.setItem("cart", JSON.stringify(cart));
+          alert(`${data.name} added to cart!`);
+          window.location.href = "cart.html";
+        });
       }
     }
   </script>
