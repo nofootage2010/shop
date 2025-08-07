@@ -101,13 +101,14 @@
       }
 
       cart.forEach((item, index) => {
+        const priceUSD = (item.price).toFixed(2); // Convert to fixed 2 decimals
         const div = document.createElement("div");
         div.className = "item";
 
         div.innerHTML = `
           <div>
             <strong>${item.name}</strong><br>
-            ${item.price} Coins each
+            $${priceUSD} USD each
           </div>
           <div class="controls">
             <button onclick="decrease(${index})">-</button>
