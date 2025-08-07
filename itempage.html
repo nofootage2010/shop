@@ -144,11 +144,11 @@
       transition: transform 0.2s;
     }
 
+    /* Popup styles with tween and offscreen start */
     #popup {
-      display: none;
       position: fixed;
-      top: 30%;
-      left: 50%;
+      top: 25%;
+      left: 70%;
       transform: translate(-50%, -50%);
       background: white;
       padding: 20px 30px;
@@ -157,6 +157,19 @@
       text-align: center;
       z-index: 1000;
       width: 320px;
+
+      opacity: 0;
+      pointer-events: none;
+
+      transition: top 0.5s ease, left 0.5s ease, opacity 0.5s ease;
+    }
+
+    #popup.show {
+      opacity: 1;
+      pointer-events: auto;
+      top: 25%;
+      left: 70%;
+      transform: translate(-50%, -50%);
     }
 
     #popup p {
@@ -299,11 +312,11 @@ document.getElementById("buyBtn").onclick = () => {
 
   localStorage.setItem("cart", JSON.stringify(cart));
   document.getElementById("popup-message").textContent = `✅ Added ${count}x ${item.name} to cart`;
-  document.getElementById("popup").style.display = "block";
+  document.getElementById("popup").classList.add("show");
 };
 
 document.getElementById("continueBtn").onclick = () => {
-  document.getElementById("popup").style.display = "none";
+  document.getElementById("popup").classList.remove("show");
 };
 
 document.getElementById("viewCartBtn").onclick = () => {
