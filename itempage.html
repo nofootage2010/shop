@@ -57,6 +57,7 @@
       border-radius: 10px;
       box-shadow: 0 0 10px rgba(0,0,0,0.2);
       text-align: center;
+      z-index: 1000;
     }
     #popup button {
       margin-top: 10px;
@@ -95,9 +96,10 @@
     const item = JSON.parse(localStorage.getItem("selectedItem"));
     if (!item) {
       alert("No item selected.");
-      location.href = "catalog.html";
+      location.href = "index.html"; // fallback to catalog
     }
 
+    // Display item info
     document.getElementById("item-name").textContent = item.name;
     document.getElementById("item-creator").textContent = item.creator || "Unknown";
     document.getElementById("item-price").textContent = item.price;
@@ -124,6 +126,7 @@
     document.getElementById("buyBtn").onclick = () => {
       const cart = JSON.parse(localStorage.getItem("cart")) || [];
       const existing = cart.find(i => i.name === item.name);
+
       if (existing) {
         existing.quantity = Math.min(existing.quantity + count, item.quantity);
       } else {
