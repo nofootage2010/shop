@@ -28,8 +28,9 @@
 
     .product-page {
       display: flex;
-      flex-direction: column;
-      max-width: 800px;
+      flex-direction: row;
+      gap: 30px;
+      max-width: 1000px;
       margin: 80px auto;
       padding: 20px;
       background: white;
@@ -40,10 +41,12 @@
     .product-image-gallery {
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 10px;
       overflow-y: auto;
       max-height: 500px;
-      margin-bottom: 30px;
+      width: 300px;
+      padding-right: 10px;
+      border-right: 1px solid #ddd;
     }
 
     .product-image-gallery img {
@@ -51,6 +54,12 @@
       height: auto;
       object-fit: cover;
       border-radius: 8px;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .product-image-gallery img:hover {
+      transform: scale(1.02);
     }
 
     .image-modal {
@@ -60,19 +69,21 @@
       top: 0; left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0,0,0,0.8);
+      background: rgba(0,0,0,0.85);
       justify-content: center;
       align-items: center;
-      cursor: pointer;
+      cursor: grab;
     }
 
     .image-modal img {
       max-width: 90%;
       max-height: 90%;
       border-radius: 8px;
+      transition: transform 0.2s ease;
     }
 
     .product-info {
+      flex: 1;
       padding: 10px 0;
     }
 
@@ -175,9 +186,11 @@
       <button class="buy-btn" id="buyBtn">Add to Cart</button>
     </div>
   </div>
+
   <div class="image-modal" id="imageModal">
     <img id="modalImage" src="" alt="Large preview" />
   </div>
+
   <div id="popup">
     <p id="popup-message"></p>
     <button id="continueBtn">Continue Shopping</button>
@@ -206,8 +219,12 @@ for (let i = 1; i <= 20; i++) {
   const img = new Image();
   img.onload = () => {
     img.onclick = () => {
-      document.getElementById("modalImage").src = path;
-      document.getElementById("imageModal").style.display = "flex";
+      const modal = document.getElementById("imageModal");
+      const modalImage = document.getElementById("modalImage");
+      modalImage.src = path;
+      modalImage.style.transform = "scale(1)";
+      modal.style.display = "flex";
+      zoomLevel = 1;
     };
     gallery.appendChild(img);
   };
@@ -218,6 +235,16 @@ for (let i = 1; i <= 20; i++) {
 document.getElementById("imageModal").onclick = () => {
   document.getElementById("imageModal").style.display = "none";
 };
+
+// Zoom functionality
+let zoomLevel = 1;
+const modalImage = document.getElementById("modalImage");
+modalImage.addEventListener("wheel", (e) => {
+  e.preventDefault();
+  zoomLevel += e.deltaY < 0 ? 0.1 : -0.1;
+  zoomLevel = Math.max(0.5, Math.min(zoomLevel, 3));
+  modalImage.style.transform = `scale(${zoomLevel})`;
+});
 
 let count = 1;
 const countDisplay = document.getElementById("count");
@@ -272,6 +299,5 @@ document.getElementById("homeBtn").onclick = () => {
   location.href = "index.html";
 };
 </script>
-
 </body>
 </html>
