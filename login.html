@@ -53,7 +53,6 @@
     const loginBtn = document.getElementById("loginBtn");
     const messageP = document.getElementById("message");
 
-    // Fake email from username
     const makeEmail = (username) => `${username}@shopapp.local`;
 
     signupBtn.onclick = async () => {
@@ -69,8 +68,8 @@
       try {
         // Check if username already exists
         const q = query(collection(db, "accounts"), where("username", "==", username));
-        const querySnap = await getDocs(q);
-        if (!querySnap.empty) {
+        const existing = await getDocs(q);
+        if (!existing.empty) {
           messageP.textContent = "Username is already taken.";
           return;
         }
@@ -78,21 +77,23 @@
         const fakeEmail = makeEmail(username);
         const cred = await createUserWithEmailAndPassword(auth, fakeEmail, password);
 
+        // Save account to Firestore
         try {
           await setDoc(doc(db, "accounts", cred.user.uid), {
             username: username,
             uid: cred.user.uid,
             createdAt: Date.now()
           });
+          console.log("✅ Account saved to Firestore.");
           window.location.href = "index.html";
-        } catch (err) {
-          console.error("❌ Failed to save account to Firestore:", err);
-          messageP.textContent = "Signup succeeded, but failed to save account.";
+        } catch (firestoreError) {
+          console.error("❌ Failed to write account to Firestore:", firestoreError);
+          messageP.textContent = "Signup succeeded but Firestore failed.";
         }
 
-      } catch (err) {
-        console.error("❌ Signup error:", err);
-        messageP.textContent = err.message;
+      } catch (signupError) {
+        console.error("❌ Signup error:", signupError);
+        messageP.textContent = signupError.message;
       }
     };
 
@@ -112,13 +113,13 @@
         await signInWithEmailAndPassword(auth, fakeEmail, password);
         window.location.href = "index.html";
       } catch (err) {
-        console.error("❌ Login error:", err);
+        console.error("❌ Login failed:", err);
         messageP.textContent = "Invalid username or password.";
       }
     };
 
     // Auto redirect if already logged in
-    onAuthStateChanged(auth, user => {
+    onAuthStateChanged(auth, (user) => {
       if (user) {
         window.location.href = "index.html";
       }
