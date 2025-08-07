@@ -1,39 +1,56 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>ShopEasy - Shop</title>
+  <meta charset="UTF-8">
+  <title>Item Catalog</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f0f0;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+    }
+    #catalog {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+    }
+    .item {
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      width: 200px;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .item:hover {
+      transform: scale(1.05);
+    }
+    .item img {
+      width: 100%;
+      border-radius: 8px;
+    }
+    .item-name {
+      font-weight: bold;
+      margin: 10px 0 5px;
+    }
+    .item-price {
+      color: green;
+    }
+  </style>
 </head>
 <body>
-  <h1>ShopEasy 🛒</h1>
-
-  <div id="authStatus"></div>
-  <button id="logoutBtn" style="display:none;">Log Out</button>
-
-  <h2>Items for Sale</h2>
-  <div id="items"></div>
-
-  <h2>Your Cart</h2>
-  <div id="cart"></div>
-  <button id="saveCartBtn" style="display:none;">Save Cart</button>
+  <h1>Catalog</h1>
+  <div id="catalog">Loading...</div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
-    import {
-      getAuth,
-      onAuthStateChanged,
-      signOut
-    } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
-    import {
-      getFirestore,
-      collection,
-      doc,
-      onSnapshot,
-      setDoc,
-      getDoc
-    } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
-    // Firebase config (same as before)
     const firebaseConfig = {
       apiKey: "AIzaSyABT1dlkE7m0k9pLtP_l5mhk10NRlNoDb8",
       authDomain: "nofootage2010.firebaseapp.com",
@@ -44,112 +61,32 @@
     };
 
     const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
     const db = getFirestore(app);
 
-    const itemsDiv = document.getElementById("items");
-    const cartDiv = document.getElementById("cart");
-    const logoutBtn = document.getElementById("logoutBtn");
-    const saveCartBtn = document.getElementById("saveCartBtn");
-    const authStatus = document.getElementById("authStatus");
+    const catalogContainer = document.getElementById('catalog');
+    catalogContainer.innerHTML = '';
 
-    let cart = [];
-    let user = null;
+    const querySnapshot = await getDocs(collection(db, "catalog"));
+    querySnapshot.forEach((doc) => {
+      const item = doc.data();
 
-    // Show items to everyone
-    onSnapshot(collection(db, "items"), (snapshot) => {
-      itemsDiv.innerHTML = "";
-      snapshot.forEach(docSnap => {
-        const data = docSnap.data();
-        const div = document.createElement("div");
-        div.style.border = "1px solid #ccc";
-        div.style.padding = "10px";
-        div.style.marginBottom = "10px";
+      const div = document.createElement('div');
+      div.className = 'item';
 
-        div.innerHTML = `
-          <strong>${data.name}</strong> - $${data.price} (${data.quantity} left)<br>
-          <em>${data.description}</em><br>
-          <button>Add to Cart</button>
-        `;
+      div.innerHTML = `
+        <img src="${item.image}" alt="${item.name}">
+        <div class="item-name">${item.name}</div>
+        <div>${item.description}</div>
+        <div class="item-price">${item.price} Coins</div>
+      `;
 
-        const btn = div.querySelector("button");
-        btn.onclick = () => {
-          if (!user) {
-            if (confirm("You must log in to add items to your cart. Go to login page?")) {
-              window.location.href = "login.html";
-            }
-            return;
-          }
-          addToCart(docSnap.id, data.name, data.price);
-        };
-
-        itemsDiv.appendChild(div);
+      div.addEventListener('click', () => {
+        alert(`You clicked on ${item.name}`);
+        // You can redirect, open a modal, or trigger a purchase here
       });
+
+      catalogContainer.appendChild(div);
     });
-
-    onAuthStateChanged(auth, (u) => {
-      user = u;
-      if (user) {
-        authStatus.textContent = `Logged in as ${user.email}`;
-        logoutBtn.style.display = "inline-block";
-        saveCartBtn.style.display = "inline-block";
-        loadCart();
-      } else {
-        authStatus.innerHTML = `Not logged in. <a href="login.html">Login or Sign Up</a>`;
-        logoutBtn.style.display = "none";
-        saveCartBtn.style.display = "none";
-        cart = [];
-        renderCart();
-      }
-    });
-
-    logoutBtn.onclick = () => {
-      signOut(auth);
-    };
-
-    function addToCart(id, name, price) {
-      const existing = cart.find(i => i.id === id);
-      if (existing) {
-        existing.quantity++;
-      } else {
-        cart.push({ id, name, price, quantity: 1 });
-      }
-      renderCart();
-    }
-
-    function renderCart() {
-      cartDiv.innerHTML = "";
-      cart.forEach(item => {
-        const div = document.createElement("div");
-        div.textContent = `${item.name} - $${item.price} x ${item.quantity}`;
-        const removeBtn = document.createElement("button");
-        removeBtn.textContent = "Remove";
-        removeBtn.onclick = () => {
-          cart = cart.filter(i => i.id !== item.id);
-          renderCart();
-        };
-        div.appendChild(removeBtn);
-        cartDiv.appendChild(div);
-      });
-    }
-
-    saveCartBtn.onclick = async () => {
-      if (!user) {
-        alert("Please log in to save your cart.");
-        return;
-      }
-      await setDoc(doc(db, "carts", user.uid), { items: cart });
-      alert("Cart saved!");
-    };
-
-    async function loadCart() {
-      if (!user) return;
-      const cartDoc = await getDoc(doc(db, "carts", user.uid));
-      if (cartDoc.exists()) {
-        cart = cartDoc.data().items || [];
-        renderCart();
-      }
-    }
   </script>
 </body>
 </html>
