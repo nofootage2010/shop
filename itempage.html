@@ -218,11 +218,12 @@ for (let i = 1; i <= 20; i++) {
   const path = `${basePath}image${i}.jpg`;
   const img = new Image();
   img.onload = () => {
-    img.onclick = () => {
+    img.onclick = (e) => {
       const modal = document.getElementById("imageModal");
       const modalImage = document.getElementById("modalImage");
       modalImage.src = path;
       modalImage.style.transform = "scale(1)";
+      modalImage.style.transformOrigin = "center center";
       modal.style.display = "flex";
       zoomLevel = 1;
     };
@@ -236,12 +237,22 @@ document.getElementById("imageModal").onclick = () => {
   document.getElementById("imageModal").style.display = "none";
 };
 
-// Zoom functionality
 let zoomLevel = 1;
 const modalImage = document.getElementById("modalImage");
+
 modalImage.addEventListener("wheel", (e) => {
   e.preventDefault();
-  zoomLevel += e.deltaY < 0 ? 0.1 : -0.1;
+
+  const rect = modalImage.getBoundingClientRect();
+  const offsetX = e.clientX - rect.left;
+  const offsetY = e.clientY - rect.top;
+  const xPercent = (offsetX / rect.width) * 100;
+  const yPercent = (offsetY / rect.height) * 100;
+
+  modalImage.style.transformOrigin = `${xPercent}% ${yPercent}%`;
+
+  const delta = e.deltaY < 0 ? 0.1 : -0.1;
+  zoomLevel += delta;
   zoomLevel = Math.max(0.5, Math.min(zoomLevel, 3));
   modalImage.style.transform = `scale(${zoomLevel})`;
 });
@@ -299,5 +310,6 @@ document.getElementById("homeBtn").onclick = () => {
   location.href = "index.html";
 };
 </script>
+
 </body>
 </html>
