@@ -331,7 +331,7 @@ document.getElementById("buyBtn").onclick = () => {
 
   localStorage.setItem("cart", JSON.stringify(cart));
   const popup = document.getElementById("popup");
-  document.getElementById("popup-message").textContent = `✅ Added ${count}x ${item.name} to cart`;
+  document.getElementById("popup-message").textContent = `Added ${count}x ${item.name} to cart`;
 
   // Randomize popup position with small offsets (+-10px horizontally and vertically)
   const baseTopPercent = 25;
