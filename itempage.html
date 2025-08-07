@@ -251,7 +251,7 @@ document.getElementById("item-quantity").textContent = item.quantity;
 const gallery = document.getElementById("imageGallery");
 const basePath = `assets/${item.name}/images/`;
 
-for (let i = 1; i <= 20; i++) {
+for (let i = 1; i <= 5; i++) {
   const path = `${basePath}image${i}.jpg`;
   const img = new Image();
   img.onload = () => {
