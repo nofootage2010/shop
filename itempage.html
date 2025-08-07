@@ -1,111 +1,313 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Item Page</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #f8f8f8;
+      background: #f2f2f2;
       margin: 0;
       padding: 20px;
     }
 
-    .item-container {
-      max-width: 900px;
-      margin: auto;
-      background: #fff;
+    #homeBtn {
+      position: fixed;
+      top: 15px;
+      left: 15px;
+      padding: 8px 14px;
+      background: #555;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+      z-index: 1000;
+    }
+
+    .product-page {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 40px;
+      max-width: 1100px;
+      margin: 80px auto;
       padding: 20px;
-      border-radius: 8px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
     }
 
-    .main-image {
-      width: 100%;
-      max-height: 500px;
-      object-fit: contain;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-    }
-
-    .thumbnail-container {
+    /* Image gallery */
+    .product-image-gallery {
+      flex: 1;
+      min-width: 300px;
+      max-width: 500px;
       display: flex;
       overflow-x: auto;
-      margin-top: 15px;
       gap: 10px;
+      padding-bottom: 10px;
     }
 
-    .thumbnail-container img {
+    .product-image-gallery img {
+      width: 100px;
       height: 100px;
+      object-fit: cover;
       cursor: pointer;
       border-radius: 4px;
       border: 2px solid transparent;
-      transition: border-color 0.3s;
+      transition: border 0.2s;
     }
 
-    .thumbnail-container img:hover {
-      border-color: #333;
+    .product-image-gallery img:hover {
+      border: 2px solid black;
     }
 
-    .item-title {
-      font-size: 24px;
-      margin-top: 20px;
+    /* Modal for full image */
+    .image-modal {
+      display: none;
+      position: fixed;
+      z-index: 2000;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.8);
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
     }
 
-    .item-price {
-      color: green;
-      font-size: 18px;
+    .image-modal img {
+      max-width: 90%;
+      max-height: 90%;
+      border-radius: 8px;
+    }
+
+    .product-info {
+      flex: 1;
+      min-width: 300px;
+    }
+
+    .product-info h1 {
+      text-transform: uppercase;
+      font-size: 28px;
+      font-weight: bold;
       margin-bottom: 10px;
+    }
+
+    .product-info p {
+      margin: 10px 0;
+      font-size: 15px;
+    }
+
+    .product-info .price {
+      font-size: 22px;
+      font-weight: bold;
+      margin: 15px 0;
+    }
+
+    .count {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 15px 0;
+    }
+
+    .count button {
+      width: 32px;
+      height: 32px;
+      font-size: 18px;
+      background: #ddd;
+      border: none;
+      cursor: pointer;
+    }
+
+    .buy-btn {
+      width: 100%;
+      padding: 14px;
+      font-size: 16px;
+      background: black;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .buy-btn:hover {
+      background: #222;
+    }
+
+    #popup {
+      display: none;
+      position: fixed;
+      top: 30%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 20px 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      text-align: center;
+      z-index: 1000;
+      width: 320px;
+    }
+
+    #popup p {
+      margin-bottom: 20px;
+    }
+
+    #popup button {
+      margin: 5px 8px 0 8px;
+      padding: 8px 16px;
+      background: dodgerblue;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      min-width: 90px;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
 
-  <div class="item-container">
-    <img id="mainImage" class="main-image" src="" alt="Main Image" />
-    <div class="thumbnail-container" id="thumbnails"></div>
-    <h2 class="item-title" id="itemTitle"></h2>
-    <div class="item-price" id="itemPrice"></div>
+  <button id="homeBtn">Home</button>
+
+  <div class="product-page">
+    <div class="product-image-gallery" id="imageGallery"></div>
+
+    <div class="product-info">
+      <h1 id="item-name">ITEM NAME</h1>
+      <p><strong>Creator:</strong> <span id="item-creator">Loading...</span></p>
+      <p class="price" id="item-price">$0.00 USD</p>
+      <p><strong>Description:</strong> <span id="item-desc">Loading...</span></p>
+      <p><strong>Available:</strong> <span id="item-quantity">0</span></p>
+
+      <div class="count">
+        <button id="decrease">-</button>
+        <span id="count">1</span>
+        <button id="increase">+</button>
+      </div>
+
+      <button class="buy-btn" id="buyBtn">Add to Cart</button>
+    </div>
   </div>
 
-  <script>
-    // EXAMPLE VARIABLES (replace with dynamic source)
-    const itemName = "CoolShirt"; // This should match the folder name in /assets/
-    const price = 100;
+  <!-- Modal for full image -->
+  <div class="image-modal" id="imageModal">
+    <img id="modalImage" src="" alt="Large preview" />
+  </div>
 
-    // Set item title and price
-    document.getElementById("itemTitle").textContent = itemName;
-    document.getElementById("itemPrice").textContent = `$${parseFloat(price).toFixed(2)} USD`;
+  <!-- Popup -->
+  <div id="popup">
+    <p id="popup-message"></p>
+    <button id="continueBtn">Continue Shopping</button>
+    <button id="viewCartBtn">View Cart</button>
+    <button id="checkOutBtn">Check Out</button>
+  </div>
 
-    // Load images
-    const thumbnailsDiv = document.getElementById("thumbnails");
-    const mainImage = document.getElementById("mainImage");
-    let firstImageSet = false;
+<script>
+  const item = JSON.parse(localStorage.getItem("selectedItem"));
+  if (!item) {
+    alert("No item selected.");
+    location.href = "index.html";
+  }
 
-    for (let i = 1; i <= 20; i++) {
-      const imagePath = `assets/${itemName}/images/image${i}.jpg`;
-      const img = new Image();
-      img.src = imagePath;
+  // Fill text data
+  document.getElementById("item-name").textContent = item.name;
+  document.getElementById("item-creator").textContent = item.creator || "Unknown";
+  document.getElementById("item-price").textContent = `$${parseFloat(item.price).toFixed(2)} USD`;
+  document.getElementById("item-desc").textContent = item.description || "No description.";
+  document.getElementById("item-quantity").textContent = item.quantity;
 
-      img.onload = () => {
-        // First image becomes the main preview
-        if (!firstImageSet) {
-          mainImage.src = img.src;
-          firstImageSet = true;
-        }
+  // Load images
+  const gallery = document.getElementById("imageGallery");
+  const basePath = `assets/${item.name}/images/`;
 
-        // Create thumbnail
-        const thumb = document.createElement("img");
-        thumb.src = img.src;
-        thumb.addEventListener("click", () => {
-          mainImage.src = thumb.src;
-        });
-        thumbnailsDiv.appendChild(thumb);
-      };
+  const maxImages = 20;
+  let loadedImages = 0;
 
-      // Don't show broken images
-      img.onerror = () => {};
+  function addImage(src) {
+    const img = document.createElement("img");
+    img.src = src;
+    img.alt = item.name + " image";
+    img.onclick = () => {
+      document.getElementById("modalImage").src = src;
+      document.getElementById("imageModal").style.display = "flex";
+    };
+    gallery.appendChild(img);
+    loadedImages++;
+  }
+
+  for (let i = 1; i <= maxImages; i++) {
+    const path = basePath + `image${i}.jpg`;
+    const testImg = new Image();
+    testImg.onload = () => addImage(path);
+    testImg.onerror = () => {}; // fail silently
+    testImg.src = path;
+  }
+
+  // Modal close
+  document.getElementById("imageModal").onclick = () => {
+    document.getElementById("imageModal").style.display = "none";
+  };
+
+  // Quantity buttons
+  let count = 1;
+  const countDisplay = document.getElementById("count");
+
+  document.getElementById("increase").onclick = () => {
+    if (count < item.quantity) {
+      count++;
+      countDisplay.textContent = count;
     }
-  </script>
+  };
+
+  document.getElementById("decrease").onclick = () => {
+    if (count > 1) {
+      count--;
+      countDisplay.textContent = count;
+    }
+  };
+
+  // Add to cart button
+  document.getElementById("buyBtn").onclick = () => {
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+    const existing = cart.find(i => i.name === item.name);
+
+    if (existing) {
+      existing.quantity = Math.min(existing.quantity + count, item.quantity);
+    } else {
+      cart.push({
+        name: item.name,
+        price: item.price,
+        quantity: count,
+        max: item.quantity
+      });
+    }
+
+    localStorage.setItem("cart", JSON.stringify(cart));
+    document.getElementById("popup-message").textContent = `✅ Added ${count}x ${item.name} to cart`;
+    document.getElementById("popup").style.display = "block";
+  };
+
+  // Popup buttons
+  document.getElementById("continueBtn").onclick = () => {
+    document.getElementById("popup").style.display = "none";
+  };
+
+  document.getElementById("viewCartBtn").onclick = () => {
+    location.href = "viewcart.html";
+  };
+
+  document.getElementById("checkOutBtn").onclick = () => {
+    location.href = "cart.html";
+  };
+
+  document.getElementById("homeBtn").onclick = () => {
+    location.href = "index.html";
+  };
+</script>
 
 </body>
 </html>
