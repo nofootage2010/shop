@@ -2,10 +2,10 @@
 <html>
 <head>
   <meta charset="UTF-8" />
-  <title>Custom Login/Signup - ShopEasy</title>
+  <title>Login / Sign Up - ShopEasy</title>
 </head>
 <body>
-  <h1>ShopEasy Custom Auth</h1>
+  <h1>Welcome to ShopEasy</h1>
 
   <input id="username" placeholder="Username" />
   <input id="password" type="password" placeholder="Password" />
@@ -18,16 +18,21 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
     import {
+      getAuth,
+      createUserWithEmailAndPassword,
+      signInWithEmailAndPassword,
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+    import {
       getFirestore,
-      collection,
-      query,
-      where,
-      getDocs,
       doc,
-      setDoc
+      setDoc,
+      query,
+      collection,
+      where,
+      getDocs
     } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
-    // Initialize Firebase (your config here)
     const firebaseConfig = {
       apiKey: "AIzaSyABT1dlkE7m0k9pLtP_l5mhk10NRlNoDb8",
       authDomain: "nofootage2010.firebaseapp.com",
@@ -38,6 +43,7 @@
     };
 
     const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
     const db = getFirestore(app);
 
     const usernameInput = document.getElementById("username");
@@ -46,34 +52,14 @@
     const loginBtn = document.getElementById("loginBtn");
     const messageP = document.getElementById("message");
 
-    // Utility: hash password using SHA-256
-    async function hashPassword(password) {
-      const encoder = new TextEncoder();
-      const data = encoder.encode(password);
-      const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-      // convert ArrayBuffer to hex string
-      return Array.from(new Uint8Array(hashBuffer))
-        .map(b => b.toString(16).padStart(2, '0'))
-        .join('');
-    }
-
-    // Save "session" in localStorage (demo only)
-    function saveSession(username) {
-      localStorage.setItem("shopEasyUser", username);
-    }
-
-    // Clear session
-    function clearSession() {
-      localStorage.removeItem("shopEasyUser");
-    }
-
-    // Get session user
-    function getSessionUser() {
-      return localStorage.getItem("shopEasyUser");
+    function makeFakeEmail(username) {
+      return `${username}@shopapp.local`;
     }
 
     signupBtn.onclick = async () => {
+      messageP.style.color = "red";
       messageP.textContent = "";
+
       const username = usernameInput.value.trim().toLowerCase();
       const password = passwordInput.value;
 
@@ -82,33 +68,42 @@
         return;
       }
 
-      // Check if username exists
-      const q = query(collection(db, "accounts"), where("username", "==", username));
-      const snap = await getDocs(q);
-      if (!snap.empty) {
-        messageP.textContent = "Username already taken.";
-        return;
-      }
-
-      const pwHash = await hashPassword(password);
-
-      // Save to Firestore (doc id = username for simplicity)
       try {
-        await setDoc(doc(db, "accounts", username), {
+        // Check if username already exists
+        const usernameQuery = query(collection(db, "accounts"), where("username", "==", username));
+        const usernameSnapshot = await getDocs(usernameQuery);
+
+        if (!usernameSnapshot.empty) {
+          messageP.textContent = "Username is already taken.";
+          return;
+        }
+
+        const fakeEmail = makeFakeEmail(username);
+
+        // Create user in Firebase Auth
+        const userCredential = await createUserWithEmailAndPassword(auth, fakeEmail, password);
+        const user = userCredential.user;
+
+        // Save user info to Firestore accounts collection
+        await setDoc(doc(db, "accounts", user.uid), {
           username: username,
-          passwordHash: pwHash,
+          uid: user.uid,
           createdAt: Date.now()
         });
-        messageP.style.color = "green";
-        messageP.textContent = "Signup successful! You can now log in.";
-      } catch (e) {
-        console.error(e);
-        messageP.textContent = "Error saving account.";
+
+        // Success — redirect to main shop page
+        window.location.href = "index.html";
+
+      } catch (error) {
+        console.error("Signup error:", error);
+        messageP.textContent = error.message || "Error during sign-up.";
       }
     };
 
     loginBtn.onclick = async () => {
+      messageP.style.color = "red";
       messageP.textContent = "";
+
       const username = usernameInput.value.trim().toLowerCase();
       const password = passwordInput.value;
 
@@ -117,37 +112,23 @@
         return;
       }
 
+      const fakeEmail = makeFakeEmail(username);
+
       try {
-        const docRef = doc(db, "accounts", username);
-        const docSnap = await getDoc(docRef);
-        if (!docSnap.exists()) {
-          messageP.textContent = "User not found.";
-          return;
-        }
-
-        const account = docSnap.data();
-        const pwHash = await hashPassword(password);
-
-        if (pwHash === account.passwordHash) {
-          saveSession(username);
-          messageP.style.color = "green";
-          messageP.textContent = "Login successful! Redirecting...";
-          setTimeout(() => {
-            window.location.href = "index.html";
-          }, 1000);
-        } else {
-          messageP.textContent = "Invalid password.";
-        }
-      } catch (e) {
-        console.error(e);
-        messageP.textContent = "Error logging in.";
+        await signInWithEmailAndPassword(auth, fakeEmail, password);
+        window.location.href = "index.html";
+      } catch (error) {
+        console.error("Login error:", error);
+        messageP.textContent = "Invalid username or password.";
       }
     };
 
-    // Auto-redirect if session found
-    if (getSessionUser()) {
-      window.location.href = "index.html";
-    }
+    // Redirect if already logged in
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        window.location.href = "index.html";
+      }
+    });
   </script>
 </body>
 </html>
