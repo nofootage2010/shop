@@ -1,8 +1,64 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Your Cart</title>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+    import {
+      getFirestore,
+      collection,
+      addDoc,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+
+    // Your Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyABT1dlkE7m0k9pLtP_l5mhk10NRlNoDb8",
+      authDomain: "nofootage2010.firebaseapp.com",
+      projectId: "nofootage2010",
+      storageBucket: "nofootage2010.firebasestorage.app",
+      messagingSenderId: "1098446374131",
+      appId: "1:1098446374131:web:499c1e6a2d5d781adae386"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    window.addEventListener("DOMContentLoaded", () => {
+      const cartItems = JSON.parse(localStorage.getItem("cart")) || [];
+      const cartContainer = document.getElementById("cart-items");
+      const checkoutBtn = document.getElementById("checkoutBtn");
+
+      if (cartItems.length === 0) {
+        cartContainer.innerHTML = "<p>Your cart is empty.</p>";
+        checkoutBtn.disabled = true;
+        return;
+      }
+
+      cartItems.forEach(item => {
+        const div = document.createElement("div");
+        div.className = "item";
+        div.textContent = `${item.name} × ${item.quantity} = ${item.price * item.quantity} Coins`;
+        cartContainer.appendChild(div);
+      });
+
+      checkoutBtn.addEventListener("click", async () => {
+        try {
+          await addDoc(collection(db, "orders"), {
+            cart: cartItems,
+            timestamp: serverTimestamp()
+          });
+          alert("Order placed! Thank you for your purchase.");
+          localStorage.removeItem("cart");
+          location.reload();
+        } catch (err) {
+          alert("Error placing order. Please try again.");
+          console.error(err);
+        }
+      });
+    });
+  </script>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -24,9 +80,6 @@
     .item {
       padding: 10px;
       border-bottom: 1px solid #ddd;
-    }
-    .item:last-child {
-      border-bottom: none;
     }
     .checkout {
       margin-top: 20px;
@@ -54,29 +107,5 @@
       <button id="checkoutBtn">Check Out</button>
     </div>
   </div>
-
-  <script>
-    const cartItems = JSON.parse(localStorage.getItem("cart")) || [];
-    const cartContainer = document.getElementById("cart-items");
-
-    if (cartItems.length === 0) {
-      cartContainer.innerHTML = "<p>Your cart is empty.</p>";
-      document.getElementById("checkoutBtn").disabled = true;
-    } else {
-      cartItems.forEach(item => {
-        const div = document.createElement("div");
-        div.className = "item";
-        div.textContent = `${item.name} × ${item.quantity} - ${item.price * item.quantity} Coins`;
-        cartContainer.appendChild(div);
-      });
-    }
-
-    document.getElementById("checkoutBtn").addEventListener("click", () => {
-      alert("Checkout complete!\nThe site owner has been alerted.");
-      console.log("OWNER ALERT: A user has completed checkout!");
-      localStorage.removeItem("cart");
-      location.reload();
-    });
-  </script>
 </body>
 </html>
