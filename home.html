@@ -1,134 +1,30 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
   <meta charset="UTF-8" />
-  <title>Windows 7 Desktop</title>
-  <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      font-family: 'Segoe UI', sans-serif;
-      overflow: hidden;
-      user-select: none;
-    }
-    body {
-      background: url('https://wallpapercave.com/wp/7yyNMFk.jpg') no-repeat center center fixed;
-      background-size: cover;
-      color: white;
-    }
-
-    #taskbar {
-      position: absolute;
-      bottom: 0;
-      width: 100%;
-      height: 40px;
-      background: linear-gradient(to top, #2c2c2c, #444);
-      display: flex;
-      align-items: center;
-      padding: 0 10px;
-      box-sizing: border-box;
-      z-index: 1000;
-    }
-
-    #start-button {
-      width: 36px;
-      height: 36px;
-      background: url('https://upload.wikimedia.org/wikipedia/commons/5/55/Windows_start_button.png') no-repeat center center;
-      background-size: contain;
-      border: none;
-      margin-right: 10px;
-      cursor: pointer;
-      outline: none;
-    }
-
-    #start-menu {
-      position: absolute;
-      bottom: 45px;
-      left: 10px;
-      width: 200px;
-      background: #1e1e1e;
-      border: 1px solid #333;
-      display: none;
-      z-index: 1001;
-      box-shadow: 0 0 10px black;
-    }
-
-    #start-menu button {
-      width: 100%;
-      background: none;
-      color: white;
-      border: none;
-      padding: 12px;
-      text-align: left;
-      cursor: pointer;
-      font-size: 1rem;
-    }
-
-    #start-menu button:hover {
-      background: #333;
-    }
-
-    #desktop-icons {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-      z-index: 1;
-    }
-
-    .icon {
-      text-align: center;
-      cursor: pointer;
-    }
-
-    .icon img {
-      width: 48px;
-      height: 48px;
-    }
-
-    .icon div {
-      font-size: 14px;
-      color: white;
-      margin-top: 4px;
-      text-shadow: 1px 1px black;
-    }
-
-    #username-label {
-      margin-left: auto;
-      font-size: 0.9rem;
-      color: #ccc;
-    }
-  </style>
+  <title>Login / Sign Up - ShopEasy</title>
 </head>
 <body>
+  <h1>Welcome to ShopEasy</h1>
 
-  <div id="desktop-icons">
-    <div class="icon">
-      <img src="https://icons.iconarchive.com/icons/papirus-team/papirus-places/512/user-desktop-icon.png" />
-      <div>My Computer</div>
-    </div>
-    <div class="icon">
-      <img src="https://icons.iconarchive.com/icons/guillendesign/variations-3/512/Recycle-Bin-icon.png" />
-      <div>Recycle Bin</div>
-    </div>
-  </div>
+  <input id="email" type="email" placeholder="Email" />
+  <input id="password" type="password" placeholder="Password" />
+  <br /><br />
+  <button id="signupBtn">Sign Up</button>
+  <button id="loginBtn">Log In</button>
 
-  <div id="taskbar">
-    <button id="start-button" title="Start"></button>
-    <div id="username-label">Loading...</div>
-  </div>
-
-  <div id="start-menu">
-    <button id="logoutBtn">🔒 Log Out</button>
-  </div>
+  <p id="message" style="color:red;"></p>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
-    import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+    import {
+      getAuth,
+      createUserWithEmailAndPassword,
+      signInWithEmailAndPassword,
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
 
+    // Firebase config
     const firebaseConfig = {
       apiKey: "AIzaSyABT1dlkE7m0k9pLtP_l5mhk10NRlNoDb8",
       authDomain: "nofootage2010.firebaseapp.com",
@@ -141,35 +37,37 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
-    const usernameLabel = document.getElementById("username-label");
-    const startButton = document.getElementById("start-button");
-    const startMenu = document.getElementById("start-menu");
-    const logoutBtn = document.getElementById("logoutBtn");
+    const emailInput = document.getElementById("email");
+    const passwordInput = document.getElementById("password");
+    const signupBtn = document.getElementById("signupBtn");
+    const loginBtn = document.getElementById("loginBtn");
+    const messageP = document.getElementById("message");
 
-    // Toggle menu
-    startButton.onclick = () => {
-      startMenu.style.display = startMenu.style.display === "block" ? "none" : "block";
+    signupBtn.onclick = () => {
+      messageP.textContent = "";
+      createUserWithEmailAndPassword(auth, emailInput.value, passwordInput.value)
+        .then(() => {
+          window.location.href = "shop.html";
+        })
+        .catch(err => {
+          messageP.textContent = err.message;
+        });
     };
 
-    document.addEventListener("click", (e) => {
-      if (!startMenu.contains(e.target) && e.target !== startButton) {
-        startMenu.style.display = "none";
-      }
-    });
-
-    logoutBtn.onclick = async () => {
-      await signOut(auth);
-      // Keep 'installed' flag to skip installer
-      window.location.href = "index.html";
+    loginBtn.onclick = () => {
+      messageP.textContent = "";
+      signInWithEmailAndPassword(auth, emailInput.value, passwordInput.value)
+        .then(() => {
+          window.location.href = "shop.html";
+        })
+        .catch(err => {
+          messageP.textContent = err.message;
+        });
     };
 
-    onAuthStateChanged(auth, (user) => {
+    onAuthStateChanged(auth, user => {
       if (user) {
-        const email = user.email || "";
-        const username = email.split("@")[0];
-        usernameLabel.textContent = `Welcome, ${username}`;
-      } else {
-        window.location.href = "index.html";
+        window.location.href = "shop.html";
       }
     });
   </script>
