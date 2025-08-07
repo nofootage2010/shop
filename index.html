@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Item Catalog</title>
+  <title>Catalog</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -81,7 +81,6 @@
       img.src = imagePath;
       img.alt = itemName;
 
-      // Hover swap
       div.addEventListener('mouseenter', () => {
         img.src = hoverPath;
       });
@@ -89,15 +88,20 @@
         img.src = imagePath;
       });
 
-      div.innerHTML = `
-        <div class="item-name">${itemName}</div>
-        <div>${item.description}</div>
-        <div class="item-price">${item.price} Coins</div>
-      `;
-      div.prepend(img);
+      const nameElem = document.createElement('div');
+      nameElem.className = 'item-name';
+      nameElem.textContent = itemName;
+
+      const priceElem = document.createElement('div');
+      priceElem.className = 'item-price';
+      priceElem.textContent = `${item.price} Coins`;
+
+      div.appendChild(img);
+      div.appendChild(nameElem);
+      div.appendChild(priceElem);
 
       div.addEventListener('click', () => {
-        alert(`You clicked on ${itemName}`);
+        window.location.href = `itempage.html?name=${encodeURIComponent(itemName)}`;
       });
 
       catalogContainer.appendChild(div);
