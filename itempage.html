@@ -6,8 +6,9 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #f2ff2f2;
+      background: #f2f2f2;
       padding: 40px;
+      position: relative;
     }
     .container {
       max-width: 500px;
@@ -58,7 +59,7 @@
       box-shadow: 0 0 10px rgba(0,0,0,0.2);
       text-align: center;
       z-index: 1000;
-      width: 280px;
+      width: 320px;
     }
     #popup p {
       margin-bottom: 20px;
@@ -72,15 +73,35 @@
       border: none;
       border-radius: 6px;
       cursor: pointer;
-      min-width: 100px;
+      min-width: 90px;
       font-weight: bold;
     }
     #popup button:hover {
       background: deepskyblue;
     }
+    /* Home button top-left */
+    #homeBtn {
+      position: fixed;
+      top: 15px;
+      left: 15px;
+      padding: 8px 14px;
+      background: #555;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+      z-index: 1100;
+    }
+    #homeBtn:hover {
+      background: #333;
+    }
   </style>
 </head>
 <body>
+  <button id="homeBtn" title="Go to Home">Home</button>
+
   <div class="container">
     <h1 id="item-name">Item Name</h1>
     <p><strong>Creator:</strong> <span id="item-creator">Loading...</span></p>
@@ -100,6 +121,7 @@
   <div id="popup">
     <p id="popup-message"></p>
     <button id="continueBtn">Continue Shopping</button>
+    <button id="viewCartBtn">View Cart</button>
     <button id="checkOutBtn">Check Out</button>
   </div>
 
@@ -156,11 +178,18 @@
 
     document.getElementById("continueBtn").onclick = () => {
       document.getElementById("popup").style.display = "none";
-      location.href = "index.html";  // go back to catalog
+    };
+
+    document.getElementById("viewCartBtn").onclick = () => {
+      location.href = "viewcart.html";
     };
 
     document.getElementById("checkOutBtn").onclick = () => {
-      location.href = "viewcart.html";  // go to view cart page
+      location.href = "viewcart.html";  // assuming checkout page is viewcart.html
+    };
+
+    document.getElementById("homeBtn").onclick = () => {
+      location.href = "index.html";
     };
   </script>
 </body>
