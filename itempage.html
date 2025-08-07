@@ -171,26 +171,26 @@
         });
       }
 
-      localStorage.setItem("cart", JSON.stringify(cart));
+    localStorage.setItem("cart", JSON.stringify(cart));
       document.getElementById("popup-message").textContent = `✅ Added ${count}x ${item.name} to cart`;
       document.getElementById("popup").style.display = "block";
     };
 
-    document.getElementById("continueBtn").onclick = () => {
-      document.getElementById("popup").style.display = "none";
-    };
+  document.getElementById("continueBtn").onclick = () => {
+    document.getElementById("popup").style.display = "none";
+  };
 
-    document.getElementById("viewCartBtn").onclick = () => {
-      location.href = "viewcart.html";
-    };
+  document.getElementById("viewCartBtn").onclick = () => {
+    location.href = "viewcart.html";
+  };
 
-    document.getElementById("checkOutBtn").onclick = () => {
-      location.href = "viewcart.html";  // assuming checkout page is viewcart.html
-    };
+  document.getElementById("checkOutBtn").onclick = () => {
+    location.href = "cart.html"; 
+  };
 
-    document.getElementById("homeBtn").onclick = () => {
-      location.href = "index.html";
-    };
+  document.getElementById("homeBtn").onclick = () => {
+    location.href = "index.html";
+  };
   </script>
 </body>
 </html>
