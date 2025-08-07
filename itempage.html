@@ -6,7 +6,7 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #f2f2f2;
+      background: #f2ff2f2;
       padding: 40px;
     }
     .container {
@@ -53,20 +53,30 @@
       left: 50%;
       transform: translate(-50%, -50%);
       background: white;
-      padding: 20px;
+      padding: 20px 30px;
       border-radius: 10px;
       box-shadow: 0 0 10px rgba(0,0,0,0.2);
       text-align: center;
       z-index: 1000;
+      width: 280px;
+    }
+    #popup p {
+      margin-bottom: 20px;
+      font-size: 16px;
     }
     #popup button {
-      margin-top: 10px;
+      margin: 5px 8px 0 8px;
       padding: 8px 16px;
       background: dodgerblue;
       color: white;
       border: none;
       border-radius: 6px;
       cursor: pointer;
+      min-width: 100px;
+      font-weight: bold;
+    }
+    #popup button:hover {
+      background: deepskyblue;
     }
   </style>
 </head>
@@ -89,7 +99,8 @@
 
   <div id="popup">
     <p id="popup-message"></p>
-    <button onclick="location.href='viewcart.html'">Check Out</button>
+    <button id="continueBtn">Continue Shopping</button>
+    <button id="checkOutBtn">Check Out</button>
   </div>
 
   <script>
@@ -141,6 +152,15 @@
       localStorage.setItem("cart", JSON.stringify(cart));
       document.getElementById("popup-message").textContent = `✅ Added ${count}x ${item.name} to cart`;
       document.getElementById("popup").style.display = "block";
+    };
+
+    document.getElementById("continueBtn").onclick = () => {
+      document.getElementById("popup").style.display = "none";
+      location.href = "index.html";  // go back to catalog
+    };
+
+    document.getElementById("checkOutBtn").onclick = () => {
+      location.href = "viewcart.html";  // go to view cart page
     };
   </script>
 </body>
