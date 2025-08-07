@@ -22,20 +22,20 @@
     .item {
       position: relative;
       overflow: hidden;
-      background: white;
+      background: transparent; /* Transparent background */
       padding: 15px;
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.05);
       width: 200px;
       cursor: pointer;
-      transition: transform 0.2s ease;
+      /* Removed transform transition to avoid resizing */
       text-align: center;
       display: flex;
       flex-direction: column;
       align-items: center;
     }
     .item:hover {
-      transform: scale(1.05);
+      transform: none; /* No scaling on hover */
     }
     .item img {
       width: 100%;
