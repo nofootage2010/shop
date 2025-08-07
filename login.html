@@ -2,10 +2,10 @@
 <html>
 <head>
   <meta charset="UTF-8" />
-  <title>Login / Sign Up - ShopEasy</title>
+  <title>Custom Login/Signup - ShopEasy</title>
 </head>
 <body>
-  <h1>Welcome to ShopEasy</h1>
+  <h1>ShopEasy Custom Auth</h1>
 
   <input id="username" placeholder="Username" />
   <input id="password" type="password" placeholder="Password" />
@@ -18,22 +18,16 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
     import {
-      getAuth,
-      createUserWithEmailAndPassword,
-      signInWithEmailAndPassword,
-      onAuthStateChanged
-    } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
-    import {
       getFirestore,
-      doc,
-      setDoc,
-      getDocs,
       collection,
       query,
-      where
+      where,
+      getDocs,
+      doc,
+      setDoc
     } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
-    // Firebase config
+    // Initialize Firebase (your config here)
     const firebaseConfig = {
       apiKey: "AIzaSyABT1dlkE7m0k9pLtP_l5mhk10NRlNoDb8",
       authDomain: "nofootage2010.firebaseapp.com",
@@ -44,7 +38,6 @@
     };
 
     const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
     const db = getFirestore(app);
 
     const usernameInput = document.getElementById("username");
@@ -53,7 +46,31 @@
     const loginBtn = document.getElementById("loginBtn");
     const messageP = document.getElementById("message");
 
-    const makeEmail = (username) => `${username}@shopapp.local`;
+    // Utility: hash password using SHA-256
+    async function hashPassword(password) {
+      const encoder = new TextEncoder();
+      const data = encoder.encode(password);
+      const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+      // convert ArrayBuffer to hex string
+      return Array.from(new Uint8Array(hashBuffer))
+        .map(b => b.toString(16).padStart(2, '0'))
+        .join('');
+    }
+
+    // Save "session" in localStorage (demo only)
+    function saveSession(username) {
+      localStorage.setItem("shopEasyUser", username);
+    }
+
+    // Clear session
+    function clearSession() {
+      localStorage.removeItem("shopEasyUser");
+    }
+
+    // Get session user
+    function getSessionUser() {
+      return localStorage.getItem("shopEasyUser");
+    }
 
     signupBtn.onclick = async () => {
       messageP.textContent = "";
@@ -61,39 +78,32 @@
       const password = passwordInput.value;
 
       if (!username || !password) {
-        messageP.textContent = "Please enter both username and password.";
+        messageP.textContent = "Please enter username and password.";
         return;
       }
 
+      // Check if username exists
+      const q = query(collection(db, "accounts"), where("username", "==", username));
+      const snap = await getDocs(q);
+      if (!snap.empty) {
+        messageP.textContent = "Username already taken.";
+        return;
+      }
+
+      const pwHash = await hashPassword(password);
+
+      // Save to Firestore (doc id = username for simplicity)
       try {
-        // Check if username already exists
-        const q = query(collection(db, "accounts"), where("username", "==", username));
-        const existing = await getDocs(q);
-        if (!existing.empty) {
-          messageP.textContent = "Username is already taken.";
-          return;
-        }
-
-        const fakeEmail = makeEmail(username);
-        const cred = await createUserWithEmailAndPassword(auth, fakeEmail, password);
-
-        // Save account to Firestore
-        try {
-          await setDoc(doc(db, "accounts", cred.user.uid), {
-            username: username,
-            uid: cred.user.uid,
-            createdAt: Date.now()
-          });
-          console.log("✅ Account saved to Firestore.");
-          window.location.href = "index.html";
-        } catch (firestoreError) {
-          console.error("❌ Failed to write account to Firestore:", firestoreError);
-          messageP.textContent = "Signup succeeded but Firestore failed.";
-        }
-
-      } catch (signupError) {
-        console.error("❌ Signup error:", signupError);
-        messageP.textContent = signupError.message;
+        await setDoc(doc(db, "accounts", username), {
+          username: username,
+          passwordHash: pwHash,
+          createdAt: Date.now()
+        });
+        messageP.style.color = "green";
+        messageP.textContent = "Signup successful! You can now log in.";
+      } catch (e) {
+        console.error(e);
+        messageP.textContent = "Error saving account.";
       }
     };
 
@@ -103,27 +113,41 @@
       const password = passwordInput.value;
 
       if (!username || !password) {
-        messageP.textContent = "Please enter both username and password.";
+        messageP.textContent = "Please enter username and password.";
         return;
       }
 
-      const fakeEmail = makeEmail(username);
-
       try {
-        await signInWithEmailAndPassword(auth, fakeEmail, password);
-        window.location.href = "index.html";
-      } catch (err) {
-        console.error("❌ Login failed:", err);
-        messageP.textContent = "Invalid username or password.";
+        const docRef = doc(db, "accounts", username);
+        const docSnap = await getDoc(docRef);
+        if (!docSnap.exists()) {
+          messageP.textContent = "User not found.";
+          return;
+        }
+
+        const account = docSnap.data();
+        const pwHash = await hashPassword(password);
+
+        if (pwHash === account.passwordHash) {
+          saveSession(username);
+          messageP.style.color = "green";
+          messageP.textContent = "Login successful! Redirecting...";
+          setTimeout(() => {
+            window.location.href = "index.html";
+          }, 1000);
+        } else {
+          messageP.textContent = "Invalid password.";
+        }
+      } catch (e) {
+        console.error(e);
+        messageP.textContent = "Error logging in.";
       }
     };
 
-    // Auto redirect if already logged in
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        window.location.href = "index.html";
-      }
-    });
+    // Auto-redirect if session found
+    if (getSessionUser()) {
+      window.location.href = "index.html";
+    }
   </script>
 </body>
 </html>
