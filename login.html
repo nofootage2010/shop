@@ -85,7 +85,7 @@
             uid: cred.user.uid,
             createdAt: Date.now()
           });
-          window.location.href = "shop.html";
+          window.location.href = "index.html";
         })
         .catch(err => {
           messageP.textContent = err.message;
@@ -106,7 +106,7 @@
 
       signInWithEmailAndPassword(auth, fakeEmail, password)
         .then(() => {
-          window.location.href = "shop.html";
+          window.location.href = "index.html";
         })
         .catch(err => {
           messageP.textContent = "Invalid username or password.";
@@ -116,7 +116,7 @@
     // Auto-redirect if already logged in
     onAuthStateChanged(auth, user => {
       if (user) {
-        window.location.href = "shop.html";
+        window.location.href = "index.html";
       }
     });
   </script>
