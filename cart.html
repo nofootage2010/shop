@@ -60,8 +60,8 @@
       };
 
       contactInput.addEventListener("input", () => {
-        if (contactInput.value.length > 20) {
-          alert("Contact info must be 20 characters or less.");
+        if (contactInput.value.length > 70) {
+          alert("Contact info must be 70 characters or less.");
           contactInput.value = contactInput.value.slice(0, 20);
         }
         validateContact();
