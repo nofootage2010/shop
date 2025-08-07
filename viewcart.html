@@ -31,6 +31,7 @@
     }
     .controls button {
       padding: 4px 10px;
+      cursor: pointer;
     }
     .delete {
       background: red;
@@ -40,12 +41,27 @@
       padding: 4px 10px;
       cursor: pointer;
     }
+    #checkoutBtn {
+      margin-top: 20px;
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      background: green;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    #checkoutBtn:hover {
+      background: darkgreen;
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <h2>Your Cart</h2>
     <div id="cart-container"></div>
+    <button id="checkoutBtn">Check Out</button>
   </div>
 
   <script>
@@ -57,7 +73,10 @@
 
       if (cart.length === 0) {
         container.innerHTML = "<p>Your cart is empty.</p>";
+        document.getElementById("checkoutBtn").style.display = "none";
         return;
+      } else {
+        document.getElementById("checkoutBtn").style.display = "block";
       }
 
       cart.forEach((item, index) => {
@@ -104,6 +123,21 @@
       localStorage.setItem("cart", JSON.stringify(cart));
       renderCart();
     };
+
+    document.getElementById("checkoutBtn").addEventListener("click", () => {
+      // Here you can send orders to Firestore, then clear cart
+      // For now, just alert and clear cart locally
+      if(cart.length === 0){
+        alert("Your cart is empty!");
+        return;
+      }
+      alert("Thank you for your purchase! Your order has been sent.");
+      // TODO: Send 'cart' data to Firestore orders collection here
+
+      localStorage.removeItem("cart");
+      cart = [];
+      renderCart();
+    });
 
     renderCart();
   </script>
