@@ -4,11 +4,19 @@
   <meta charset="UTF-8" />
   <title>Item Page</title>
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       font-family: Arial, sans-serif;
-      background: #f2f2f2;
+      background: #e5e5e5;
       margin: 0;
-      padding: 20px;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
     }
 
     #homeBtn {
@@ -30,12 +38,12 @@
       display: flex;
       flex-direction: row;
       gap: 30px;
+      width: 90%;
       max-width: 1000px;
-      margin: 80px auto;
-      padding: 20px;
       background: white;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      padding: 20px;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
     }
 
     .product-image-gallery {
@@ -46,63 +54,42 @@
       max-height: 500px;
       width: 300px;
       padding-right: 10px;
-      border-right: 1px solid #ddd;
+      border-right: 1px solid #ccc;
     }
 
     .product-image-gallery img {
       width: 100%;
-      height: auto;
-      object-fit: cover;
       border-radius: 8px;
       cursor: pointer;
-      transition: transform 0.2s ease;
+      object-fit: cover;
+      transition: transform 0.2s;
     }
 
     .product-image-gallery img:hover {
       transform: scale(1.02);
     }
 
-    .image-modal {
-      display: none;
-      position: fixed;
-      z-index: 2000;
-      top: 0; left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.85);
-      justify-content: center;
-      align-items: center;
-      cursor: grab;
-    }
-
-    .image-modal img {
-      max-width: 90%;
-      max-height: 90%;
-      border-radius: 8px;
-      transition: transform 0.2s ease;
-    }
-
     .product-info {
       flex: 1;
-      padding: 10px 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
 
     .product-info h1 {
-      text-transform: uppercase;
       font-size: 28px;
-      font-weight: bold;
       margin-bottom: 10px;
+      text-transform: uppercase;
     }
 
     .product-info p {
-      margin: 10px 0;
-      font-size: 15px;
+      margin: 6px 0;
     }
 
-    .product-info .price {
-      font-size: 22px;
+    .price {
+      font-size: 24px;
       font-weight: bold;
-      margin: 15px 0;
+      margin: 12px 0;
     }
 
     .count {
@@ -122,18 +109,39 @@
     }
 
     .buy-btn {
-      width: 100%;
-      padding: 14px;
-      font-size: 16px;
+      padding: 12px;
       background: black;
       color: white;
       border: none;
       border-radius: 6px;
       cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
     }
 
     .buy-btn:hover {
       background: #222;
+    }
+
+    .image-modal {
+      display: none;
+      position: fixed;
+      z-index: 2000;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.85);
+      justify-content: center;
+      align-items: center;
+      cursor: grab;
+    }
+
+    .image-modal img {
+      max-width: 90%;
+      max-height: 90%;
+      border-radius: 10px;
+      transition: transform 0.2s;
     }
 
     #popup {
@@ -169,7 +177,9 @@
   </style>
 </head>
 <body>
+
   <button id="homeBtn">Home</button>
+
   <div class="product-page">
     <div class="product-image-gallery" id="imageGallery"></div>
     <div class="product-info">
@@ -237,22 +247,20 @@ document.getElementById("imageModal").onclick = () => {
   document.getElementById("imageModal").style.display = "none";
 };
 
+// Zoom logic w/ mouse position
 let zoomLevel = 1;
 const modalImage = document.getElementById("modalImage");
 
 modalImage.addEventListener("wheel", (e) => {
   e.preventDefault();
-
   const rect = modalImage.getBoundingClientRect();
   const offsetX = e.clientX - rect.left;
   const offsetY = e.clientY - rect.top;
   const xPercent = (offsetX / rect.width) * 100;
   const yPercent = (offsetY / rect.height) * 100;
-
   modalImage.style.transformOrigin = `${xPercent}% ${yPercent}%`;
 
-  const delta = e.deltaY < 0 ? 0.1 : -0.1;
-  zoomLevel += delta;
+  zoomLevel += e.deltaY < 0 ? 0.1 : -0.1;
   zoomLevel = Math.max(0.5, Math.min(zoomLevel, 3));
   modalImage.style.transform = `scale(${zoomLevel})`;
 });
