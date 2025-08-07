@@ -20,6 +20,8 @@
       justify-content: center;
     }
     .item {
+      position: relative;
+      overflow: hidden;
       background: white;
       padding: 15px;
       border-radius: 12px;
@@ -38,10 +40,26 @@
     .item img {
       width: 100%;
       border-radius: 8px;
-      transition: opacity 0.3s ease;
       margin-bottom: 12px;
       object-fit: cover;
       height: 150px;
+      display: block;
+    }
+    .item img.hover-img {
+      position: absolute;
+      top: 15px; /* same padding as .item */
+      left: 15px;
+      width: calc(100% - 30px);
+      height: 150px;
+      border-radius: 8px;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      pointer-events: none;
+      z-index: 2;
+    }
+    .item:hover img.hover-img {
+      opacity: 1;
     }
     .item-name {
       font-weight: bold;
@@ -49,12 +67,14 @@
       font-size: 16px;
       color: #222;
       text-transform: uppercase;
+      z-index: 3;
     }
     .item-price {
       color: green;
       font-weight: bold;
       font-size: 18px;
       margin-top: auto;
+      z-index: 3;
     }
 
     #view-cart-button {
@@ -72,6 +92,7 @@
       box-shadow: 0 3px 7px rgba(0,123,255,0.6);
       transition: background-color 0.3s ease;
       user-select: none;
+      z-index: 1000;
     }
 
     #view-cart-button:hover {
@@ -119,17 +140,19 @@
           const div = document.createElement('div');
           div.className = "item";
 
-          const img = document.createElement('img');
-          img.src = `assets/${name}/icon.png`;
-          img.alt = name;
+          // Base image
+          const baseImg = document.createElement('img');
+          baseImg.src = `assets/${name}/icon.png`;
+          baseImg.alt = name;
 
-          // hover image swap
-          div.addEventListener('mouseenter', () => {
-            img.src = `assets/${name}/icon2.png`;
-          });
-          div.addEventListener('mouseleave', () => {
-            img.src = `assets/${name}/icon.png`;
-          });
+          // Hover image (on top, initially transparent)
+          const hoverImg = document.createElement('img');
+          hoverImg.src = `assets/${name}/icon2.png`;
+          hoverImg.alt = name;
+          hoverImg.classList.add('hover-img');
+
+          div.appendChild(baseImg);
+          div.appendChild(hoverImg);
 
           const nameElem = document.createElement('div');
           nameElem.className = "item-name";
@@ -139,7 +162,6 @@
           priceElem.className = "item-price";
           priceElem.textContent = `$${parseFloat(price).toFixed(2)} USD`;
 
-          div.appendChild(img);
           div.appendChild(nameElem);
           div.appendChild(priceElem);
 
