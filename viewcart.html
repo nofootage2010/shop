@@ -67,7 +67,7 @@
   <script>
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
-    const renderCart = () => {
+    function renderCart() {
       const container = document.getElementById("cart-container");
       container.innerHTML = "";
 
@@ -90,7 +90,7 @@
           </div>
           <div class="controls">
             <button onclick="decrease(${index})">-</button>
-            <span>${item.quantity}</span>
+            <span id="quantity-${index}">${item.quantity}</span>
             <button onclick="increase(${index})">+</button>
             <button class="delete" onclick="removeItem(${index})">❌</button>
           </div>
@@ -98,45 +98,39 @@
 
         container.appendChild(div);
       });
-    };
+    }
 
-    const increase = (i) => {
+    function increase(i) {
       if (cart[i].quantity < cart[i].max) {
         cart[i].quantity++;
         save();
       }
-    };
+    }
 
-    const decrease = (i) => {
+    function decrease(i) {
       if (cart[i].quantity > 1) {
         cart[i].quantity--;
         save();
       }
-    };
+    }
 
-    const removeItem = (i) => {
+    function removeItem(i) {
       cart.splice(i, 1);
       save();
-    };
+    }
 
-    const save = () => {
+    function save() {
       localStorage.setItem("cart", JSON.stringify(cart));
       renderCart();
-    };
+    }
 
     document.getElementById("checkoutBtn").addEventListener("click", () => {
-      // Here you can send orders to Firestore, then clear cart
-      // For now, just alert and clear cart locally
       if(cart.length === 0){
         alert("Your cart is empty!");
         return;
       }
-      alert("Thank you for your purchase! Your order has been sent.");
-      // TODO: Send 'cart' data to Firestore orders collection here
-
-      localStorage.removeItem("cart");
-      cart = [];
-      renderCart();
+      // Redirect to cart.html for checkout process
+      window.location.href = "cart.html";
     });
 
     renderCart();
