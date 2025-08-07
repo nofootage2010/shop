@@ -1,68 +1,39 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
   <meta charset="UTF-8" />
-  <title>Install & Login</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #1e1e1e;
-      color: white;
-      text-align: center;
-      padding: 40px;
-    }
-    #installation-screen, #auth-screen {
-      display: none;
-    }
-    input, button {
-      font-size: 1rem;
-      padding: 8px;
-      margin: 10px 0;
-      width: 100%;
-      max-width: 300px;
-      border-radius: 4px;
-      border: none;
-    }
-    input {
-      background: #333;
-      color: white;
-    }
-    button {
-      background: #0078D7;
-      color: white;
-      cursor: pointer;
-    }
-    button:hover {
-      background: #005fa3;
-    }
-    #message {
-      margin-top: 10px;
-      min-height: 20px;
-    }
-  </style>
+  <title>ShopEasy - Shop</title>
 </head>
 <body>
+  <h1>ShopEasy 🛒</h1>
 
-  <div id="installation-screen">
-    <h1>Windows 7 Web Installation</h1>
-    <p>Preparing your desktop...</p>
-    <button id="finish-install">Finish Installation</button>
-  </div>
+  <div id="authStatus"></div>
+  <button id="logoutBtn" style="display:none;">Log Out</button>
 
-  <div id="auth-screen">
-    <h2>Create Account / Login</h2>
-    <input type="text" id="username" placeholder="Username (max 20, A-Z 0-9 _)" maxlength="20" />
-    <input type="password" id="password" placeholder="Password (6–30 chars)" maxlength="30" />
-    <button id="signupBtn">Sign Up</button>
-    <button id="loginBtn">Log In</button>
-    <div id="message"></div>
-  </div>
+  <h2>Items for Sale</h2>
+  <div id="items"></div>
+
+  <h2>Your Cart</h2>
+  <div id="cart"></div>
+  <button id="saveCartBtn" style="display:none;">Save Cart</button>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+    import {
+      getAuth,
+      onAuthStateChanged,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+    import {
+      getFirestore,
+      collection,
+      doc,
+      onSnapshot,
+      setDoc,
+      getDoc
+    } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
+    // Firebase config (same as before)
     const firebaseConfig = {
       apiKey: "AIzaSyABT1dlkE7m0k9pLtP_l5mhk10NRlNoDb8",
       authDomain: "nofootage2010.firebaseapp.com",
@@ -74,81 +45,111 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+    const db = getFirestore(app);
 
-    const installationScreen = document.getElementById("installation-screen");
-    const authScreen = document.getElementById("auth-screen");
-    const usernameInput = document.getElementById("username");
-    const passwordInput = document.getElementById("password");
-    const signupBtn = document.getElementById("signupBtn");
-    const loginBtn = document.getElementById("loginBtn");
-    const messageDiv = document.getElementById("message");
+    const itemsDiv = document.getElementById("items");
+    const cartDiv = document.getElementById("cart");
+    const logoutBtn = document.getElementById("logoutBtn");
+    const saveCartBtn = document.getElementById("saveCartBtn");
+    const authStatus = document.getElementById("authStatus");
 
-    // Show correct screen
-    if (localStorage.getItem("installed") === "true") {
-      installationScreen.style.display = "none";
-      authScreen.style.display = "block";
-    } else {
-      installationScreen.style.display = "block";
-      authScreen.style.display = "none";
-    }
+    let cart = [];
+    let user = null;
 
-    // Finish install
-    document.getElementById("finish-install").onclick = () => {
-      localStorage.setItem("installed", "true");
-      installationScreen.style.display = "none";
-      authScreen.style.display = "block";
+    // Show items to everyone
+    onSnapshot(collection(db, "items"), (snapshot) => {
+      itemsDiv.innerHTML = "";
+      snapshot.forEach(docSnap => {
+        const data = docSnap.data();
+        const div = document.createElement("div");
+        div.style.border = "1px solid #ccc";
+        div.style.padding = "10px";
+        div.style.marginBottom = "10px";
+
+        div.innerHTML = `
+          <strong>${data.name}</strong> - $${data.price} (${data.quantity} left)<br>
+          <em>${data.description}</em><br>
+          <button>Add to Cart</button>
+        `;
+
+        const btn = div.querySelector("button");
+        btn.onclick = () => {
+          if (!user) {
+            if (confirm("You must log in to add items to your cart. Go to login page?")) {
+              window.location.href = "login.html";
+            }
+            return;
+          }
+          addToCart(docSnap.id, data.name, data.price);
+        };
+
+        itemsDiv.appendChild(div);
+      });
+    });
+
+    onAuthStateChanged(auth, (u) => {
+      user = u;
+      if (user) {
+        authStatus.textContent = `Logged in as ${user.email}`;
+        logoutBtn.style.display = "inline-block";
+        saveCartBtn.style.display = "inline-block";
+        loadCart();
+      } else {
+        authStatus.innerHTML = `Not logged in. <a href="login.html">Login or Sign Up</a>`;
+        logoutBtn.style.display = "none";
+        saveCartBtn.style.display = "none";
+        cart = [];
+        renderCart();
+      }
+    });
+
+    logoutBtn.onclick = () => {
+      signOut(auth);
     };
 
-    const usernameRegex = /^[a-zA-Z0-9_]{1,20}$/;
-
-    function validateInputs(username, password) {
-      if (!usernameRegex.test(username)) {
-        messageDiv.textContent = "❌ Invalid username. Use A-Z, 0-9, underscore, max 20.";
-        return false;
+    function addToCart(id, name, price) {
+      const existing = cart.find(i => i.id === id);
+      if (existing) {
+        existing.quantity++;
+      } else {
+        cart.push({ id, name, price, quantity: 1 });
       }
-      if (password.length < 6 || password.length > 30) {
-        messageDiv.textContent = "❌ Password must be 6–30 characters.";
-        return false;
-      }
-      return true;
+      renderCart();
     }
 
-    function usernameToEmail(username) {
-      return `${username}@nofootage.local`;
+    function renderCart() {
+      cartDiv.innerHTML = "";
+      cart.forEach(item => {
+        const div = document.createElement("div");
+        div.textContent = `${item.name} - $${item.price} x ${item.quantity}`;
+        const removeBtn = document.createElement("button");
+        removeBtn.textContent = "Remove";
+        removeBtn.onclick = () => {
+          cart = cart.filter(i => i.id !== item.id);
+          renderCart();
+        };
+        div.appendChild(removeBtn);
+        cartDiv.appendChild(div);
+      });
     }
 
-    async function postLogin() {
-      messageDiv.textContent = "✅ Logged in! Redirecting...";
-      setTimeout(() => window.location.href = "home.html", 1000);
-    }
-
-    signupBtn.onclick = async () => {
-      const username = usernameInput.value.trim();
-      const password = passwordInput.value;
-      if (!validateInputs(username, password)) return;
-      const email = usernameToEmail(username);
-      try {
-        await createUserWithEmailAndPassword(auth, email, password);
-        await postLogin();
-      } catch (error) {
-        console.error(error);
-        messageDiv.textContent = "❌ Signup error: " + error.message;
+    saveCartBtn.onclick = async () => {
+      if (!user) {
+        alert("Please log in to save your cart.");
+        return;
       }
+      await setDoc(doc(db, "carts", user.uid), { items: cart });
+      alert("Cart saved!");
     };
 
-    loginBtn.onclick = async () => {
-      const username = usernameInput.value.trim();
-      const password = passwordInput.value;
-      if (!validateInputs(username, password)) return;
-      const email = usernameToEmail(username);
-      try {
-        await signInWithEmailAndPassword(auth, email, password);
-        await postLogin();
-      } catch (error) {
-        console.error(error);
-        messageDiv.textContent = "❌ Login error: " + error.message;
+    async function loadCart() {
+      if (!user) return;
+      const cartDoc = await getDoc(doc(db, "carts", user.uid));
+      if (cartDoc.exists()) {
+        cart = cartDoc.data().items || [];
+        renderCart();
       }
-    };
+    }
   </script>
 </body>
 </html>
