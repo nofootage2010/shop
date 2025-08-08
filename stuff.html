@@ -1,276 +1,366 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Stuff</title>
-  <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      font-family: sans-serif;
-      background-color: black;
-      overflow: hidden;
-      color: black;
-    }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Stuff</title>
+<style>
+  html, body {
+    margin: 0; padding: 0; height: 100%;
+    font-family: Arial, sans-serif;
+    background-color: black;
+    overflow: hidden;
+    color: white;
+  }
+  #bg {
+    position: fixed; top: 0; left: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    z-index: -1;
+    user-select: none;
+  }
+  .container {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    gap: 40px;
+    padding: 0 20px;
+  }
+  .button-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    transition: transform 0.5s ease;
+    user-select: none;
+  }
+  .button-panel.moved {
+    transform: translateX(-180px);
+  }
+  button {
+    background: linear-gradient(180deg, #222, #111);
+    border: 2px solid black;
+    border-radius: 0;
+    padding: 14px 30px;
+    font-weight: 900;
+    font-size: 16px;
+    cursor: pointer;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 1.3px;
+    box-shadow:
+      inset 0 2px 6px rgba(255,255,255,0.25),
+      0 0 15px rgba(255,255,255,0.3);
+    transition: box-shadow 0.3s ease;
+  }
+  button:hover, button:focus {
+    outline: none;
+    box-shadow:
+      inset 0 2px 10px rgba(255,255,255,0.6),
+      0 0 25px rgba(255,255,255,0.7);
+  }
+  /* Neon colors for each button */
+  #btnArt {
+    background: linear-gradient(180deg, #1a0aff, #0f0080);
+    box-shadow: 0 0 10px #1a0aff;
+  }
+  #btnFavorites {
+    background: linear-gradient(180deg, #ff0050, #800030);
+    box-shadow: 0 0 10px #ff0050;
+  }
+  #btnTodo {
+    background: linear-gradient(180deg, #00ffcc, #008066);
+    box-shadow: 0 0 10px #00ffcc;
+  }
+  #btnArt:hover {
+    box-shadow: 0 0 20px #3b46ff;
+  }
+  #btnFavorites:hover {
+    box-shadow: 0 0 20px #ff4080;
+  }
+  #btnTodo:hover {
+    box-shadow: 0 0 20px #33ffdb;
+  }
 
-    #bg {
-      position: fixed;
-      top: 0;
-      left: 0;
-      height: 100%;
-      width: 100%;
-      object-fit: cover;
-      z-index: -1;
-    }
+  .content-panel {
+    width: 540px;
+    max-height: 80vh;
+    overflow-y: auto;
+    background: rgba(0,0,0,0.5);
+    border: 2px solid black;
+    padding: 16px 22px;
+    box-sizing: border-box;
+    display: none;
+    color: white;
+    user-select: text;
+  }
+  .content-panel.active {
+    display: block;
+  }
+  /* Art images */
+  .art-image {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    margin: 6px;
+    border: 2px solid black;
+    cursor: zoom-in;
+    box-shadow: 0 0 10px #111;
+    transition: box-shadow 0.2s;
+  }
+  .art-image:hover {
+    box-shadow: 0 0 20px #4d7eff;
+  }
 
-    .main {
-      display: flex;
-      height: 100%;
-      width: 100%;
-      align-items: center;
-      justify-content: space-between;
-      position: relative;
-    }
+  /* Zoom overlay */
+  #zoomOverlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.95);
+    cursor: zoom-out;
+    z-index: 9999;
+    user-select: none;
+    overflow: hidden;
+  }
+  #zoomImage {
+    position: absolute;
+    top: 0; left: 0;
+    will-change: transform;
+    transform-origin: 0 0;
+    max-width: none;
+    max-height: none;
+  }
 
-    .button-panel {
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-      padding: 20px;
-      transition: transform 0.5s ease;
-      z-index: 10;
-    }
-
-    .button-panel.moved {
-      transform: translateX(-100px);
-    }
-
-    .button {
-      font-weight: bold;
-      font-size: 16px;
-      padding: 14px 24px;
-      border: 2px solid black;
-      cursor: pointer;
-      transition: 0.3s;
-      text-shadow: 0 1px 0 white;
-      box-shadow: 0 0 10px white;
-    }
-
-    .content-panel {
-      position: relative;
-      width: 60vw;
-      height: 80%;
-      overflow-y: auto;
-      overflow-x: hidden;
-      background: rgba(255, 255, 255, 0.88);
-      padding: 20px;
-      border: 2px solid black;
-      display: none;
-      z-index: 9;
-    }
-
-    .content-panel::-webkit-scrollbar {
-      display: none;
-    }
-
-    .content-panel.active {
-      display: block;
-    }
-
-    .art-image {
-      width: 100px;
-      height: 100px;
-      object-fit: cover;
-      margin: 5px;
-      cursor: pointer;
-    }
-
-    #zoomOverlay {
-      display: none;
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.9);
-      justify-content: center;
-      align-items: center;
-      z-index: 20;
-    }
-
-    #zoomImage {
-      max-width: 90%;
-      max-height: 90%;
-      transition: transform 0.1s;
-    }
-
-    #funfact {
-      position: absolute;
-      bottom: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 20px;
-      background: rgba(255,255,0,0.9);
-      color: black;
-      padding: 10px 20px;
-      border: 2px solid black;
-      font-weight: bold;
-      box-shadow: 0 2px 10px black;
-      text-align: center;
-      z-index: 11;
-    }
-
-    #backBtn {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      font-size: 14px;
-      padding: 6px 10px;
-      border: 2px solid black;
-      cursor: pointer;
-      background: linear-gradient(to bottom, #ffffff, #dddddd);
-      z-index: 12;
-    }
-  </style>
+  /* Fun fact at bottom center */
+  #funfact {
+    position: fixed;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.7);
+    padding: 12px 20px;
+    border: 2px solid black;
+    font-weight: 700;
+    font-size: 14px;
+    max-width: 90vw;
+    color: #ccf6ff;
+    text-shadow: 0 0 5px #66ccff;
+    user-select: none;
+  }
+  /* Back button */
+  #backBtn {
+    position: fixed;
+    top: 12px;
+    left: 12px;
+    padding: 10px 18px;
+    background: linear-gradient(180deg, #222, #111);
+    border: 2px solid black;
+    font-weight: 900;
+    color: white;
+    cursor: pointer;
+    user-select: none;
+    box-shadow:
+      inset 0 2px 6px rgba(255,255,255,0.25),
+      0 0 15px rgba(255,255,255,0.3);
+    transition: box-shadow 0.3s ease;
+    text-transform: uppercase;
+  }
+  #backBtn:hover, #backBtn:focus {
+    outline: none;
+    box-shadow:
+      inset 0 2px 10px rgba(255,255,255,0.6),
+      0 0 25px rgba(255,255,255,0.7);
+  }
+</style>
 </head>
 <body>
 
-  <img id="bg" src="" alt="Background">
+<img id="bg" alt="Background" src="">
 
-  <div class="main">
-    <div class="button-panel" id="buttonPanel">
-      <button class="button" style="background: linear-gradient(to bottom, #ff00ff, #cc00cc);" onclick="togglePanel('art')">Art</button>
-      <button class="button" style="background: linear-gradient(to bottom, #00ffff, #00cccc);" onclick="togglePanel('favorites')">Favorites of Us</button>
-      <button class="button" style="background: linear-gradient(to bottom, #00ff00, #00cc00);" onclick="togglePanel('todo')">Things 2 Do</button>
-    </div>
+<button id="backBtn" onclick="goBack()">Back</button>
 
-    <div class="content-panel" id="artPanel"></div>
-    <div class="content-panel" id="favoritesPanel">
-      <div>🎵 Our Favorite Songs:</div>
-      <ul>
-        <li>Song 1</li>
-        <li>Song 2</li>
-        <li>Song 3</li>
-      </ul>
-      <div>💖 Other Faves:</div>
-      <ul>
-        <li>Color: Blue</li>
-        <li>Food: Pizza</li>
-      </ul>
-    </div>
-    <div class="content-panel" id="todoPanel">
-      <ul>
-        <li>Make a playlist</li>
-        <li>Draw together</li>
-        <li>Make a silly video</li>
-      </ul>
-    </div>
+<div class="container">
+  <div class="button-panel" id="buttonPanel">
+    <button id="btnArt" onclick="showContent('art')">Art</button>
+    <button id="btnFavorites" onclick="showContent('favorites')">Favorites of Us</button>
+    <button id="btnTodo" onclick="showContent('todo')">Things 2 Do</button>
   </div>
 
-  <div id="funfact"></div>
-  <button id="backBtn" onclick="goBack()">← Back</button>
-
-  <div id="zoomOverlay" onclick="closeZoom()">
-    <img id="zoomImage" src="">
+  <div class="content-panel" id="artPanel"></div>
+  <div class="content-panel" id="favoritesPanel">
+    <h2>Favorites of Us</h2>
+    <ul>
+      <li>Song: Electric Love</li>
+      <li>Show: Adventure Time</li>
+      <li>Game: Minecraft</li>
+      <li>Food: Pepperoni Pizza</li>
+    </ul>
   </div>
+  <div class="content-panel" id="todoPanel">
+    <h2>Things 2 Do</h2>
+    <ul>
+      <li>Draw silly doodles</li>
+      <li>Listen to our playlist</li>
+      <li>Make a silly video</li>
+      <li>Write a short poem</li>
+      <li>Try a new recipe</li>
+      <li>Build something in a sandbox game</li>
+    </ul>
+  </div>
+</div>
 
-  <script>
-    // Background GIF randomizer
-    const gifs = [
-      "assets/gifbackground/gif1.gif",
-      "assets/gifbackground/gif2.gif",
-      "assets/gifbackground/gif3.gif"
-    ];
-    document.getElementById("bg").src = gifs[Math.floor(Math.random() * gifs.length)];
+<div id="funfact"></div>
 
-    // Fun Fact
-    const funfacts = [
-      "Fun Fact: Penguins have knees!",
-      "Fun Fact: Bananas are berries.",
-      "Fun Fact: You blink 15-20 times a minute!",
-      "Fun Fact: Octopuses have three hearts."
-    ];
-    document.getElementById("funfact").innerText = funfacts[Math.floor(Math.random() * funfacts.length)];
+<div id="zoomOverlay" onclick="closeZoom()">
+  <img id="zoomImage" src="" alt="Zoomed Art" />
+</div>
 
-    // Panel toggle
-    const panelMap = {
-      art: "artPanel",
-      favorites: "favoritesPanel",
-      todo: "todoPanel"
+<script>
+  // Random background GIF from assets/gifbackground (3 gifs)
+  const gifs = [
+    "assets/gifbackground/gif1.gif",
+    "assets/gifbackground/gif2.gif",
+    "assets/gifbackground/gif3.gif"
+  ];
+  document.getElementById('bg').src = gifs[Math.floor(Math.random() * gifs.length)];
+
+  // Fun facts array
+  const funFacts = [
+    "Did you know the Eiffel Tower can grow 6 inches in summer?",
+    "Bananas are berries, but strawberries are not.",
+    "Octopuses have three hearts.",
+    "You can hear a blue whale's heartbeat from 2 miles away.",
+    "Sloths can hold their breath longer than dolphins.",
+    "Some cats are allergic to humans.",
+    "Wombat poop is cube-shaped."
+  ];
+
+  // Show random fun fact
+  function showFunFact() {
+    const factElem = document.getElementById('funfact');
+    factElem.textContent = funFacts[Math.floor(Math.random() * funFacts.length)];
+  }
+  showFunFact();
+
+  // Elements & state
+  const buttonPanel = document.getElementById('buttonPanel');
+  const artPanel = document.getElementById('artPanel');
+  const favoritesPanel = document.getElementById('favoritesPanel');
+  const todoPanel = document.getElementById('todoPanel');
+
+  let currentPanel = null;
+
+  // Load art images dynamically on demand
+  function loadArtImages() {
+    if (artPanel.dataset.loaded) return;
+    for (let i = 1; i <= 9; i++) {
+      const img = document.createElement('img');
+      img.src = `assets/art/art${i}.jpg`;
+      img.alt = `Art ${i}`;
+      img.className = 'art-image';
+      img.onerror = () => img.style.display = 'none';
+      img.onclick = (e) => zoomImage(e, img.src);
+      artPanel.appendChild(img);
+    }
+    artPanel.dataset.loaded = "true";
+  }
+
+  // Show content panel + tween buttons left
+  function showContent(panel) {
+    if (currentPanel === panel) {
+      // Same panel clicked: re-trigger tween (toggle off & on)
+      buttonPanel.classList.remove('moved');
+      setTimeout(() => {
+        buttonPanel.classList.add('moved');
+      }, 50);
+      return;
+    }
+    currentPanel = panel;
+    buttonPanel.classList.add('moved');
+
+    artPanel.style.display = 'none';
+    favoritesPanel.style.display = 'none';
+    todoPanel.style.display = 'none';
+
+    if (panel === 'art') {
+      artPanel.style.display = 'block';
+      loadArtImages();
+    } else if (panel === 'favorites') {
+      favoritesPanel.style.display = 'block';
+    } else if (panel === 'todo') {
+      todoPanel.style.display = 'block';
+    }
+  }
+
+  // Zoom image with mouse position center + scroll zoom
+  function zoomImage(event, src) {
+    event.stopPropagation();
+    const overlay = document.getElementById('zoomOverlay');
+    const zoomImg = document.getElementById('zoomImage');
+
+    overlay.style.display = 'flex';
+    zoomImg.src = src;
+
+    let scale = 1;
+    let posX = event.clientX;
+    let posY = event.clientY;
+
+    // Calculate initial offset so zoom center matches mouse
+    let rect = zoomImg.getBoundingClientRect();
+    let offsetX = posX - rect.left;
+    let offsetY = posY - rect.top;
+
+    // Initial transform origin in px
+    let originX = offsetX;
+    let originY = offsetY;
+
+    zoomImg.style.transformOrigin = `${originX}px ${originY}px`;
+    zoomImg.style.transform = `scale(${scale})`;
+
+    function onWheel(e) {
+      e.preventDefault();
+      const delta = e.deltaY < 0 ? 0.1 : -0.1;
+      scale = Math.min(Math.max(0.5, scale + delta), 5);
+      zoomImg.style.transform = `scale(${scale})`;
+    }
+
+    overlay.addEventListener('wheel', onWheel);
+
+    // Remove zoom when clicking overlay
+    overlay.onclick = () => {
+      overlay.style.display = 'none';
+      overlay.removeEventListener('wheel', onWheel);
+      currentPanel = null;
+      buttonPanel.classList.remove('moved');
+      artPanel.style.display = 'none';
+      favoritesPanel.style.display = 'none';
+      todoPanel.style.display = 'none';
     };
 
-    function togglePanel(panelKey) {
-      const buttonPanel = document.getElementById("buttonPanel");
-      buttonPanel.classList.toggle("moved");
-
-      for (const key in panelMap) {
-        const panel = document.getElementById(panelMap[key]);
-        if (key === panelKey) {
-          panel.classList.toggle("active");
-        } else {
-          panel.classList.remove("active");
-        }
+    // Escape key to exit zoom
+    function escListener(e) {
+      if (e.key === 'Escape') {
+        overlay.style.display = 'none';
+        overlay.removeEventListener('wheel', onWheel);
+        document.removeEventListener('keydown', escListener);
+        currentPanel = null;
+        buttonPanel.classList.remove('moved');
+        artPanel.style.display = 'none';
+        favoritesPanel.style.display = 'none';
+        todoPanel.style.display = 'none';
       }
-
-      if (panelKey === "art") loadArtImages();
     }
+    document.addEventListener('keydown', escListener, { once: true });
+  }
 
-    function loadArtImages() {
-      const artPanel = document.getElementById("artPanel");
-      if (artPanel.dataset.loaded === "true") return;
+  // Back button function
+  function goBack() {
+    window.location.href = 'index.html';
+  }
+</script>
 
-      for (let i = 1; i <= 9; i++) {
-        const img = document.createElement("img");
-        img.src = `assets/art/art${i}.jpg`;
-        img.className = "art-image";
-        img.onclick = (e) => zoomImage(e, img.src);
-        artPanel.appendChild(img);
-      }
-
-      artPanel.dataset.loaded = "true";
-    }
-
-    // Image Zoom with mouse position zoom
-    let currentScale = 1;
-    let mouseX = 0.5;
-    let mouseY = 0.5;
-
-    function zoomImage(e, src) {
-      const overlay = document.getElementById("zoomOverlay");
-      const zoomImg = document.getElementById("zoomImage");
-      zoomImg.src = src;
-      overlay.style.display = "flex";
-      currentScale = 1;
-      zoomImg.style.transformOrigin = "center center";
-      zoomImg.style.transform = "scale(1)";
-
-      overlay.onmousemove = (ev) => {
-        const rect = overlay.getBoundingClientRect();
-        mouseX = (ev.clientX - rect.left) / rect.width;
-        mouseY = (ev.clientY - rect.top) / rect.height;
-        zoomImg.style.transformOrigin = `${mouseX * 100}% ${mouseY * 100}%`;
-      };
-
-      overlay.onwheel = (ev) => {
-        ev.preventDefault();
-        const delta = ev.deltaY < 0 ? 0.1 : -0.1;
-        currentScale = Math.min(Math.max(0.5, currentScale + delta), 3);
-        zoomImg.style.transform = `scale(${currentScale})`;
-      };
-    }
-
-    function closeZoom() {
-      document.getElementById("zoomOverlay").style.display = "none";
-      document.getElementById("zoomOverlay").onwheel = null;
-      document.getElementById("zoomOverlay").onmousemove = null;
-    }
-
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") closeZoom();
-    });
-
-    function goBack() {
-      window.location.href = "index.html";
-    }
-  </script>
 </body>
 </html>
