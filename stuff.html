@@ -198,7 +198,7 @@
   const gifCount = 3;
   const bg = document.getElementById("bg");
 
-  // Load random background after DOM is ready
+  // Wait until DOM is ready to run startup logic
   window.addEventListener("DOMContentLoaded", () => {
     setRandomBg();
     setRandomFunfact();
@@ -231,14 +231,15 @@
 
   const buttonPanel = document.getElementById("buttonPanel");
   let currentPanel = null;
+  let panelMoved = false;
 
   function showPanel(name) {
-    // Prevent toggling animation if clicking the same button
-    if (currentPanel === name) return;
+    if (currentPanel === name) return; // Don't do anything if same button clicked
 
-    // Move button panel (if not already moved)
-    if (!buttonPanel.classList.contains("moved")) {
+    // Slide the button panel only once
+    if (!panelMoved) {
       buttonPanel.classList.add("moved");
+      panelMoved = true;
     }
 
     // Hide all panels
@@ -308,6 +309,7 @@
     window.location.href = "index.html";
   }
 </script>
+
 
 </body>
 </html>
