@@ -33,18 +33,19 @@
     }
 
     .product-page {
-  position: absolute;
-  top: 50%;
-  left: 55%; 
-  transform: translate(-50%, -50%);
-  display: flex;
-  gap: 30px;
-  width: 90%;
-  max-width: 1100px;
-  background: transparent;
-  padding: 30px 0;
-  border-radius: 0;
-}
+      position: absolute;
+      top: 50%;
+      left: 55%; 
+      transform: translate(-50%, -50%);
+      display: flex;
+      gap: 30px;
+      width: 90%;
+      max-width: 1100px;
+      background: transparent;
+      padding: 30px 0;
+      border-radius: 0;
+      flex-wrap: nowrap;
+    }
 
     .product-image-gallery {
       display: flex;
@@ -89,6 +90,7 @@
       font-size: 22px; /* bigger text */
       line-height: 1.5;
       padding-left: 10px;
+      min-width: 320px;
     }
 
     .product-info h1 {
@@ -222,6 +224,73 @@
     #popup button:hover {
       background: #1e90ffcc;
     }
+
+    /* Featured Items styles */
+    .featured-items {
+      margin-top: 40px;
+      width: 100%;
+      color: #222;
+      font-weight: 700;
+      font-size: 24px;
+      padding-left: 10px;
+      flex-basis: 100%;
+      /* Make sure it takes full width below product-info */
+    }
+
+    .featured-items h2 {
+      margin-bottom: 15px;
+      text-transform: uppercase;
+      font-weight: 900;
+      letter-spacing: 1.1px;
+    }
+
+    .featured-list {
+      display: flex;
+      gap: 20px;
+      overflow-x: auto;
+      padding-bottom: 10px;
+      scrollbar-width: none;
+    }
+
+    .featured-list::-webkit-scrollbar {
+      display: none;
+    }
+
+    .featured-item {
+      min-width: 140px;
+      cursor: pointer;
+      background: transparent;
+      color: #222;
+      text-align: center;
+      user-select: none;
+    }
+
+    .featured-item img {
+      width: 100%;
+      height: 100px;
+      object-fit: cover;
+      border-radius: 0;
+      transition: transform 0.2s;
+    }
+
+    .featured-item:hover img {
+      transform: scale(1.05);
+    }
+
+    .featured-item-name {
+      margin-top: 8px;
+      font-size: 16px;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .featured-item-price {
+      font-weight: 900;
+      color: green;
+      font-size: 14px;
+    }
   </style>
 </head>
 <body>
@@ -242,6 +311,12 @@
         <button id="increase">+</button>
       </div>
       <button class="buy-btn" id="buyBtn">Add to Cart</button>
+    </div>
+
+    <!-- Featured Items below product-info -->
+    <div class="featured-items" id="featuredItems">
+      <h2>Featured Items</h2>
+      <div class="featured-list" id="featuredList"></div>
     </div>
   </div>
 
@@ -392,6 +467,57 @@ document.getElementById("checkOutBtn").onclick = () => {
 document.getElementById("homeBtn").onclick = () => {
   location.href = "index.html";
 };
+
+// --- FEATURED ITEMS ---
+
+// Sample data for featured items (replace or fetch dynamically as needed)
+const allItems = [
+  { name: "ItemA", price: 29.99, creator: "Creator A", description: "Description A", quantity: 10, image: `assets/ItemA/images/image1.jpg` },
+  { name: "ItemB", price: 19.99, creator: "Creator B", description: "Description B", quantity: 5, image: `assets/ItemB/images/image1.jpg` },
+  { name: "ItemC", price: 39.99, creator: "Creator C", description: "Description C", quantity: 7, image: `assets/ItemC/images/image1.jpg` },
+  { name: "ItemD", price: 24.99, creator: "Creator D", description: "Description D", quantity: 8, image: `assets/ItemD/images/image1.jpg` },
+  { name: "ItemE", price: 14.99, creator: "Creator E", description: "Description E", quantity: 12, image: `assets/ItemE/images/image1.jpg` },
+  { name: "ItemF", price: 49.99, creator: "Creator F", description: "Description F", quantity: 4, image: `assets/ItemF/images/image1.jpg` }
+];
+
+// Exclude current item and shuffle
+const featuredCandidates = allItems.filter(i => i.name !== item.name);
+
+function shuffleArray(arr) {
+  for (let i = arr.length -1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+}
+
+shuffleArray(featuredCandidates);
+
+const featuredToShow = featuredCandidates.slice(0, 4);
+
+const featuredList = document.getElementById("featuredList");
+
+featuredToShow.forEach(fi => {
+  const div = document.createElement("div");
+  div.className = "featured-item";
+  div.title = fi.name;
+  div.innerHTML = `
+    <img src="${fi.image}" alt="${fi.name}" />
+    <div class="featured-item-name">${fi.name}</div>
+    <div class="featured-item-price">$${fi.price.toFixed(2)}</div>
+  `;
+  div.onclick = () => {
+    // Save selected featured item and reload page
+    localStorage.setItem("selectedItem", JSON.stringify({
+      name: fi.name,
+      price: fi.price,
+      creator: fi.creator,
+      description: fi.description,
+      quantity: fi.quantity
+    }));
+    location.reload();
+  };
+  featuredList.appendChild(div);
+});
 </script>
 
 </body>
