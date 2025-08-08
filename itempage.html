@@ -26,22 +26,18 @@
       background: #555;
       color: white;
       border: 1px solid black;
-      border-radius: 0;
       cursor: pointer;
       font-weight: bold;
       z-index: 1000;
-      outline: none;
+      border-radius: 0;
       box-shadow: none;
-    }
-
-    #homeBtn:hover {
-      background: #333;
+      outline: none;
     }
 
     .product-page {
       position: absolute;
       top: 50%;
-      left: 55%;
+      left: 48%; /* shifted slightly left */
       transform: translate(-50%, -50%);
       display: flex;
       gap: 30px;
@@ -50,7 +46,6 @@
       background: transparent;
       padding: 30px 0;
       border-radius: 0;
-      border: 1px solid black;
     }
 
     .product-image-gallery {
@@ -61,26 +56,24 @@
       max-height: 600px;
       width: 400px;
       padding-right: 0;
-      border: 1px solid black;
-
-      /* Hide scrollbar but keep scrollable */
+      border: none;
       scrollbar-width: none; /* Firefox */
-      -ms-overflow-style: none;  /* IE 10+ */
-      overflow-x: hidden; /* No horizontal scroll */
+      -ms-overflow-style: none; /* IE 10+ */
+      overflow-x: hidden;
     }
 
     .product-image-gallery::-webkit-scrollbar {
-      display: none; /* Chrome, Safari, Opera */
+      display: none;
     }
 
     .product-image-gallery img {
       width: 100%;
-      border-radius: 0;
       cursor: pointer;
       object-fit: cover;
       transition: transform 0.2s;
-      border: 1px solid black;
+      border: 1px solid black; /* black outline on images */
       background: white;
+      border-radius: 0;
     }
 
     .product-image-gallery img:hover {
@@ -98,8 +91,8 @@
       font-size: 22px;
       line-height: 1.5;
       padding-left: 10px;
-      border: 1px solid black;
       padding: 20px;
+      /* no border or outline here */
     }
 
     .product-info h1 {
@@ -108,15 +101,15 @@
       text-transform: uppercase;
       font-weight: 900;
       letter-spacing: 1.2px;
-      border-bottom: 1px solid black;
-      padding-bottom: 8px;
+      border: none;
+      padding: 0;
+      margin: 0 0 10px 0;
     }
 
     .product-info p {
       margin: 0;
       font-weight: 600;
-      border-bottom: 1px solid black;
-      padding-bottom: 8px;
+      border: none;
     }
 
     .price {
@@ -124,8 +117,8 @@
       font-weight: 900;
       margin: 10px 0;
       color: green;
-      border-bottom: 1px solid black;
-      padding-bottom: 8px;
+      border: none;
+      padding: 0;
     }
 
     .count {
@@ -140,7 +133,7 @@
       height: 40px;
       font-size: 22px;
       background: #ddd;
-      border: 1px solid black;
+      border: 1px solid black; /* outline on buttons */
       cursor: pointer;
       border-radius: 0;
       font-weight: bold;
@@ -155,25 +148,23 @@
 
     .buy-btn {
       padding: 12px 24px;
-      background: linear-gradient(to bottom, #39b54a, #2e8b3a);
+      background: #00aa00; /* bright green */
       color: white;
-      border: 2px solid #1f5a28;
+      border: 1px solid black; /* black outline */
       border-radius: 0;
       cursor: pointer;
-      font-size: 20px;
+      font-size: 18px;
       font-weight: 900;
       box-shadow: none;
       align-self: flex-start;
-      letter-spacing: 1.2px;
-      text-shadow: 1px 1px 0 #145214;
-      user-select: none;
-      transition: background 0.2s ease;
-      font-family: 'Trebuchet MS', sans-serif;
-      text-transform: uppercase;
+      transition: background 0.3s ease;
+      letter-spacing: 1px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      text-shadow: 0 0 2px #004400;
     }
 
     .buy-btn:hover {
-      background: linear-gradient(to bottom, #2e8b3a, #1f5a28);
+      background: #007700;
     }
 
     .image-modal {
@@ -206,7 +197,7 @@
       transform: translate(-50%, -150%);
       background: white;
       padding: 20px 30px;
-      border-radius: 0;
+      border-radius: 16px;
       box-shadow: 0 8px 24px rgba(0,0,0,0.12);
       text-align: center;
       z-index: 1000;
@@ -268,7 +259,7 @@
         <span id="count">1</span>
         <button id="increase">+</button>
       </div>
-      <button class="buy-btn" id="buyBtn">BUY</button>
+      <button class="buy-btn" id="buyBtn">Buy Now</button>
     </div>
   </div>
 
