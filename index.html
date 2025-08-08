@@ -9,23 +9,25 @@
       background: #f0f0f0;
       padding: 20px;
     }
+
     h1 {
       text-align: center;
       margin-bottom: 30px;
     }
+
     #catalog {
       display: flex;
       flex-wrap: wrap;
       gap: 20px;
       justify-content: center;
     }
+
     .item {
       position: relative;
       overflow: hidden;
-      background: transparent; /* Transparent background */
+      background: transparent;
       padding: 15px;
       border-radius: 12px;
-      /* box-shadow removed */
       width: 200px;
       cursor: pointer;
       text-align: center;
@@ -33,23 +35,26 @@
       flex-direction: column;
       align-items: center;
     }
+
     .item:hover {
-      transform: none; /* No scaling on hover */
+      transform: none;
     }
+
     .item img {
-      width: 100%;
+      width: 170px;
+      height: 170px;
       border-radius: 8px;
       margin-bottom: 12px;
       object-fit: cover;
-      height: 150px;
       display: block;
     }
+
     .item img.hover-img {
       position: absolute;
-      top: 15px; /* same padding as .item */
+      top: 15px;
       left: 15px;
-      width: calc(100% - 30px);
-      height: 150px;
+      width: 170px;
+      height: 170px;
       border-radius: 8px;
       object-fit: cover;
       opacity: 0;
@@ -57,9 +62,11 @@
       pointer-events: none;
       z-index: 2;
     }
+
     .item:hover img.hover-img {
       opacity: 1;
     }
+
     .item-name {
       font-weight: bold;
       margin-bottom: 6px;
@@ -68,6 +75,7 @@
       text-transform: uppercase;
       z-index: 3;
     }
+
     .item-price {
       color: green;
       font-weight: bold;
@@ -88,7 +96,6 @@
       cursor: pointer;
       font-size: 14px;
       text-decoration: none;
-      /* box-shadow removed */
       transition: background-color 0.3s ease;
       user-select: none;
       z-index: 1000;
@@ -139,12 +146,10 @@
           const div = document.createElement('div');
           div.className = "item";
 
-          // Base image
           const baseImg = document.createElement('img');
           baseImg.src = `assets/${name}/icon.png`;
           baseImg.alt = name;
 
-          // Hover image (on top, initially transparent)
           const hoverImg = document.createElement('img');
           hoverImg.src = `assets/${name}/icon2.png`;
           hoverImg.alt = name;
