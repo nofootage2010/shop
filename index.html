@@ -8,11 +8,34 @@
       font-family: Arial, sans-serif;
       background: #f0f0f0;
       padding: 20px;
+      margin: 0;
+    }
+
+    #announcement-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background-color: black;
+      color: white;
+      text-align: center;
+      padding: 8px 0;
+      font-weight: bold;
+      font-size: 14px;
+      z-index: 2000;
+    }
+
+    #logo {
+      display: block;
+      margin: 60px auto 10px auto;
+      width: 100px;
+      height: auto;
     }
 
     h1 {
       text-align: center;
       margin-bottom: 30px;
+      margin-top: 10px;
     }
 
     #catalog {
@@ -73,7 +96,7 @@
     .item-name {
       font-weight: bold;
       margin-top: 12px;
-      font-size: 16px;
+      font-size: 18px;
       color: #222;
       text-transform: uppercase;
     }
@@ -81,7 +104,7 @@
     .item-price {
       color: green;
       font-weight: bold;
-      font-size: 18px;
+      font-size: 20px;
       margin-top: 8px;
     }
 
@@ -108,7 +131,9 @@
   </style>
 </head>
 <body>
+  <div id="announcement-bar">Loading announcement...</div>
   <a id="view-cart-button" href="viewcart.html">View Cart</a>
+  <img src="assets/logo.png" alt="Logo" id="logo" />
   <h1>Catalog</h1>
   <div id="catalog">Loading...</div>
 
@@ -129,6 +154,7 @@
     const db = getFirestore(app);
 
     const catalogContainer = document.getElementById('catalog');
+    const announcementBar = document.getElementById('announcement-bar');
     catalogContainer.innerHTML = '';
 
     async function loadCatalog() {
@@ -188,6 +214,30 @@
       }
     }
 
+    async function loadAnnouncement() {
+      try {
+        const snapshot = await getDocs(collection(db, "announcements"));
+        const announcements = [];
+        snapshot.forEach(doc => {
+          const data = doc.data();
+          if (data.text) {
+            announcements.push(data.text);
+          }
+        });
+
+        if (announcements.length > 0) {
+          const randomIndex = Math.floor(Math.random() * announcements.length);
+          announcementBar.textContent = announcements[randomIndex];
+        } else {
+          announcementBar.textContent = "No announcements available.";
+        }
+      } catch (err) {
+        console.error("Failed to load announcement:", err);
+        announcementBar.textContent = "Failed to load announcements.";
+      }
+    }
+
+    loadAnnouncement();
     loadCatalog();
   </script>
 </body>
