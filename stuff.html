@@ -195,14 +195,19 @@
   </div>
 
 <script>
-  // Background gifs
   const gifCount = 3;
   const bg = document.getElementById("bg");
+
+  // Load random background after DOM is ready
+  window.addEventListener("DOMContentLoaded", () => {
+    setRandomBg();
+    setRandomFunfact();
+  });
+
   function setRandomBg() {
     const index = Math.floor(Math.random() * gifCount) + 1;
     bg.src = `assets/gifbackground/gif${index}.gif`;
   }
-  setRandomBg();
 
   // Fun facts
   const funfacts = [
@@ -212,10 +217,10 @@
     "Fun Fact: Octopuses have three hearts."
   ];
   const funfactEl = document.getElementById("funfact");
+
   function setRandomFunfact() {
     funfactEl.textContent = funfacts[Math.floor(Math.random() * funfacts.length)];
   }
-  setRandomFunfact();
 
   // Panels
   const panels = {
@@ -228,15 +233,20 @@
   let currentPanel = null;
 
   function showPanel(name) {
-    // Move buttons left if not moved, or if clicked same button again
-    if (!buttonPanel.classList.contains("moved") || currentPanel === name) {
-      buttonPanel.classList.toggle("moved");
+    // Prevent toggling animation if clicking the same button
+    if (currentPanel === name) return;
+
+    // Move button panel (if not already moved)
+    if (!buttonPanel.classList.contains("moved")) {
+      buttonPanel.classList.add("moved");
     }
+
     // Hide all panels
     for (const key in panels) {
       panels[key].classList.remove("active");
     }
-    // Show chosen panel
+
+    // Show selected panel
     panels[name].classList.add("active");
     currentPanel = name;
 
