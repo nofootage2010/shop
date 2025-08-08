@@ -24,9 +24,7 @@
 
     .item {
       position: relative;
-      overflow: hidden;
       background: transparent;
-      padding: 15px;
       border-radius: 12px;
       width: 200px;
       cursor: pointer;
@@ -36,36 +34,39 @@
       align-items: center;
     }
 
-    .item img {
+    .image-wrapper {
+      position: relative;
+      width: 170px;
+      height: 170px;
+    }
+
+    .image-wrapper img {
+      position: absolute;
+      top: 0;
+      left: 0;
       width: 170px;
       height: 170px;
       border-radius: 8px;
       object-fit: cover;
-      display: block;
-      transition: transform 0.2s ease;
+      transition: transform 0.2s ease, opacity 0.4s ease;
+    }
+
+    .base-img {
       z-index: 1;
     }
 
-    .item:hover img.base-img {
+    .hover-img {
+      z-index: 2;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .item:hover .hover-img {
+      opacity: 1;
       transform: scale(1.05);
     }
 
-    .item img.hover-img {
-      position: absolute;
-      top: 15px;
-      left: 15px;
-      width: 170px;
-      height: 170px;
-      border-radius: 8px;
-      object-fit: cover;
-      opacity: 0;
-      transition: opacity 0.4s ease, transform 0.2s ease;
-      pointer-events: none;
-      z-index: 2;
-    }
-
-    .item:hover img.hover-img {
-      opacity: 1;
+    .item:hover .base-img {
       transform: scale(1.05);
     }
 
@@ -75,7 +76,6 @@
       font-size: 16px;
       color: #222;
       text-transform: uppercase;
-      z-index: 3;
     }
 
     .item-price {
@@ -83,7 +83,6 @@
       font-weight: bold;
       font-size: 18px;
       margin-top: 8px;
-      z-index: 3;
     }
 
     #view-cart-button {
@@ -148,6 +147,9 @@
           const div = document.createElement('div');
           div.className = "item";
 
+          const imageWrapper = document.createElement('div');
+          imageWrapper.className = "image-wrapper";
+
           const baseImg = document.createElement('img');
           baseImg.src = `assets/${name}/icon.png`;
           baseImg.alt = name;
@@ -158,8 +160,9 @@
           hoverImg.alt = name;
           hoverImg.className = 'hover-img';
 
-          div.appendChild(baseImg);
-          div.appendChild(hoverImg);
+          imageWrapper.appendChild(baseImg);
+          imageWrapper.appendChild(hoverImg);
+          div.appendChild(imageWrapper);
 
           const nameElem = document.createElement('div');
           nameElem.className = "item-name";
