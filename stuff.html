@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Stuff</title>
   <style>
     html, body {
@@ -29,7 +29,7 @@
       height: 100%;
       width: 100%;
       align-items: center;
-      justify-content: center;
+      justify-content: space-between;
       position: relative;
     }
 
@@ -43,7 +43,7 @@
     }
 
     .button-panel.moved {
-      transform: translateX(-200px);
+      transform: translateX(-100px);
     }
 
     .button {
@@ -51,39 +51,38 @@
       font-size: 16px;
       padding: 14px 24px;
       border: 2px solid black;
-      background: linear-gradient(to bottom, #ffffff, #dddddd);
-      text-shadow: 0 1px 0 white;
       cursor: pointer;
-      transition: background 0.3s;
+      transition: 0.3s;
+      text-shadow: 0 1px 0 white;
       box-shadow: 0 0 10px white;
     }
 
-    .button:hover {
-      outline: none;
-    }
-
     .content-panel {
-      position: absolute;
-      left: 50%;
-      transform: translateX(100px);
-      display: none;
-      flex-direction: column;
-      gap: 10px;
-      max-height: 80%;
+      position: relative;
+      width: 60vw;
+      height: 80%;
       overflow-y: auto;
-      background: rgba(255, 255, 255, 0.85);
+      overflow-x: hidden;
+      background: rgba(255, 255, 255, 0.88);
       padding: 20px;
       border: 2px solid black;
+      display: none;
+      z-index: 9;
+    }
+
+    .content-panel::-webkit-scrollbar {
+      display: none;
     }
 
     .content-panel.active {
-      display: flex;
+      display: block;
     }
 
     .art-image {
       width: 100px;
       height: 100px;
       object-fit: cover;
+      margin: 5px;
       cursor: pointer;
     }
 
@@ -106,11 +105,18 @@
 
     #funfact {
       position: absolute;
-      bottom: 20px;
-      text-align: center;
-      width: 100%;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 20px;
+      background: rgba(255,255,0,0.9);
+      color: black;
+      padding: 10px 20px;
+      border: 2px solid black;
       font-weight: bold;
-      text-shadow: 0 1px 0 white;
+      box-shadow: 0 2px 10px black;
+      text-align: center;
+      z-index: 11;
     }
 
     #backBtn {
@@ -122,6 +128,7 @@
       border: 2px solid black;
       cursor: pointer;
       background: linear-gradient(to bottom, #ffffff, #dddddd);
+      z-index: 12;
     }
   </style>
 </head>
@@ -167,6 +174,7 @@
   </div>
 
   <script>
+    // Background GIF randomizer
     const gifs = [
       "assets/gifbackground/gif1.gif",
       "assets/gifbackground/gif2.gif",
@@ -174,6 +182,7 @@
     ];
     document.getElementById("bg").src = gifs[Math.floor(Math.random() * gifs.length)];
 
+    // Fun Fact
     const funfacts = [
       "Fun Fact: Penguins have knees!",
       "Fun Fact: Bananas are berries.",
@@ -182,6 +191,7 @@
     ];
     document.getElementById("funfact").innerText = funfacts[Math.floor(Math.random() * funfacts.length)];
 
+    // Panel toggle
     const panelMap = {
       art: "artPanel",
       favorites: "favoritesPanel",
@@ -212,31 +222,46 @@
         const img = document.createElement("img");
         img.src = `assets/art/art${i}.jpg`;
         img.className = "art-image";
-        img.onclick = () => zoomImage(img.src);
+        img.onclick = (e) => zoomImage(e, img.src);
         artPanel.appendChild(img);
       }
 
       artPanel.dataset.loaded = "true";
     }
 
-    function zoomImage(src) {
+    // Image Zoom with mouse position zoom
+    let currentScale = 1;
+    let mouseX = 0.5;
+    let mouseY = 0.5;
+
+    function zoomImage(e, src) {
       const overlay = document.getElementById("zoomOverlay");
       const zoomImg = document.getElementById("zoomImage");
       zoomImg.src = src;
-      zoomImg.style.transform = "scale(1)";
       overlay.style.display = "flex";
+      currentScale = 1;
+      zoomImg.style.transformOrigin = "center center";
+      zoomImg.style.transform = "scale(1)";
 
-      overlay.onwheel = (e) => {
-        e.preventDefault();
-        const scale = parseFloat(zoomImg.style.transform.replace("scale(", "").replace(")", "")) || 1;
-        const newScale = Math.min(Math.max(0.1, scale + (e.deltaY < 0 ? 0.1 : -0.1)), 5);
-        zoomImg.style.transform = `scale(${newScale})`;
+      overlay.onmousemove = (ev) => {
+        const rect = overlay.getBoundingClientRect();
+        mouseX = (ev.clientX - rect.left) / rect.width;
+        mouseY = (ev.clientY - rect.top) / rect.height;
+        zoomImg.style.transformOrigin = `${mouseX * 100}% ${mouseY * 100}%`;
+      };
+
+      overlay.onwheel = (ev) => {
+        ev.preventDefault();
+        const delta = ev.deltaY < 0 ? 0.1 : -0.1;
+        currentScale = Math.min(Math.max(0.5, currentScale + delta), 3);
+        zoomImg.style.transform = `scale(${currentScale})`;
       };
     }
 
     function closeZoom() {
       document.getElementById("zoomOverlay").style.display = "none";
       document.getElementById("zoomOverlay").onwheel = null;
+      document.getElementById("zoomOverlay").onmousemove = null;
     }
 
     document.addEventListener("keydown", (e) => {
