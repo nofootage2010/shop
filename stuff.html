@@ -4,12 +4,13 @@
   <meta charset="UTF-8" />
   <title>Stuff</title>
   <style>
+    /* Reset margins/padding, blocky 2000s style */
     body {
       font-family: Arial, sans-serif;
       background: #f0f0f0 url("") no-repeat center center fixed;
       background-size: cover;
       margin: 0;
-      padding: 40px 20px 60px;
+      padding: 60px 20px 20px;
       color: #222;
       text-transform: uppercase;
       letter-spacing: 1px;
@@ -18,28 +19,47 @@
       flex-direction: column;
       align-items: center;
       min-height: 100vh;
+      border: 4px solid black;
+      box-sizing: border-box;
+    }
+
+    /* Fun fact box at top, no rounded corners, bold black outline, blocky */
+    #funfact {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background: #d0eaff;
+      border-bottom: 4px solid black;
+      color: #222;
+      padding: 16px 20px;
+      font-weight: 700;
+      font-size: 18px;
+      text-align: center;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      box-sizing: border-box;
+      user-select: none;
+      font-family: Arial, sans-serif;
+      z-index: 1000;
+      border-top: 4px solid black;
+      border-left: 4px solid black;
+      border-right: 4px solid black;
     }
 
     h1 {
       font-weight: 900;
       font-size: 36px;
-      margin-bottom: 40px;
-      text-shadow:
-        0 1px 0 #fff,
-        0 2px 0 #ddd,
-        0 3px 0 #ccc,
-        0 4px 0 #bbb,
-        0 5px 0 #aaa,
-        0 6px 1px rgba(0,0,0,.1),
-        0 0 5px rgba(0,0,0,.1),
-        0 1px 3px rgba(0,0,0,.3),
-        0 3px 5px rgba(0,0,0,.2),
-        0 5px 10px rgba(0,0,0,.25),
-        0 10px 10px rgba(0,0,0,.2),
-        0 20px 20px rgba(0,0,0,.15);
+      margin: 0 0 40px 0;
       color: #1177bb;
       text-align: center;
       user-select: none;
+      letter-spacing: 2px;
+      border: 4px solid black;
+      padding: 10px 20px;
+      background: white;
+      width: 320px;
+      box-sizing: border-box;
     }
 
     .btn-container {
@@ -48,77 +68,61 @@
       gap: 25px;
       width: 320px;
       margin-bottom: 40px;
+      border: 4px solid black;
+      padding: 10px;
+      background: white;
+      box-sizing: border-box;
+      user-select: none;
     }
 
     .button {
-      background: linear-gradient(180deg, #55ccff, #1177bb);
-      border: 2px solid black;
+      background: #1177bb;
+      border: 4px solid black;
       color: white;
       font-weight: 900;
       font-size: 20px;
-      padding: 18px 0;
+      padding: 14px 0;
       cursor: pointer;
       text-align: center;
-      border-radius: 8px;
-      box-shadow:
-        inset 0 2px 5px rgba(255,255,255,0.7),
-        0 4px 7px rgba(0,0,0,0.5);
-      transition: background 0.3s ease;
       user-select: none;
-      text-decoration: none;
-      letter-spacing: 1.2px;
+      letter-spacing: 1.5px;
       text-transform: uppercase;
       font-family: 'Arial Black', Arial, sans-serif;
+      outline-offset: -4px;
+      outline: 4px solid #1177bb;
+      transition: background 0.2s ease;
     }
-    .button:hover {
-      background: linear-gradient(180deg, #66ddff, #2288cc);
-      box-shadow:
-        inset 0 2px 8px rgba(255,255,255,0.9),
-        0 5px 10px rgba(0,0,0,0.7);
+    .button:hover, .button:focus {
+      background: #55ccff;
+      outline-color: #55ccff;
+      color: black;
     }
-
-    #funfact {
-      margin-top: 50px;
-      background: linear-gradient(180deg, #ffffff, #d0eaff);
-      border: 2px solid black;
-      color: #222;
-      padding: 18px 24px;
-      font-weight: 700;
-      font-size: 16px;
-      text-align: center;
-      width: 320px;
-      box-shadow:
-        inset 0 1px 3px rgba(255,255,255,0.8),
-        0 2px 5px rgba(0,0,0,0.2);
-      user-select: none;
-      letter-spacing: 0.8px;
-      text-transform: none;
-      border-radius: 6px;
-      font-family: Arial, sans-serif;
-      min-height: 50px;
+    .button:active {
+      background: #0a4a73;
+      outline-color: #0a4a73;
+      color: white;
     }
 
-    /* Content area */
+    /* Content box hidden by default, with blocky black border */
     #content {
+      display: none;
       width: 90vw;
       max-width: 800px;
       min-height: 250px;
       background: white;
-      border: 2px solid black;
-      border-radius: 8px;
+      border: 4px solid black;
       padding: 20px;
-      box-shadow:
-        inset 0 1px 3px rgba(255,255,255,0.8),
-        0 4px 8px rgba(0,0,0,0.15);
+      box-sizing: border-box;
       color: #222;
       text-transform: none;
       letter-spacing: 0.4px;
       overflow-y: auto;
       max-height: 400px;
       user-select: text;
+      margin-top: 0;
     }
 
-    /* Art gallery styling */
+    /* Art gallery styling, no radius, solid outlines */
     #art-gallery {
       display: flex;
       flex-wrap: wrap;
@@ -129,17 +133,13 @@
       width: 150px;
       height: 150px;
       object-fit: cover;
-      border: 2px solid black;
-      box-shadow:
-        0 0 6px rgba(17,119,187,0.7);
-      border-radius: 6px;
+      border: 4px solid black;
       cursor: pointer;
-      transition: transform 0.2s ease;
+      transition: none;
     }
     #art-gallery img:hover {
-      transform: scale(1.05);
-      box-shadow:
-        0 0 12px rgba(34,136,204,1);
+      outline: 4px solid #55ccff;
+      outline-offset: -4px;
     }
 
     /* Lists styling for favorites & things 2 do */
@@ -154,37 +154,51 @@
       margin-bottom: 8px;
       cursor: default;
     }
+
+    /* Back button separate margin */
+    .back-button {
+      margin-top: 25px;
+      user-select: none;
+      display: block;
+      width: 320px;
+    }
   </style>
 </head>
 <body>
+  <div id="funfact" title="Fun Fact"></div>
+
   <h1>Stuff</h1>
 
   <div class="btn-container">
     <button class="button" id="btn-art">Art Favorites of Us</button>
     <button class="button" id="btn-favorites">Favorites</button>
     <button class="button" id="btn-things">Things 2 Do</button>
-    <a href="index.html" class="button" role="button" style="margin-top: 25px;">Back to Catalog</a>
+    <a href="index.html" class="button back-button" role="button">Back to Catalog</a>
   </div>
 
-  <div id="content">
-    <p style="text-align:center; font-style: italic; color: #666;">Choose a category above to view content.</p>
-  </div>
-
-  <div id="funfact" title="Fun Fact!"></div>
+  <div id="content"></div>
 
   <script>
-    // Fun facts array
+    // How many gif backgrounds in assets/gifbackground folder (must be named gif1.gif, gif2.gif, etc.)
+    const gifCount = 3; // <-- change this number to how many gif backgrounds you have
+    function setRandomGifBackground() {
+      const index = Math.floor(Math.random() * gifCount) + 1;
+      const gifPath = `assets/gifbackground/gif${index}.gif`;
+      document.body.style.backgroundImage = `url('${gifPath}')`;
+    }
+    setRandomGifBackground();
+
+    // Fun facts array - plain text, no emojis
     const funFacts = [
-      "💡 Fun Fact: The first website was published in 1991 by Tim Berners-Lee.",
-      "🎨 Fun Fact: The Mona Lisa has her own mailbox at the Louvre because of all the letters she receives!",
-      "🎵 Fun Fact: 'Happy Birthday' is the most recognized song in the English language.",
-      "📚 Fun Fact: The longest novel ever written is 'In Search of Lost Time' by Marcel Proust.",
-      "🌍 Fun Fact: Earth is the only planet not named after a god.",
-      "🐝 Fun Fact: Honey never spoils and can be edible for thousands of years.",
-      "💻 Fun Fact: The first computer virus was created in 1983 and was called 'Elk Cloner'."
+      "Fun Fact: The first website was published in 1991 by Tim Berners-Lee.",
+      "Fun Fact: The Mona Lisa has her own mailbox at the Louvre because of all the letters she receives.",
+      "Fun Fact: 'Happy Birthday' is the most recognized song in the English language.",
+      "Fun Fact: The longest novel ever written is 'In Search of Lost Time' by Marcel Proust.",
+      "Fun Fact: Earth is the only planet not named after a god.",
+      "Fun Fact: Honey never spoils and can be edible for thousands of years.",
+      "Fun Fact: The first computer virus was created in 1983 and was called 'Elk Cloner'."
     ];
 
-    // Randomly set a fun fact
     const funfactElem = document.getElementById('funfact');
     function setRandomFunFact() {
       const index = Math.floor(Math.random() * funFacts.length);
@@ -198,7 +212,7 @@
     const btnFavorites = document.getElementById('btn-favorites');
     const btnThings = document.getElementById('btn-things');
 
-    // Data for Favorites and Things 2 Do (easy to edit)
+    // Data for Favorites and Things 2 Do
     const favoritesList = [
       "Song: 'Bohemian Rhapsody' by Queen",
       "Song: 'Imagine' by John Lennon",
@@ -221,8 +235,8 @@
     ];
 
     // How many art images you have (must be named art1.jpg, art2.jpg, art3.jpg, etc.)
-    const totalArtImages = 1; // <-- Change this number to how many art images you have
-    const artExtension = "jpg"; // <-- Change this if your art images use a different extension (png, gif, etc.)
+    const totalArtImages = 1; // Change this number for your art count
+    const artExtension = "jpg"; // Change if needed
 
     // Generate art filenames automatically
     function generateArtFilenames(count, ext) {
@@ -232,18 +246,19 @@
       }
       return files;
     }
-
     const artImages = generateArtFilenames(totalArtImages, artExtension);
 
-    // Utility to clear and set content HTML
+    // Clear and hide content
     function clearContent() {
       contentDiv.innerHTML = "";
+      contentDiv.style.display = "none";
     }
 
     // Show Art Gallery
     function showArt() {
       clearContent();
       if (artImages.length === 0) {
+        contentDiv.style.display = "block";
         contentDiv.innerHTML = "<p style='text-align:center;'>No art images available.</p>";
         return;
       }
@@ -259,12 +274,14 @@
       });
 
       contentDiv.appendChild(gallery);
+      contentDiv.style.display = "block";
     }
 
     // Show Favorites List
     function showFavorites() {
       clearContent();
       if (favoritesList.length === 0) {
+        contentDiv.style.display = "block";
         contentDiv.innerHTML = "<p style='text-align:center;'>No favorites added yet.</p>";
         return;
       }
@@ -275,12 +292,14 @@
         ul.appendChild(li);
       });
       contentDiv.appendChild(ul);
+      contentDiv.style.display = "block";
     }
 
     // Show Things 2 Do List
     function showThings() {
       clearContent();
       if (thingsToDoList.length === 0) {
+        contentDiv.style.display = "block";
         contentDiv.innerHTML = "<p style='text-align:center;'>No things to do listed.</p>";
         return;
       }
@@ -291,13 +310,13 @@
         ul.appendChild(li);
       });
       contentDiv.appendChild(ul);
+      contentDiv.style.display = "block";
     }
 
-    // Button event listeners
+    // Button events
     btnArt.addEventListener('click', showArt);
     btnFavorites.addEventListener('click', showFavorites);
     btnThings.addEventListener('click', showThings);
   </script>
 </body>
 </html>
-
