@@ -163,9 +163,8 @@
       text-shadow: 0 1px 0 #0a0;
     }
 
-    #view-cart-button {
+    #view-cart-button, #view-stuff-button {
       position: fixed;
-      top: 60px;
       right: 20px;
       background: linear-gradient(180deg, #55ccff, #1177bb);
       color: white;
@@ -185,16 +184,26 @@
       z-index: 1000;
       text-transform: uppercase;
       letter-spacing: 1px;
+      display: inline-block;
     }
 
-    #view-cart-button:hover {
+    #view-cart-button {
+      top: 60px;
+    }
+
+    #view-cart-button:hover, #view-stuff-button:hover {
       background: linear-gradient(180deg, #66ddff, #2288cc);
+    }
+
+    #view-stuff-button {
+      top: 110px;
     }
   </style>
 </head>
 <body>
   <div id="announcement-bar">Loading announcement...</div>
   <a id="view-cart-button" href="viewcart.html">View Cart</a>
+  <a id="view-stuff-button" href="stuff.html">Stuff</a>
   <img src="assets/logo.png" alt="Logo" id="logo" />
   <h1>Catalog</h1>
 
