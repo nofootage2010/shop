@@ -1,351 +1,301 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Stuff</title>
-<style>
-  html, body {
-    margin: 0; padding: 0; height: 100%;
-    font-family: Arial, sans-serif;
-    background-color: black;
-    overflow: hidden;
-    color: white;
-  }
-  #bg {
-    position: fixed; top: 0; left: 0;
-    width: 100%; height: 100%;
-    object-fit: cover;
-    z-index: -1;
-    user-select: none;
-  }
-  .container {
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    gap: 40px;
-    padding: 0 20px;
-  }
-  .button-panel {
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
-    transition: transform 0.5s ease;
-    user-select: none;
-  }
-  .button-panel.moved {
-    transform: translateX(-180px);
-  }
-  button {
-    background: linear-gradient(180deg, #222, #111);
-    border: 2px solid black;
-    border-radius: 0;
-    padding: 14px 30px;
-    font-weight: 900;
-    font-size: 16px;
-    cursor: pointer;
-    color: white;
-    text-transform: uppercase;
-    letter-spacing: 1.3px;
-    box-shadow:
-      inset 0 2px 6px rgba(255,255,255,0.25),
-      0 0 15px rgba(255,255,255,0.3);
-    transition: box-shadow 0.3s ease;
-  }
-  button:hover, button:focus {
-    outline: none;
-    box-shadow:
-      inset 0 2px 10px rgba(255,255,255,0.6),
-      0 0 25px rgba(255,255,255,0.7);
-  }
-  /* Neon colors for each button */
-  #btnArt {
-    background: linear-gradient(180deg, #1a0aff, #0f0080);
-    box-shadow: 0 0 10px #1a0aff;
-  }
-  #btnFavorites {
-    background: linear-gradient(180deg, #ff0050, #800030);
-    box-shadow: 0 0 10px #ff0050;
-  }
-  #btnTodo {
-    background: linear-gradient(180deg, #00ffcc, #008066);
-    box-shadow: 0 0 10px #00ffcc;
-  }
-  #btnArt:hover {
-    box-shadow: 0 0 20px #3b46ff;
-  }
-  #btnFavorites:hover {
-    box-shadow: 0 0 20px #ff4080;
-  }
-  #btnTodo:hover {
-    box-shadow: 0 0 20px #33ffdb;
-  }
+  <meta charset="UTF-8" />
+  <title>Stuff</title>
+  <style>
+    html, body {
+      margin: 0; padding: 0; height: 100%;
+      font-family: sans-serif;
+      background-color: black;
+      overflow: hidden;
+      color: black;
+    }
 
-  .content-panel {
-    width: 540px;
-    max-height: 80vh;
-    overflow-y: auto;
-    background: rgba(0,0,0,0.5);
-    border: 2px solid black;
-    padding: 16px 22px;
-    box-sizing: border-box;
-    display: none;
-    color: white;
-    user-select: text;
-  }
-  .content-panel.active {
-    display: block;
-  }
-  /* Art images */
-  .art-image {
-    width: 100px;
-    height: 100px;
-    object-fit: cover;
-    margin: 6px;
-    border: 2px solid black;
-    cursor: zoom-in;
-    box-shadow: 0 0 10px #111;
-    transition: box-shadow 0.2s;
-  }
-  .art-image:hover {
-    box-shadow: 0 0 20px #4d7eff;
-  }
+    #bg {
+      position: fixed;
+      top: 0; left: 0;
+      height: 100%; width: 100%;
+      object-fit: cover;
+      z-index: -1;
+    }
 
-  /* Zoom overlay */
-  #zoomOverlay {
-    display: none;
-    position: fixed;
-    top: 0; left: 0;
-    width: 100vw; height: 100vh;
-    background: rgba(0,0,0,0.95);
-    cursor: zoom-out;
-    z-index: 9999;
-    user-select: none;
-    overflow: hidden;
-    justify-content: center;
-    align-items: center;
-    display: flex;
-  }
-  #zoomImage {
-    max-width: 90%;
-    max-height: 90%;
-    transition: transform 0.1s ease;
-    transform-origin: center center;
-    cursor: zoom-out;
-  }
+    .main {
+      display: flex;
+      height: 100%;
+      width: 100%;
+      align-items: center;
+      justify-content: flex-start;
+      position: relative;
+      padding-left: 20px;
+      box-sizing: border-box;
+      gap: 40px;
+    }
 
-  /* Fun fact at bottom center */
-  #funfact {
-    position: fixed;
-    bottom: 12px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(0,0,0,0.7);
-    padding: 12px 20px;
-    border: 2px solid black;
-    font-weight: 700;
-    font-size: 14px;
-    max-width: 90vw;
-    color: #ccf6ff;
-    text-shadow: 0 0 5px #66ccff;
-    user-select: none;
-  }
-  /* Back button */
-  #backBtn {
-    position: fixed;
-    top: 12px;
-    left: 12px;
-    padding: 10px 18px;
-    background: linear-gradient(180deg, #222, #111);
-    border: 2px solid black;
-    font-weight: 900;
-    color: white;
-    cursor: pointer;
-    user-select: none;
-    box-shadow:
-      inset 0 2px 6px rgba(255,255,255,0.25),
-      0 0 15px rgba(255,255,255,0.3);
-    transition: box-shadow 0.3s ease;
-    text-transform: uppercase;
-  }
-  #backBtn:hover, #backBtn:focus {
-    outline: none;
-    box-shadow:
-      inset 0 2px 10px rgba(255,255,255,0.6),
-      0 0 25px rgba(255,255,255,0.7);
-  }
-</style>
+    .button-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      padding: 20px;
+      transition: transform 0.5s ease;
+      z-index: 10;
+      min-width: 160px;
+    }
+
+    .button-panel.moved {
+      transform: translateX(-200px);
+    }
+
+    .button {
+      font-weight: bold;
+      font-size: 16px;
+      padding: 14px 24px;
+      border: 2px solid black;
+      background: white;
+      cursor: pointer;
+      transition: none;
+      box-shadow: none;
+      color: black;
+      text-transform: uppercase;
+      user-select: none;
+    }
+
+    .button:hover {
+      background: #eee;
+      outline: none;
+      box-shadow: none;
+    }
+
+    .content-panel {
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 80%;
+      overflow-y: auto;
+      background: rgba(255, 255, 255, 0.95);
+      padding: 20px;
+      border: 2px solid black;
+      min-width: 520px;
+      max-width: 70vw;
+      box-sizing: border-box;
+      position: relative;
+      z-index: 5;
+    }
+
+    .content-panel.active {
+      display: flex;
+    }
+
+    .art-image {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      cursor: zoom-in;
+      border: 2px solid black;
+      margin: 5px;
+    }
+
+    #zoomOverlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.9);
+      justify-content: center;
+      align-items: center;
+      z-index: 20;
+      cursor: zoom-out;
+    }
+
+    #zoomImage {
+      max-width: 90%;
+      max-height: 90%;
+      transition: transform 0.1s;
+      will-change: transform;
+      user-select: none;
+      pointer-events: none;
+    }
+
+    #funfact {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #fff9b0;
+      padding: 12px 18px;
+      border: 2px solid black;
+      font-weight: bold;
+      color: black;
+      z-index: 15;
+      user-select: none;
+      max-width: 80vw;
+      text-align: center;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+
+    #backBtn {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      font-size: 14px;
+      padding: 6px 10px;
+      border: 2px solid black;
+      cursor: pointer;
+      background: white;
+      z-index: 15;
+      user-select: none;
+      color: black;
+      text-transform: uppercase;
+    }
+  </style>
 </head>
 <body>
 
-<img id="bg" alt="Background" src="">
+  <img id="bg" src="" alt="Background" />
 
-<button id="backBtn" onclick="goBack()">Back</button>
+  <div class="main">
+    <div class="button-panel" id="buttonPanel">
+      <button class="button" onclick="showPanel('art')">Art</button>
+      <button class="button" onclick="showPanel('favorites')">Favorites of Us</button>
+      <button class="button" onclick="showPanel('todo')">Things 2 Do</button>
+    </div>
 
-<div class="container">
-  <div class="button-panel" id="buttonPanel">
-    <button id="btnArt" onclick="showContent('art')">Art</button>
-    <button id="btnFavorites" onclick="showContent('favorites')">Favorites of Us</button>
-    <button id="btnTodo" onclick="showContent('todo')">Things 2 Do</button>
+    <div class="content-panel" id="artPanel"></div>
+
+    <div class="content-panel" id="favoritesPanel">
+      <h2>Our Favorite Stuff</h2>
+      <ul>
+        <li>Song: Electric Love</li>
+        <li>Show: Adventure Time</li>
+        <li>Game: Minecraft</li>
+        <li>Food: Pepperoni Pizza</li>
+      </ul>
+    </div>
+
+    <div class="content-panel" id="todoPanel">
+      <h2>Things To Do</h2>
+      <ul>
+        <li>Draw silly doodles</li>
+        <li>Listen to our playlist</li>
+        <li>Make a silly video</li>
+        <li>Build something in a sandbox game</li>
+        <li>Write a short poem</li>
+        <li>Make a random recipe</li>
+      </ul>
+    </div>
   </div>
 
-  <div class="content-panel" id="artPanel"></div>
-  <div class="content-panel" id="favoritesPanel">
-    <h2>Favorites of Us</h2>
-    <ul>
-      <li>Song: Electric Love</li>
-      <li>Show: Adventure Time</li>
-      <li>Game: Minecraft</li>
-      <li>Food: Pepperoni Pizza</li>
-    </ul>
-  </div>
-  <div class="content-panel" id="todoPanel">
-    <h2>Things 2 Do</h2>
-    <ul>
-      <li>Draw silly doodles</li>
-      <li>Listen to our playlist</li>
-      <li>Make a silly video</li>
-      <li>Write a short poem</li>
-      <li>Try a new recipe</li>
-      <li>Build something in a sandbox game</li>
-    </ul>
-  </div>
-</div>
+  <div id="funfact"></div>
 
-<div id="funfact"></div>
+  <button id="backBtn" onclick="goBack()">Back</button>
 
-<div id="zoomOverlay" onclick="closeZoom()">
-  <img id="zoomImage" src="" alt="Zoomed Art" />
-</div>
+  <div id="zoomOverlay" onclick="closeZoom()">
+    <img id="zoomImage" src="" alt="Zoomed Art" />
+  </div>
 
 <script>
-  // Configurable GIF count
+  // Background gifs
   const gifCount = 3;
-  const gifs = [];
-  for (let i = 1; i <= gifCount; i++) {
-    gifs.push(`assets/gifbackground/gif${i}.gif`);
+  const bg = document.getElementById("bg");
+  function setRandomBg() {
+    const index = Math.floor(Math.random() * gifCount) + 1;
+    bg.src = `assets/gifbackground/gif${index}.gif`;
   }
-  // Set random bg
-  document.getElementById('bg').src = gifs[Math.floor(Math.random() * gifs.length)];
+  setRandomBg();
 
-  // Fun facts array
-  const funFacts = [
-    "Did you know the Eiffel Tower can grow 6 inches in summer?",
-    "Bananas are berries, but strawberries are not.",
-    "Octopuses have three hearts.",
-    "You can hear a blue whale's heartbeat from 2 miles away.",
-    "Sloths can hold their breath longer than dolphins.",
-    "Some cats are allergic to humans.",
-    "Wombat poop is cube-shaped."
+  // Fun facts
+  const funfacts = [
+    "Fun Fact: Penguins have knees!",
+    "Fun Fact: Bananas are berries.",
+    "Fun Fact: You blink 15-20 times a minute!",
+    "Fun Fact: Octopuses have three hearts."
   ];
-
-  // Show random fun fact
-  function showFunFact() {
-    const factElem = document.getElementById('funfact');
-    factElem.textContent = funFacts[Math.floor(Math.random() * funFacts.length)];
+  const funfactEl = document.getElementById("funfact");
+  function setRandomFunfact() {
+    funfactEl.textContent = funfacts[Math.floor(Math.random() * funfacts.length)];
   }
-  showFunFact();
+  setRandomFunfact();
 
-  const buttonPanel = document.getElementById('buttonPanel');
-  const artPanel = document.getElementById('artPanel');
-  const favoritesPanel = document.getElementById('favoritesPanel');
-  const todoPanel = document.getElementById('todoPanel');
+  // Panels
+  const panels = {
+    art: document.getElementById("artPanel"),
+    favorites: document.getElementById("favoritesPanel"),
+    todo: document.getElementById("todoPanel"),
+  };
 
+  const buttonPanel = document.getElementById("buttonPanel");
   let currentPanel = null;
 
-  // Load art images dynamically on demand
-  function loadArtImages() {
-    if (artPanel.dataset.loaded) return;
+  function showPanel(name) {
+    // Move buttons left if not moved, or if clicked same button again
+    if (!buttonPanel.classList.contains("moved") || currentPanel === name) {
+      buttonPanel.classList.toggle("moved");
+    }
+    // Hide all panels
+    for (const key in panels) {
+      panels[key].classList.remove("active");
+    }
+    // Show chosen panel
+    panels[name].classList.add("active");
+    currentPanel = name;
+
+    if (name === "art") loadArt();
+  }
+
+  // Load art images only once
+  let artLoaded = false;
+  function loadArt() {
+    if (artLoaded) return;
+    const artPanel = panels.art;
     for (let i = 1; i <= 9; i++) {
-      const img = document.createElement('img');
+      const img = document.createElement("img");
       img.src = `assets/art/art${i}.jpg`;
+      img.className = "art-image";
       img.alt = `Art ${i}`;
-      img.className = 'art-image';
-      img.onerror = () => img.style.display = 'none';
+      img.onerror = () => img.style.display = "none";
       img.onclick = () => zoomImage(img.src);
       artPanel.appendChild(img);
     }
-    artPanel.dataset.loaded = "true";
+    artLoaded = true;
   }
 
-  // Show content panel + tween buttons left
-  function showContent(panel) {
-    if (currentPanel === panel) {
-      // Same panel clicked: re-trigger tween
-      buttonPanel.classList.remove('moved');
-      setTimeout(() => {
-        buttonPanel.classList.add('moved');
-      }, 50);
-      return;
-    }
-    currentPanel = panel;
-    buttonPanel.classList.add('moved');
+  // Zoom overlay logic
+  const zoomOverlay = document.getElementById("zoomOverlay");
+  const zoomImageEl = document.getElementById("zoomImage");
+  let zoomScale = 1;
 
-    artPanel.style.display = 'none';
-    favoritesPanel.style.display = 'none';
-    todoPanel.style.display = 'none';
-
-    if (panel === 'art') {
-      artPanel.style.display = 'block';
-      loadArtImages();
-    } else if (panel === 'favorites') {
-      favoritesPanel.style.display = 'block';
-    } else if (panel === 'todo') {
-      todoPanel.style.display = 'block';
-    }
-  }
-
-  // Zoom image with scroll to zoom, centered on image, click overlay to close
   function zoomImage(src) {
-    const overlay = document.getElementById('zoomOverlay');
-    const zoomImg = document.getElementById('zoomImage');
-
-    overlay.style.display = 'flex';
-    zoomImg.src = src;
-    zoomImg.style.transform = 'scale(1)';
-    let scale = 1;
-
-    function onWheel(e) {
-      e.preventDefault();
-      scale += e.deltaY * -0.001;
-      scale = Math.min(Math.max(0.5, scale), 5);
-      zoomImg.style.transform = `scale(${scale})`;
-    }
-
-    overlay.addEventListener('wheel', onWheel);
-
-    // Remove zoom on overlay click
-    overlay.onclick = () => {
-      overlay.style.display = 'none';
-      overlay.removeEventListener('wheel', onWheel);
-      currentPanel = null;
-      buttonPanel.classList.remove('moved');
-      artPanel.style.display = 'none';
-      favoritesPanel.style.display = 'none';
-      todoPanel.style.display = 'none';
-    };
-
-    // Escape key closes zoom
-    function escListener(e) {
-      if (e.key === 'Escape') {
-        overlay.style.display = 'none';
-        overlay.removeEventListener('wheel', onWheel);
-        document.removeEventListener('keydown', escListener);
-        currentPanel = null;
-        buttonPanel.classList.remove('moved');
-        artPanel.style.display = 'none';
-        favoritesPanel.style.display = 'none';
-        todoPanel.style.display = 'none';
-      }
-    }
-    document.addEventListener('keydown', escListener, { once: true });
+    zoomImageEl.src = src;
+    zoomScale = 1;
+    zoomImageEl.style.transform = `scale(${zoomScale})`;
+    zoomOverlay.style.display = "flex";
   }
 
-  // Back button function
+  zoomOverlay.onclick = () => {
+    zoomOverlay.style.display = "none";
+  };
+
+  zoomImageEl.onwheel = (e) => {
+    e.preventDefault();
+    zoomScale += e.deltaY * -0.0015;
+    zoomScale = Math.min(Math.max(0.5, zoomScale), 5);
+    zoomImageEl.style.transform = `scale(${zoomScale})`;
+  };
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && zoomOverlay.style.display === "flex") {
+      zoomOverlay.style.display = "none";
+    }
+  });
+
+  function closeZoom() {
+    zoomOverlay.style.display = "none";
+  }
+
+  // Back button
   function goBack() {
-    window.location.href = 'index.html';
+    window.location.href = "index.html";
   }
 </script>
 
