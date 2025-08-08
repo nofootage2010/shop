@@ -7,214 +7,238 @@
   <style>
     body {
       margin: 0;
-      padding: 0;
-      background: linear-gradient(to bottom, #a7d3f5, #e0f0ff);
-      font-family: Comic Sans MS, cursive, sans-serif;
-      overflow-x: hidden;
+      font-family: sans-serif;
+      background: linear-gradient(to bottom, #aee1f9, #ffffff);
+      color: black;
+      overflow: hidden;
     }
 
-    #container {
+    .container {
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 90vh;
+      height: 100vh;
       position: relative;
     }
 
-    #button-panel {
-      background: linear-gradient(180deg, #55ccff, #1177bb);
-      border: 2px solid #004466;
-      box-shadow: 0 0 15px #0005;
-      border-radius: 12px;
-      padding: 20px;
-      width: 250px;
+    .button-panel {
       display: flex;
       flex-direction: column;
-      align-items: center;
-      gap: 20px;
+      gap: 12px;
+      background: transparent;
+      padding: 10px;
+      border: none;
       position: absolute;
       transition: transform 0.6s ease;
-      z-index: 2;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 5;
     }
 
-    .stuff-button {
-      background: linear-gradient(180deg, #66ddff, #2288cc);
-      border: 2px solid #004466;
-      border-radius: 8px;
-      padding: 12px 24px;
-      font-size: 18px;
-      font-weight: bold;
-      color: white;
-      cursor: pointer;
-      text-shadow: 1px 1px 1px #000;
-      width: 100%;
-      transition: background 0.3s ease;
-      text-align: center;
-      user-select: none;
+    .button-panel.moved {
+      transform: translate(-300px, -50%);
     }
 
-    .stuff-button:hover {
-      background: linear-gradient(180deg, #88eeff, #3399dd);
-    }
-
-    #content {
-      margin-left: 280px;
-      flex: 1;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      min-height: 60vh;
-      padding: 20px;
-      z-index: 1;
-    }
-
-    #content img {
-      max-width: 90%;
-      max-height: 70vh;
-      cursor: zoom-in;
-      transition: transform 0.3s ease;
-    }
-
-    #funfact {
-      background: linear-gradient(180deg, #ffcc88, #ffaa44);
-      color: #333;
-      padding: 12px;
-      border-radius: 10px;
-      border: 2px solid #aa7722;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.6), 0 3px 6px rgba(0,0,0,0.4);
-      width: 90%;
-      max-width: 600px;
-      margin: 20px auto;
-      font-weight: bold;
-    }
-
-    #back-link {
-      display: block;
-      text-align: center;
-      margin-top: 10px;
+    button {
+      background: linear-gradient(180deg, #55ccff, #1177bb);
+      color: black;
+      padding: 12px 18px;
+      border: 2px solid black;
       font-size: 16px;
-      text-decoration: none;
-      color: #004466;
+      font-weight: bold;
+      cursor: pointer;
+      text-transform: uppercase;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.7),
+        0 3px 5px rgba(0,0,0,0.4);
+      outline: none;
+      transition: background 0.2s;
+    }
+
+    button:hover {
+      background: linear-gradient(180deg, #66ddff, #2288cc);
+    }
+
+    .content-area {
+      width: 600px;
+      height: 80vh;
+      overflow: auto;
+      background: linear-gradient(180deg, #ffffff, #e0f4ff);
+      border: 2px solid black;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.7),
+        0 3px 5px rgba(0,0,0,0.4);
+      padding: 20px;
+      position: absolute;
+      right: 50px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: none;
+      z-index: 4;
+    }
+
+    .fun-fact {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(180deg, #ffffaa, #ffcc88);
+      padding: 12px 18px;
+      border: 2px solid black;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.7),
+        0 3px 5px rgba(0,0,0,0.4);
       font-weight: bold;
     }
 
-    #back-link:hover {
-      text-decoration: underline;
+    .image-gallery {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+    }
+
+    .image-gallery img {
+      width: 120px;
+      height: auto;
+      cursor: zoom-in;
+      border: 2px solid black;
+    }
+
+    .zoomed {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      max-width: 90vw;
+      max-height: 90vh;
+      transform: translate(-50%, -50%) scale(1);
+      z-index: 10;
+      border: 4px solid black;
+      background: white;
+      cursor: zoom-out;
+    }
+
+    .back-button {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: linear-gradient(180deg, #ffcc55, #dd9933);
+      color: black;
+      padding: 10px 16px;
+      border: 2px solid black;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.7),
+        0 3px 5px rgba(0,0,0,0.4);
+      text-decoration: none;
     }
   </style>
 </head>
 <body>
-  <div id="container">
-    <div id="button-panel">
-      <div class="stuff-button" onclick="showArt()">Art</div>
-      <div class="stuff-button" onclick="showFavorites()">Favorites of Us</div>
-      <div class="stuff-button" onclick="showThings()">Things 2 Do</div>
-    </div>
-    <div id="content">
-      <p>Select a category to see stuff!</p>
-    </div>
+
+<a href="index.html" class="back-button">Back</a>
+
+<div class="container">
+  <div class="button-panel" id="buttonPanel">
+    <button onclick="showContent('art')">Art</button>
+    <button onclick="showContent('favorites')">Favorites of Us</button>
+    <button onclick="showContent('todo')">Things 2 Do</button>
   </div>
 
-  <div id="funfact">Fun Fact: Loading...</div>
-  <a id="back-link" href="index.html">← Back to Home</a>
+  <div class="content-area" id="contentArea">
+    <div id="art" style="display:none;">
+      <div class="image-gallery" id="artGallery"></div>
+    </div>
 
-  <script>
-    const funFacts = [
-      "Bananas are berries, but strawberries aren't!",
-      "A snail can sleep for three years.",
-      "Octopuses have three hearts.",
-      "Honey never spoils.",
-      "Some turtles can breathe through their butts.",
-      "A group of flamingos is called a 'flamboyance'.",
-      "You can't hum while holding your nose."
-    ];
+    <div id="favorites" style="display:none;">
+      <h2>Our Favorite Stuff</h2>
+      <ul>
+        <li>🎵 Song: “Electric Love”</li>
+        <li>📺 Show: “Adventure Time”</li>
+        <li>🎮 Game: “Minecraft”</li>
+        <li>🍕 Food: “Pepperoni Pizza”</li>
+        <!-- Add more easily -->
+      </ul>
+    </div>
 
-    document.getElementById("funfact").textContent = "Fun Fact: " + funFacts[Math.floor(Math.random() * funFacts.length)];
+    <div id="todo" style="display:none;">
+      <h2>Things To Do</h2>
+      <ul>
+        <li>Draw silly doodles</li>
+        <li>Listen to our playlist</li>
+        <li>Make a digital collage</li>
+        <li>Build something in a sandbox game</li>
+        <li>Write a short poem</li>
+        <li>Make a random recipe</li>
+      </ul>
+    </div>
+  </div>
+</div>
 
-    let zoomed = false;
-    let zoomScale = 1;
+<div class="fun-fact" id="funFact">Fun Fact: Loading...</div>
 
-    function clearContent() {
-      document.getElementById("content").innerHTML = '';
+<script>
+  const facts = [
+    "Did you know? The Eiffel Tower can grow 6 inches in summer.",
+    "Bananas are berries, but strawberries aren't!",
+    "Octopuses have three hearts.",
+    "You can hear a blue whale's heartbeat from 2 miles away.",
+    "Sloths can hold their breath longer than dolphins.",
+    "Some cats are allergic to humans.",
+    "Wombat poop is cube-shaped!"
+  ];
+
+  function randomFact() {
+    const index = Math.floor(Math.random() * facts.length);
+    document.getElementById('funFact').textContent = "Fun Fact: " + facts[index];
+  }
+
+  randomFact();
+
+  function showContent(type) {
+    const panel = document.getElementById('buttonPanel');
+    const contentArea = document.getElementById('contentArea');
+    const sections = ['art', 'favorites', 'todo'];
+    sections.forEach(id => document.getElementById(id).style.display = 'none');
+
+    document.getElementById(type).style.display = 'block';
+    contentArea.style.display = 'block';
+    panel.classList.add('moved');
+
+    if (type === 'art') loadArt();
+  }
+
+  function loadArt() {
+    const gallery = document.getElementById('artGallery');
+    gallery.innerHTML = '';
+    for (let i = 1; i <= 10; i++) {
+      const img = document.createElement('img');
+      img.src = `assets/art/art${i}.jpg`;
+      img.alt = `Art ${i}`;
+      img.onerror = () => img.style.display = 'none';
+      img.onclick = () => zoomImage(img.src);
+      gallery.appendChild(img);
     }
+  }
 
-    function animatePanel() {
-      document.getElementById("button-panel").style.transform = "translateX(-260px)";
-    }
+  function zoomImage(src) {
+    const zoomed = document.createElement('img');
+    zoomed.src = src;
+    zoomed.className = 'zoomed';
+    zoomed.onclick = () => zoomed.remove();
+    document.body.appendChild(zoomed);
 
-    function showArt() {
-      clearContent();
-      animatePanel();
+    let scale = 1;
+    zoomed.addEventListener('wheel', e => {
+      e.preventDefault();
+      scale += e.deltaY * -0.001;
+      scale = Math.min(Math.max(.5, scale), 3);
+      zoomed.style.transform = `translate(-50%, -50%) scale(${scale})`;
+    });
+  }
+</script>
 
-      const content = document.getElementById("content");
-
-      // Load art images dynamically
-      const totalArt = 10; // Adjust based on number of art images
-      for (let i = 1; i <= totalArt; i++) {
-        const img = document.createElement("img");
-        img.src = `assets/art/art${i}.jpg`;
-        img.alt = `Art ${i}`;
-        img.style.margin = "10px";
-        img.addEventListener("click", () => {
-          zoomed = !zoomed;
-          zoomScale = zoomed ? 2 : 1;
-          img.style.transform = `scale(${zoomScale})`;
-          img.style.cursor = zoomed ? "zoom-out" : "zoom-in";
-        });
-
-        img.addEventListener("wheel", (e) => {
-          e.preventDefault();
-          zoomScale += e.deltaY * -0.001;
-          zoomScale = Math.min(Math.max(1, zoomScale), 5);
-          img.style.transform = `scale(${zoomScale})`;
-        });
-
-        content.appendChild(img);
-      }
-    }
-
-    function showFavorites() {
-      clearContent();
-      animatePanel();
-
-      const content = document.getElementById("content");
-      const favs = document.createElement("div");
-      favs.innerHTML = `
-        <h2>🎵 Our Favorite Songs</h2>
-        <ul style="text-align: left;">
-          <li>“Bohemian Rhapsody” - Queen</li>
-          <li>“Electric Feel” - MGMT</li>
-          <li>“Blinding Lights” - The Weeknd</li>
-        </ul>
-        <h2>💖 Favorite Things</h2>
-        <ul style="text-align: left;">
-          <li>Pizza and sushi</li>
-          <li>Drawing together</li>
-          <li>Watching the stars</li>
-        </ul>
-      `;
-      content.appendChild(favs);
-    }
-
-    function showThings() {
-      clearContent();
-      animatePanel();
-
-      const content = document.getElementById("content");
-      const list = document.createElement("div");
-      list.innerHTML = `
-        <h2>🎲 Things 2 Do</h2>
-        <ul style="text-align: left;">
-          <li>Draw something random</li>
-          <li>Make a playlist</li>
-          <li>Invent a new game</li>
-          <li>Write a silly story</li>
-          <li>Have a dance party</li>
-        </ul>
-      `;
-      content.appendChild(list);
-    }
-  </script>
 </body>
 </html>
