@@ -1,1 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Stuff</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f0f0 url("") no-repeat center center fixed;
+      background-size: cover;
+      margin: 0;
+      padding: 40px 20px 60px;
+      color: #222;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      user-select: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    h1 {
+      font-weight: 900;
+      font-size: 36px;
+      margin-bottom: 40px;
+      text-shadow:
+        0 1px 0 #fff,
+        0 2px 0 #ddd,
+        0 3px 0 #ccc,
+        0 4px 0 #bbb,
+        0 5px 0 #aaa,
+        0 6px 1px rgba(0,0,0,.1),
+        0 0 5px rgba(0,0,0,.1),
+        0 1px 3px rgba(0,0,0,.3),
+        0 3px 5px rgba(0,0,0,.2),
+        0 5px 10px rgba(0,0,0,.25),
+        0 10px 10px rgba(0,0,0,.2),
+        0 20px 20px rgba(0,0,0,.15);
+      color: #1177bb;
+      text-align: center;
+      user-select: none;
+    }
+
+    .btn-container {
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+      width: 320px;
+      margin-bottom: 40px;
+    }
+
+    .button {
+      background: linear-gradient(180deg, #55ccff, #1177bb);
+      border: 2px solid black;
+      color: white;
+      font-weight: 900;
+      font-size: 20px;
+      padding: 18px 0;
+      cursor: pointer;
+      text-align: center;
+      border-radius: 8px;
+      box-shadow:
+        inset 0 2px 5px rgba(255,255,255,0.7),
+        0 4px 7px rgba(0,0,0,0.5);
+      transition: background 0.3s ease;
+      user-select: none;
+      text-decoration: none;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      font-family: 'Arial Black', Arial, sans-serif;
+    }
+    .button:hover {
+      background: linear-gradient(180deg, #66ddff, #2288cc);
+      box-shadow:
+        inset 0 2px 8px rgba(255,255,255,0.9),
+        0 5px 10px rgba(0,0,0,0.7);
+    }
+
+    #funfact {
+      margin-top: 50px;
+      background: linear-gradient(180deg, #ffffff, #d0eaff);
+      border: 2px solid black;
+      color: #222;
+      padding: 18px 24px;
+      font-weight: 700;
+      font-size: 16px;
+      text-align: center;
+      width: 320px;
+      box-shadow:
+        inset 0 1px 3px rgba(255,255,255,0.8),
+        0 2px 5px rgba(0,0,0,0.2);
+      user-select: none;
+      letter-spacing: 0.8px;
+      text-transform: none;
+      border-radius: 6px;
+      font-family: Arial, sans-serif;
+      min-height: 50px;
+    }
+
+    /* Content area */
+    #content {
+      width: 90vw;
+      max-width: 800px;
+      min-height: 250px;
+      background: white;
+      border: 2px solid black;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow:
+        inset 0 1px 3px rgba(255,255,255,0.8),
+        0 4px 8px rgba(0,0,0,0.15);
+      color: #222;
+      text-transform: none;
+      letter-spacing: 0.4px;
+      overflow-y: auto;
+      max-height: 400px;
+      user-select: text;
+    }
+
+    /* Art gallery styling */
+    #art-gallery {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      justify-content: center;
+    }
+    #art-gallery img {
+      width: 150px;
+      height: 150px;
+      object-fit: cover;
+      border: 2px solid black;
+      box-shadow:
+        0 0 6px rgba(17,119,187,0.7);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+    #art-gallery img:hover {
+      transform: scale(1.05);
+      box-shadow:
+        0 0 12px rgba(34,136,204,1);
+    }
+
+    /* Lists styling for favorites & things 2 do */
+    ul {
+      list-style-type: disc;
+      padding-left: 40px;
+      font-size: 16px;
+      line-height: 1.5;
+      color: #222;
+    }
+    ul li {
+      margin-bottom: 8px;
+      cursor: default;
+    }
+  </style>
+</head>
+<body>
+  <h1>Stuff</h1>
+
+  <div class="btn-container">
+    <button class="button" id="btn-art">Art Favorites of Us</button>
+    <button class="button" id="btn-favorites">Favorites</button>
+    <button class="button" id="btn-things">Things 2 Do</button>
+    <a href="index.html" class="button" role="button" style="margin-top: 25px;">Back to Catalog</a>
+  </div>
+
+  <div id="content">
+    <p style="text-align:center; font-style: italic; color: #666;">Choose a category above to view content.</p>
+  </div>
+
+  <div id="funfact" title="Fun Fact!"></div>
+
+  <script>
+    // Fun facts array
+    const funFacts = [
+      "💡 Fun Fact: The first website was published in 1991 by Tim Berners-Lee.",
+      "🎨 Fun Fact: The Mona Lisa has her own mailbox at the Louvre because of all the letters she receives!",
+      "🎵 Fun Fact: 'Happy Birthday' is the most recognized song in the English language.",
+      "📚 Fun Fact: The longest novel ever written is 'In Search of Lost Time' by Marcel Proust.",
+      "🌍 Fun Fact: Earth is the only planet not named after a god.",
+      "🐝 Fun Fact: Honey never spoils and can be edible for thousands of years.",
+      "💻 Fun Fact: The first computer virus was created in 1983 and was called 'Elk Cloner'."
+    ];
+
+    // Randomly set a fun fact
+    const funfactElem = document.getElementById('funfact');
+    function setRandomFunFact() {
+      const index = Math.floor(Math.random() * funFacts.length);
+      funfactElem.textContent = funFacts[index];
+    }
+    setRandomFunFact();
+
+    // References
+    const contentDiv = document.getElementById('content');
+    const btnArt = document.getElementById('btn-art');
+    const btnFavorites = document.getElementById('btn-favorites');
+    const btnThings = document.getElementById('btn-things');
+
+    // Data for Favorites and Things 2 Do (easy to edit)
+    const favoritesList = [
+      "Song: 'Bohemian Rhapsody' by Queen",
+      "Song: 'Imagine' by John Lennon",
+      "Favorite Movie: The Matrix",
+      "Favorite Food: Pizza",
+      "Favorite Hobby: Coding and Gaming"
+    ];
+
+    const thingsToDoList = [
+      "Read a book you've never read before",
+      "Go for a walk outside",
+      "Try a new recipe",
+      "Listen to your favorite music",
+      "Start a new creative project",
+      "Meditate for 10 minutes",
+      "Watch a documentary",
+      "Call a friend or family member",
+      "Organize your workspace",
+      "Learn a few words in a new language"
+    ];
+
+    // How many art images you have (must be named art1.jpg, art2.jpg, art3.jpg, etc.)
+    const totalArtImages = 5; // <-- Change this number to how many art images you have
+    const artExtension = "jpg"; // <-- Change this if your art images use a different extension (png, gif, etc.)
+
+    // Generate art filenames automatically
+    function generateArtFilenames(count, ext) {
+      const files = [];
+      for(let i=1; i<=count; i++) {
+        files.push(`art${i}.${ext}`);
+      }
+      return files;
+    }
+
+    const artImages = generateArtFilenames(totalArtImages, artExtension);
+
+    // Utility to clear and set content HTML
+    function clearContent() {
+      contentDiv.innerHTML = "";
+    }
+
+    // Show Art Gallery
+    function showArt() {
+      clearContent();
+      if (artImages.length === 0) {
+        contentDiv.innerHTML = "<p style='text-align:center;'>No art images available.</p>";
+        return;
+      }
+      const gallery = document.createElement('div');
+      gallery.id = "art-gallery";
+
+      artImages.forEach(filename => {
+        const img = document.createElement('img');
+        img.src = `assets/art/${filename}`;
+        img.alt = filename;
+        img.title = filename;
+        gallery.appendChild(img);
+      });
+
+      contentDiv.appendChild(gallery);
+    }
+
+    // Show Favorites List
+    function showFavorites() {
+      clearContent();
+      if (favoritesList.length === 0) {
+        contentDiv.innerHTML = "<p style='text-align:center;'>No favorites added yet.</p>";
+        return;
+      }
+      const ul = document.createElement('ul');
+      favoritesList.forEach(fav => {
+        const li = document.createElement('li');
+        li.textContent = fav;
+        ul.appendChild(li);
+      });
+      contentDiv.appendChild(ul);
+    }
+
+    // Show Things 2 Do List
+    function showThings() {
+      clearContent();
+      if (thingsToDoList.length === 0) {
+        contentDiv.innerHTML = "<p style='text-align:center;'>No things to do listed.</p>";
+        return;
+      }
+      const ul = document.createElement('ul');
+      thingsToDoList.forEach(task => {
+        const li = document.createElement('li');
+        li.textContent = task;
+        ul.appendChild(li);
+      });
+      contentDiv.appendChild(ul);
+    }
+
+    // Button event listeners
+    btnArt.addEventListener('click', showArt);
+    btnFavorites.addEventListener('click', showFavorites);
+    btnThings.addEventListener('click', showThings);
+  </script>
+</body>
+</html>
 
