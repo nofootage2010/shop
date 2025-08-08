@@ -13,9 +13,10 @@
       background: #e5e5e5;
       margin: 0;
       padding: 0;
-      height: 100vh;
-      overflow: hidden;
+      min-height: 100vh;
       position: relative;
+      display: flex;
+      flex-direction: column;
     }
 
     /* Home button with glossy style */
@@ -43,17 +44,15 @@
     }
 
     .product-page {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
+      margin: 80px auto 0;
       display: flex;
       gap: 30px;
       width: 90%;
       max-width: 1100px;
       background: transparent;
-      padding: 30px 0;
+      padding: 30px 0 20px 0;
       border-radius: 0;
+      flex: 1 0 auto;
     }
 
     .product-image-gallery {
@@ -264,6 +263,91 @@
     #popup button:hover {
       background: #1e90ffcc;
     }
+
+    /* --- Related items container --- */
+    #related-items-container {
+      margin: 40px auto 40px;
+      width: 90%;
+      max-width: 1100px;
+      border-top: 3px solid black;
+      padding-top: 20px;
+      background: white;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      user-select: none;
+      text-transform: uppercase;
+    }
+
+    #related-items-container h2 {
+      text-align: center;
+      font-weight: 900;
+      letter-spacing: 1.3px;
+      margin-bottom: 20px;
+      color: #222;
+      font-size: 24px;
+    }
+
+    #related-items {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+    }
+
+    #related-items .item {
+      background: #fff;
+      border: 2px solid black;
+      width: 150px;
+      cursor: pointer;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      border-radius: 0;
+      box-shadow: none;
+      padding: 8px;
+      font-weight: 700;
+      color: #222;
+      font-size: 14px;
+      transition: background-color 0.2s ease;
+    }
+    #related-items .item:hover {
+      background-color: #e6ffe6;
+    }
+
+    #related-items .image-wrapper {
+      width: 130px;
+      height: 130px;
+      border: 1px solid black;
+      margin-bottom: 8px;
+    }
+
+    #related-items .image-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      user-select: none;
+      transition: transform 0.2s ease, opacity 0.4s ease;
+      border-radius: 0;
+      border: none;
+      position: relative;
+      z-index: 1;
+    }
+
+    #related-items .item-name {
+      font-weight: 900;
+      font-size: 14px;
+      margin: 0;
+      user-select: none;
+    }
+
+    #related-items .item-price {
+      color: green;
+      font-weight: 900;
+      font-size: 14px;
+      margin: 4px 0 0 0;
+      text-shadow: 0 1px 0 #0a0;
+    }
+
   </style>
 </head>
 <body>
@@ -287,6 +371,12 @@
     </div>
   </div>
 
+  <!-- Related Items Section -->
+  <section id="related-items-container" aria-label="Related Items">
+    <h2>More Items</h2>
+    <div id="related-items">Loading related items...</div>
+  </section>
+
   <div class="image-modal" id="imageModal">
     <img id="modalImage" src="" alt="Large preview" />
   </div>
@@ -298,142 +388,240 @@
     <button id="checkOutBtn">Check Out</button>
   </div>
 
-<script>
-const item = JSON.parse(localStorage.getItem("selectedItem"));
-if (!item) {
-  alert("No item selected.");
-  location.href = "index.html";
-}
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+  import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
-document.getElementById("item-name").textContent = item.name;
-document.getElementById("item-creator").textContent = item.creator || "Unknown";
-document.getElementById("item-price").textContent = `$${parseFloat(item.price).toFixed(2)} USD`;
-document.getElementById("item-desc").textContent = item.description || "No description.";
-document.getElementById("item-quantity").textContent = item.quantity;
-
-const gallery = document.getElementById("imageGallery");
-const basePath = `assets/${item.name}/images/`;
-
-for (let i = 1; i <= 5; i++) {
-  const path = `${basePath}image${i}.jpg`;
-  const img = new Image();
-  img.onload = () => {
-    img.onclick = () => {
-      const modal = document.getElementById("imageModal");
-      const modalImage = document.getElementById("modalImage");
-      modalImage.src = path;
-      modalImage.style.transform = "scale(1)";
-      modalImage.style.transformOrigin = "center center";
-      modal.style.display = "flex";
-      zoomLevel = 1;
-    };
-    gallery.appendChild(img);
+  const firebaseConfig = {
+    apiKey: "AIzaSyABT1dlkE7m0k9pLtP_l5mhk10NRlNoDb8",
+    authDomain: "nofootage2010.firebaseapp.com",
+    projectId: "nofootage2010",
+    storageBucket: "nofootage2010.firebasestorage.app",
+    messagingSenderId: "1098446374131",
+    appId: "1:1098446374131:web:499c1e6a2d5d781adae386"
   };
-  img.onerror = () => {};
-  img.src = path;
-}
 
-document.getElementById("imageModal").onclick = () => {
-  document.getElementById("imageModal").style.display = "none";
-};
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
 
-let zoomLevel = 1;
-const modalImage = document.getElementById("modalImage");
-
-modalImage.addEventListener("wheel", (e) => {
-  e.preventDefault();
-  const rect = modalImage.getBoundingClientRect();
-  const offsetX = e.clientX - rect.left;
-  const offsetY = e.clientY - rect.top;
-  const xPercent = (offsetX / rect.width) * 100;
-  const yPercent = (offsetY / rect.height) * 100;
-  modalImage.style.transformOrigin = `${xPercent}% ${yPercent}%`;
-
-  zoomLevel += e.deltaY < 0 ? 0.1 : -0.1;
-  zoomLevel = Math.max(0.5, Math.min(zoomLevel, 3));
-  modalImage.style.transform = `scale(${zoomLevel})`;
-});
-
-let count = 1;
-const countDisplay = document.getElementById("count");
-
-document.getElementById("increase").onclick = () => {
-  if (count < item.quantity) {
-    count++;
-    countDisplay.textContent = count;
-  }
-};
-
-document.getElementById("decrease").onclick = () => {
-  if (count > 1) {
-    count--;
-    countDisplay.textContent = count;
-  }
-};
-
-function getRandomOffset(max) {
-  return (Math.random() * 2 - 1) * max;
-}
-
-document.getElementById("buyBtn").onclick = () => {
-  const cart = JSON.parse(localStorage.getItem("cart")) || [];
-  const existing = cart.find(i => i.name === item.name);
-
-  if (existing) {
-    existing.quantity = Math.min(existing.quantity + count, item.quantity);
-  } else {
-    cart.push({
-      name: item.name,
-      price: item.price,
-      quantity: count,
-      max: item.quantity
-    });
+  const item = JSON.parse(localStorage.getItem("selectedItem"));
+  if (!item) {
+    alert("No item selected.");
+    location.href = "index.html";
   }
 
-  localStorage.setItem("cart", JSON.stringify(cart));
-  const popup = document.getElementById("popup");
-  document.getElementById("popup-message").textContent = `Added ${count}x ${item.name} to cart`;
+  // Set page title to item name
+  document.title = item.name + " - Item Page";
 
-  const baseTopPercent = 25;
-  const baseLeftPercent = 70;
-  const vpWidth = window.innerWidth;
-  const vpHeight = window.innerHeight;
+  // Populate main product info
+  document.getElementById("item-name").textContent = item.name;
+  document.getElementById("item-creator").textContent = item.creator || "Unknown";
+  document.getElementById("item-price").textContent = `$${parseFloat(item.price).toFixed(2)} USD`;
+  document.getElementById("item-desc").textContent = item.description || "No description.";
+  document.getElementById("item-quantity").textContent = item.quantity;
 
-  const offsetX = getRandomOffset(10);
-  const offsetY = getRandomOffset(10);
+  // Load main images (up to 5)
+  const gallery = document.getElementById("imageGallery");
+  const basePath = `assets/${item.name}/images/`;
 
-  let topPx = (baseTopPercent / 100) * vpHeight + offsetY;
-  let leftPx = (baseLeftPercent / 100) * vpWidth + offsetX;
+  for (let i = 1; i <= 5; i++) {
+    const path = `${basePath}image${i}.jpg`;
+    const img = new Image();
+    img.onload = () => {
+      img.onclick = () => {
+        const modal = document.getElementById("imageModal");
+        const modalImage = document.getElementById("modalImage");
+        modalImage.src = path;
+        modalImage.style.transform = "scale(1)";
+        modalImage.style.transformOrigin = "center center";
+        modal.style.display = "flex";
+        zoomLevel = 1;
+      };
+      gallery.appendChild(img);
+    };
+    img.onerror = () => {};
+    img.src = path;
+  }
 
-  topPx = Math.min(Math.max(50, topPx), vpHeight - 50);
-  leftPx = Math.min(Math.max(100, leftPx), vpWidth - 100);
+  // Modal zooming
+  document.getElementById("imageModal").onclick = () => {
+    document.getElementById("imageModal").style.display = "none";
+  };
 
-  const topPercent = (topPx / vpHeight) * 100;
-  const leftPercent = (leftPx / vpWidth) * 100;
+  let zoomLevel = 1;
+  const modalImage = document.getElementById("modalImage");
 
-  popup.style.top = topPercent + '%';
-  popup.style.left = leftPercent + '%';
-  popup.classList.add("show");
-};
+  modalImage.addEventListener("wheel", (e) => {
+    e.preventDefault();
+    const rect = modalImage.getBoundingClientRect();
+    const offsetX = e.clientX - rect.left;
+    const offsetY = e.clientY - rect.top;
+    const xPercent = (offsetX / rect.width) * 100;
+    const yPercent = (offsetY / rect.height) * 100;
+    modalImage.style.transformOrigin = `${xPercent}% ${yPercent}%`;
 
-document.getElementById("continueBtn").onclick = () => {
-  const popup = document.getElementById("popup");
-  popup.classList.remove("show");
-  popup.style.top = '25%';
-  popup.style.left = '70%';
-};
+    zoomLevel += e.deltaY < 0 ? 0.1 : -0.1;
+    zoomLevel = Math.max(0.5, Math.min(zoomLevel, 3));
+    modalImage.style.transform = `scale(${zoomLevel})`;
+  });
 
-document.getElementById("viewCartBtn").onclick = () => {
-  location.href = "viewcart.html";
-};
+  // Quantity control
+  let count = 1;
+  const countDisplay = document.getElementById("count");
 
-document.getElementById("checkOutBtn").onclick = () => {
-  location.href = "cart.html";
-};
+  document.getElementById("increase").onclick = () => {
+    if (count < item.quantity) {
+      count++;
+      countDisplay.textContent = count;
+    }
+  };
 
-document.getElementById("homeBtn").onclick = () => {
-  location.href = "index.html";
-};
+  document.getElementById("decrease").onclick = () => {
+    if (count > 1) {
+      count--;
+      countDisplay.textContent = count;
+    }
+  };
+
+  // Add to cart handler
+  function addToCart() {
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+    const existing = cart.find(i => i.name === item.name);
+
+    if (existing) {
+      existing.quantity = Math.min(existing.quantity + count, item.quantity);
+    } else {
+      cart.push({
+        name: item.name,
+        price: item.price,
+        quantity: count,
+        max: item.quantity
+      });
+    }
+
+    localStorage.setItem("cart", JSON.stringify(cart));
+    const popup = document.getElementById("popup");
+    document.getElementById("popup-message").textContent = `Added ${count}x ${item.name} to cart`;
+
+    // Random popup position near bottom right
+    const baseTopPercent = 75;
+    const baseLeftPercent = 70;
+    const vpWidth = window.innerWidth;
+    const vpHeight = window.innerHeight;
+
+    const getRandomOffset = (max) => (Math.random() * 2 - 1) * max;
+
+    const offsetX = getRandomOffset(10);
+    const offsetY = getRandomOffset(10);
+
+    let topPx = (baseTopPercent / 100) * vpHeight + offsetY;
+    let leftPx = (baseLeftPercent / 100) * vpWidth + offsetX;
+
+    topPx = Math.min(Math.max(50, topPx), vpHeight - 50);
+    leftPx = Math.min(Math.max(100, leftPx), vpWidth - 100);
+
+    const topPercent = (topPx / vpHeight) * 100;
+    const leftPercent = (leftPx / vpWidth) * 100;
+
+    popup.style.top = topPercent + '%';
+    popup.style.left = leftPercent + '%';
+    popup.classList.add("show");
+  }
+
+  document.getElementById("buyBtn").onclick = addToCart;
+
+  // Popup buttons
+  document.getElementById("continueBtn").onclick = () => {
+    const popup = document.getElementById("popup");
+    popup.classList.remove("show");
+    popup.style.top = '25%';
+    popup.style.left = '70%';
+  };
+
+  document.getElementById("viewCartBtn").onclick = () => {
+    location.href = "viewcart.html";
+  };
+
+  document.getElementById("checkOutBtn").onclick = () => {
+    location.href = "cart.html";
+  };
+
+  document.getElementById("homeBtn").onclick = () => {
+    location.href = "index.html";
+  };
+
+  // --- Related Items Section ---
+
+  async function loadRelatedItems() {
+    const container = document.getElementById("related-items");
+    container.textContent = "Loading related items...";
+
+    try {
+      const querySnapshot = await getDocs(collection(db, "items"));
+      const items = [];
+      querySnapshot.forEach(doc => {
+        const data = doc.data();
+        // Push only if it has a name, price, and quantity (filter out incomplete)
+        if (data.name && data.price && data.quantity) {
+          items.push(data);
+        }
+      });
+
+      if (items.length === 0) {
+        container.textContent = "No items found.";
+        return;
+      }
+
+      // Clear container
+      container.textContent = "";
+
+      items.forEach(it => {
+        // Skip current item
+        if (it.name === item.name) return;
+
+        const div = document.createElement("div");
+        div.className = "item";
+
+        // Image wrapper & image (fallback if no images)
+        const imgWrapper = document.createElement("div");
+        imgWrapper.className = "image-wrapper";
+
+        const img = new Image();
+        img.alt = it.name;
+        img.src = `assets/${it.name}/images/image1.jpg`;
+        img.onerror = () => {
+          img.src = "assets/default-image.jpg"; // fallback image you can add to your assets
+        };
+        imgWrapper.appendChild(img);
+
+        div.appendChild(imgWrapper);
+
+        const nameEl = document.createElement("p");
+        nameEl.className = "item-name";
+        nameEl.textContent = it.name;
+        div.appendChild(nameEl);
+
+        const priceEl = document.createElement("p");
+        priceEl.className = "item-price";
+        priceEl.textContent = `$${parseFloat(it.price).toFixed(2)} USD`;
+        div.appendChild(priceEl);
+
+        // Click loads that item page by storing to localStorage then reloading page
+        div.onclick = () => {
+          localStorage.setItem("selectedItem", JSON.stringify(it));
+          location.reload();  // reload same page with new item
+        };
+
+        container.appendChild(div);
+      });
+    } catch (err) {
+      console.error("Error loading related items:", err);
+      container.textContent = "Failed to load related items.";
+    }
+  }
+
+  loadRelatedItems();
+
 </script>
 
 </body>
