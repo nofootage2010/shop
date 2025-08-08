@@ -8,9 +8,17 @@
     body {
       margin: 0;
       font-family: sans-serif;
-      background: linear-gradient(to bottom, #aee1f9, #ffffff);
       color: black;
       overflow: hidden;
+    }
+
+    #background {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
+      z-index: -1;
     }
 
     .container {
@@ -41,24 +49,26 @@
     }
 
     button {
-      background: linear-gradient(180deg, #55ccff, #1177bb);
-      color: black;
       padding: 12px 18px;
       border: 2px solid black;
       font-size: 16px;
       font-weight: bold;
       cursor: pointer;
       text-transform: uppercase;
+      outline: none;
+      transition: background 0.2s;
       box-shadow:
         inset 0 1px 0 rgba(255,255,255,0.7),
         0 3px 5px rgba(0,0,0,0.4);
-      outline: none;
-      transition: background 0.2s;
     }
 
     button:hover {
-      background: linear-gradient(180deg, #66ddff, #2288cc);
+      filter: brightness(1.1);
     }
+
+    .neon1 { background: linear-gradient(180deg, #39ff14, #00cc00); }
+    .neon2 { background: linear-gradient(180deg, #ff6ec7, #ff1493); }
+    .neon3 { background: linear-gradient(180deg, #00ffff, #008b8b); }
 
     .content-area {
       width: 600px;
@@ -71,7 +81,7 @@
         0 3px 5px rgba(0,0,0,0.4);
       padding: 20px;
       position: absolute;
-      right: 50px;
+      left: 300px;
       top: 50%;
       transform: translateY(-50%);
       display: none;
@@ -133,18 +143,20 @@
         inset 0 1px 0 rgba(255,255,255,0.7),
         0 3px 5px rgba(0,0,0,0.4);
       text-decoration: none;
+      z-index: 6;
     }
   </style>
 </head>
 <body>
 
+<video autoplay muted loop id="background"></video>
 <a href="index.html" class="back-button">Back</a>
 
 <div class="container">
   <div class="button-panel" id="buttonPanel">
-    <button onclick="showContent('art')">Art</button>
-    <button onclick="showContent('favorites')">Favorites of Us</button>
-    <button onclick="showContent('todo')">Things 2 Do</button>
+    <button class="neon1" onclick="showContent('art')">Art</button>
+    <button class="neon2" onclick="showContent('favorites')">Favorites of Us</button>
+    <button class="neon3" onclick="showContent('todo')">Things 2 Do</button>
   </div>
 
   <div class="content-area" id="contentArea">
@@ -159,7 +171,6 @@
         <li>📺 Show: “Adventure Time”</li>
         <li>🎮 Game: “Minecraft”</li>
         <li>🍕 Food: “Pepperoni Pizza”</li>
-        <!-- Add more easily -->
       </ul>
     </div>
 
@@ -180,6 +191,15 @@
 <div class="fun-fact" id="funFact">Fun Fact: Loading...</div>
 
 <script>
+  const gifList = [
+    "assets/gifbackground/bg1.gif",
+    "assets/gifbackground/bg2.gif",
+    "assets/gifbackground/bg3.gif"
+  ];
+
+  const bg = document.getElementById("background");
+  bg.src = gifList[Math.floor(Math.random() * gifList.length)];
+
   const facts = [
     "Did you know? The Eiffel Tower can grow 6 inches in summer.",
     "Bananas are berries, but strawberries aren't!",
@@ -197,15 +217,26 @@
 
   randomFact();
 
+  let lastType = "";
   function showContent(type) {
     const panel = document.getElementById('buttonPanel');
     const contentArea = document.getElementById('contentArea');
     const sections = ['art', 'favorites', 'todo'];
+
+    // Reset display
     sections.forEach(id => document.getElementById(id).style.display = 'none');
 
+    // Show selected
     document.getElementById(type).style.display = 'block';
     contentArea.style.display = 'block';
+
+    // Animate again even if same
+    if (lastType === type) {
+      panel.classList.remove('moved');
+      void panel.offsetWidth; // force reflow
+    }
     panel.classList.add('moved');
+    lastType = type;
 
     if (type === 'art') loadArt();
   }
@@ -234,7 +265,7 @@
     zoomed.addEventListener('wheel', e => {
       e.preventDefault();
       scale += e.deltaY * -0.001;
-      scale = Math.min(Math.max(.5, scale), 3);
+      scale = Math.min(Math.max(0.5, scale), 3);
       zoomed.style.transform = `translate(-50%, -50%) scale(${scale})`;
     });
   }
