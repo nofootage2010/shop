@@ -19,7 +19,6 @@
       flex-direction: column;
     }
 
-    /* Home button with glossy style */
     #homeBtn {
       position: fixed;
       top: 15px;
@@ -152,7 +151,6 @@
       background: #bbb;
     }
 
-    /* Buy button with early 2000s glossy green style */
     .buy-btn {
       padding: 12px 24px;
       background: linear-gradient(180deg, #55cc55, #117711);
@@ -411,7 +409,7 @@
   }
 
   // Set page title to item name
-  document.title = item.name + " - Item Page";
+  document.title = item.name + " - Page";
 
   // Populate main product info
   document.getElementById("item-name").textContent = item.name;
@@ -589,9 +587,6 @@
         const img = new Image();
         img.alt = it.name;
         img.src = `assets/${it.name}/images/image1.jpg`;
-        img.onerror = () => {
-          img.src = "assets/default-image.jpg"; // fallback image you can add to your assets
-        };
         imgWrapper.appendChild(img);
 
         div.appendChild(imgWrapper);
