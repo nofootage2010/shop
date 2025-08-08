@@ -2,321 +2,219 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Stuff</title>
   <style>
-    /* Reset margins/padding, blocky 2000s style */
     body {
-      font-family: Arial, sans-serif;
-      background: #f0f0f0 url("") no-repeat center center fixed;
-      background-size: cover;
       margin: 0;
-      padding: 60px 20px 20px;
-      color: #222;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      user-select: none;
+      padding: 0;
+      background: linear-gradient(to bottom, #a7d3f5, #e0f0ff);
+      font-family: Comic Sans MS, cursive, sans-serif;
+      overflow-x: hidden;
+    }
+
+    #container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 90vh;
+      position: relative;
+    }
+
+    #button-panel {
+      background: linear-gradient(180deg, #55ccff, #1177bb);
+      border: 2px solid #004466;
+      box-shadow: 0 0 15px #0005;
+      border-radius: 12px;
+      padding: 20px;
+      width: 250px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      min-height: 100vh;
-      border: 4px solid black;
-      box-sizing: border-box;
+      gap: 20px;
+      position: absolute;
+      transition: transform 0.6s ease;
+      z-index: 2;
     }
 
-    /* Fun fact box at top, no rounded corners, bold black outline, blocky */
-    #funfact {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      background: #d0eaff;
-      border-bottom: 4px solid black;
-      color: #222;
-      padding: 16px 20px;
-      font-weight: 700;
+    .stuff-button {
+      background: linear-gradient(180deg, #66ddff, #2288cc);
+      border: 2px solid #004466;
+      border-radius: 8px;
+      padding: 12px 24px;
       font-size: 18px;
-      text-align: center;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      box-sizing: border-box;
-      user-select: none;
-      font-family: Arial, sans-serif;
-      z-index: 1000;
-      border-top: 4px solid black;
-      border-left: 4px solid black;
-      border-right: 4px solid black;
-    }
-
-    h1 {
-      font-weight: 900;
-      font-size: 36px;
-      margin: 0 0 40px 0;
-      color: #1177bb;
-      text-align: center;
-      user-select: none;
-      letter-spacing: 2px;
-      border: 4px solid black;
-      padding: 10px 20px;
-      background: white;
-      width: 320px;
-      box-sizing: border-box;
-    }
-
-    .btn-container {
-      display: flex;
-      flex-direction: column;
-      gap: 25px;
-      width: 320px;
-      margin-bottom: 40px;
-      border: 4px solid black;
-      padding: 10px;
-      background: white;
-      box-sizing: border-box;
-      user-select: none;
-    }
-
-    .button {
-      background: #1177bb;
-      border: 4px solid black;
+      font-weight: bold;
       color: white;
-      font-weight: 900;
-      font-size: 20px;
-      padding: 14px 0;
       cursor: pointer;
+      text-shadow: 1px 1px 1px #000;
+      width: 100%;
+      transition: background 0.3s ease;
       text-align: center;
       user-select: none;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      font-family: 'Arial Black', Arial, sans-serif;
-      outline-offset: -4px;
-      outline: 4px solid #1177bb;
-      transition: background 0.2s ease;
-    }
-    .button:hover, .button:focus {
-      background: #55ccff;
-      outline-color: #55ccff;
-      color: black;
-    }
-    .button:active {
-      background: #0a4a73;
-      outline-color: #0a4a73;
-      color: white;
     }
 
-    /* Content box hidden by default, with blocky black border */
+    .stuff-button:hover {
+      background: linear-gradient(180deg, #88eeff, #3399dd);
+    }
+
     #content {
-      display: none;
-      width: 90vw;
-      max-width: 800px;
-      min-height: 250px;
-      background: white;
-      border: 4px solid black;
-      padding: 20px;
-      box-sizing: border-box;
-      color: #222;
-      text-transform: none;
-      letter-spacing: 0.4px;
-      overflow-y: auto;
-      max-height: 400px;
-      user-select: text;
-      margin-top: 0;
-    }
-
-    /* Art gallery styling, no radius, solid outlines */
-    #art-gallery {
+      margin-left: 280px;
+      flex: 1;
       display: flex;
-      flex-wrap: wrap;
-      gap: 15px;
       justify-content: center;
-    }
-    #art-gallery img {
-      width: 150px;
-      height: 150px;
-      object-fit: cover;
-      border: 4px solid black;
-      cursor: pointer;
-      transition: none;
-    }
-    #art-gallery img:hover {
-      outline: 4px solid #55ccff;
-      outline-offset: -4px;
+      align-items: center;
+      text-align: center;
+      min-height: 60vh;
+      padding: 20px;
+      z-index: 1;
     }
 
-    /* Lists styling for favorites & things 2 do */
-    ul {
-      list-style-type: disc;
-      padding-left: 40px;
-      font-size: 16px;
-      line-height: 1.5;
-      color: #222;
-    }
-    ul li {
-      margin-bottom: 8px;
-      cursor: default;
+    #content img {
+      max-width: 90%;
+      max-height: 70vh;
+      cursor: zoom-in;
+      transition: transform 0.3s ease;
     }
 
-    /* Back button separate margin */
-    .back-button {
-      margin-top: 25px;
-      user-select: none;
+    #funfact {
+      background: linear-gradient(180deg, #ffcc88, #ffaa44);
+      color: #333;
+      padding: 12px;
+      border-radius: 10px;
+      border: 2px solid #aa7722;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.6), 0 3px 6px rgba(0,0,0,0.4);
+      width: 90%;
+      max-width: 600px;
+      margin: 20px auto;
+      font-weight: bold;
+    }
+
+    #back-link {
       display: block;
-      width: 320px;
+      text-align: center;
+      margin-top: 10px;
+      font-size: 16px;
+      text-decoration: none;
+      color: #004466;
+      font-weight: bold;
+    }
+
+    #back-link:hover {
+      text-decoration: underline;
     }
   </style>
 </head>
 <body>
-  <div id="funfact" title="Fun Fact"></div>
-
-  <h1>Stuff</h1>
-
-  <div class="btn-container">
-    <button class="button" id="btn-art">Art Favorites of Us</button>
-    <button class="button" id="btn-favorites">Favorites</button>
-    <button class="button" id="btn-things">Things 2 Do</button>
-    <a href="index.html" class="button back-button" role="button">Back to Catalog</a>
+  <div id="container">
+    <div id="button-panel">
+      <div class="stuff-button" onclick="showArt()">Art</div>
+      <div class="stuff-button" onclick="showFavorites()">Favorites of Us</div>
+      <div class="stuff-button" onclick="showThings()">Things 2 Do</div>
+    </div>
+    <div id="content">
+      <p>Select a category to see stuff!</p>
+    </div>
   </div>
 
-  <div id="content"></div>
+  <div id="funfact">Fun Fact: Loading...</div>
+  <a id="back-link" href="index.html">← Back to Home</a>
 
   <script>
-    // How many gif backgrounds in assets/gifbackground folder (must be named gif1.gif, gif2.gif, etc.)
-    const gifCount = 3; // <-- change this number to how many gif backgrounds you have
-    function setRandomGifBackground() {
-      const index = Math.floor(Math.random() * gifCount) + 1;
-      const gifPath = `assets/gifbackground/gif${index}.gif`;
-      document.body.style.backgroundImage = `url('${gifPath}')`;
-    }
-    setRandomGifBackground();
-
-    // Fun facts array - plain text, no emojis
     const funFacts = [
-      "Fun Fact: The first website was published in 1991 by Tim Berners-Lee.",
-      "Fun Fact: The Mona Lisa has her own mailbox at the Louvre because of all the letters she receives.",
-      "Fun Fact: 'Happy Birthday' is the most recognized song in the English language.",
-      "Fun Fact: The longest novel ever written is 'In Search of Lost Time' by Marcel Proust.",
-      "Fun Fact: Earth is the only planet not named after a god.",
-      "Fun Fact: Honey never spoils and can be edible for thousands of years.",
-      "Fun Fact: The first computer virus was created in 1983 and was called 'Elk Cloner'."
+      "Bananas are berries, but strawberries aren't!",
+      "A snail can sleep for three years.",
+      "Octopuses have three hearts.",
+      "Honey never spoils.",
+      "Some turtles can breathe through their butts.",
+      "A group of flamingos is called a 'flamboyance'.",
+      "You can't hum while holding your nose."
     ];
 
-    const funfactElem = document.getElementById('funfact');
-    function setRandomFunFact() {
-      const index = Math.floor(Math.random() * funFacts.length);
-      funfactElem.textContent = funFacts[index];
-    }
-    setRandomFunFact();
+    document.getElementById("funfact").textContent = "Fun Fact: " + funFacts[Math.floor(Math.random() * funFacts.length)];
 
-    // References
-    const contentDiv = document.getElementById('content');
-    const btnArt = document.getElementById('btn-art');
-    const btnFavorites = document.getElementById('btn-favorites');
-    const btnThings = document.getElementById('btn-things');
+    let zoomed = false;
+    let zoomScale = 1;
 
-    // Data for Favorites and Things 2 Do
-    const favoritesList = [
-      "Song: 'Bohemian Rhapsody' by Queen",
-      "Song: 'Imagine' by John Lennon",
-      "Favorite Movie: The Matrix",
-      "Favorite Food: Pizza",
-      "Favorite Hobby: Coding and Gaming"
-    ];
-
-    const thingsToDoList = [
-      "Read a book you've never read before",
-      "Go for a walk outside",
-      "Try a new recipe",
-      "Listen to your favorite music",
-      "Start a new creative project",
-      "Meditate for 10 minutes",
-      "Watch a documentary",
-      "Call a friend or family member",
-      "Organize your workspace",
-      "Learn a few words in a new language"
-    ];
-
-    // How many art images you have (must be named art1.jpg, art2.jpg, art3.jpg, etc.)
-    const totalArtImages = 1; // Change this number for your art count
-    const artExtension = "jpg"; // Change if needed
-
-    // Generate art filenames automatically
-    function generateArtFilenames(count, ext) {
-      const files = [];
-      for(let i=1; i<=count; i++) {
-        files.push(`art${i}.${ext}`);
-      }
-      return files;
-    }
-    const artImages = generateArtFilenames(totalArtImages, artExtension);
-
-    // Clear and hide content
     function clearContent() {
-      contentDiv.innerHTML = "";
-      contentDiv.style.display = "none";
+      document.getElementById("content").innerHTML = '';
     }
 
-    // Show Art Gallery
+    function animatePanel() {
+      document.getElementById("button-panel").style.transform = "translateX(-260px)";
+    }
+
     function showArt() {
       clearContent();
-      if (artImages.length === 0) {
-        contentDiv.style.display = "block";
-        contentDiv.innerHTML = "<p style='text-align:center;'>No art images available.</p>";
-        return;
+      animatePanel();
+
+      const content = document.getElementById("content");
+
+      // Load art images dynamically
+      const totalArt = 10; // Adjust based on number of art images
+      for (let i = 1; i <= totalArt; i++) {
+        const img = document.createElement("img");
+        img.src = `assets/art/art${i}.jpg`;
+        img.alt = `Art ${i}`;
+        img.style.margin = "10px";
+        img.addEventListener("click", () => {
+          zoomed = !zoomed;
+          zoomScale = zoomed ? 2 : 1;
+          img.style.transform = `scale(${zoomScale})`;
+          img.style.cursor = zoomed ? "zoom-out" : "zoom-in";
+        });
+
+        img.addEventListener("wheel", (e) => {
+          e.preventDefault();
+          zoomScale += e.deltaY * -0.001;
+          zoomScale = Math.min(Math.max(1, zoomScale), 5);
+          img.style.transform = `scale(${zoomScale})`;
+        });
+
+        content.appendChild(img);
       }
-      const gallery = document.createElement('div');
-      gallery.id = "art-gallery";
-
-      artImages.forEach(filename => {
-        const img = document.createElement('img');
-        img.src = `assets/art/${filename}`;
-        img.alt = filename;
-        img.title = filename;
-        gallery.appendChild(img);
-      });
-
-      contentDiv.appendChild(gallery);
-      contentDiv.style.display = "block";
     }
 
-    // Show Favorites List
     function showFavorites() {
       clearContent();
-      if (favoritesList.length === 0) {
-        contentDiv.style.display = "block";
-        contentDiv.innerHTML = "<p style='text-align:center;'>No favorites added yet.</p>";
-        return;
-      }
-      const ul = document.createElement('ul');
-      favoritesList.forEach(fav => {
-        const li = document.createElement('li');
-        li.textContent = fav;
-        ul.appendChild(li);
-      });
-      contentDiv.appendChild(ul);
-      contentDiv.style.display = "block";
+      animatePanel();
+
+      const content = document.getElementById("content");
+      const favs = document.createElement("div");
+      favs.innerHTML = `
+        <h2>🎵 Our Favorite Songs</h2>
+        <ul style="text-align: left;">
+          <li>“Bohemian Rhapsody” - Queen</li>
+          <li>“Electric Feel” - MGMT</li>
+          <li>“Blinding Lights” - The Weeknd</li>
+        </ul>
+        <h2>💖 Favorite Things</h2>
+        <ul style="text-align: left;">
+          <li>Pizza and sushi</li>
+          <li>Drawing together</li>
+          <li>Watching the stars</li>
+        </ul>
+      `;
+      content.appendChild(favs);
     }
 
-    // Show Things 2 Do List
     function showThings() {
       clearContent();
-      if (thingsToDoList.length === 0) {
-        contentDiv.style.display = "block";
-        contentDiv.innerHTML = "<p style='text-align:center;'>No things to do listed.</p>";
-        return;
-      }
-      const ul = document.createElement('ul');
-      thingsToDoList.forEach(task => {
-        const li = document.createElement('li');
-        li.textContent = task;
-        ul.appendChild(li);
-      });
-      contentDiv.appendChild(ul);
-      contentDiv.style.display = "block";
-    }
+      animatePanel();
 
-    // Button events
-    btnArt.addEventListener('click', showArt);
-    btnFavorites.addEventListener('click', showFavorites);
-    btnThings.addEventListener('click', showThings);
+      const content = document.getElementById("content");
+      const list = document.createElement("div");
+      list.innerHTML = `
+        <h2>🎲 Things 2 Do</h2>
+        <ul style="text-align: left;">
+          <li>Draw something random</li>
+          <li>Make a playlist</li>
+          <li>Invent a new game</li>
+          <li>Write a silly story</li>
+          <li>Have a dance party</li>
+        </ul>
+      `;
+      content.appendChild(list);
+    }
   </script>
 </body>
 </html>
