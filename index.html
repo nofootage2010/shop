@@ -329,14 +329,14 @@
 
       if (useGif) {
         // Number of gif files inside assets/gifbackground/
-        const gifCount = 3;
+        const gifCount = 1;
         const gifIndex = Math.floor(Math.random() * gifCount) + 1;
         const gifPath = `assets/gifbackground/gif${gifIndex}.gif`;
         document.body.style.backgroundImage = `url('${gifPath}')`;
         // Show overlay for readability on gif backgrounds
         backgroundOverlay.style.display = 'block';
       } else {
-        const jpgCount = 5;
+        const jpgCount = 3;
         const jpgIndex = Math.floor(Math.random() * jpgCount) + 1;
         const jpgPath = `assets/bg${jpgIndex}.jpg`;
         document.body.style.backgroundImage = `url('${jpgPath}')`;
