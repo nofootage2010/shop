@@ -36,17 +36,18 @@
       align-items: center;
     }
 
-    .item:hover {
-      transform: none;
-    }
-
     .item img {
       width: 170px;
       height: 170px;
       border-radius: 8px;
-      margin-bottom: 12px;
       object-fit: cover;
       display: block;
+      transition: transform 0.2s ease;
+      z-index: 1;
+    }
+
+    .item:hover img.base-img {
+      transform: scale(1.05);
     }
 
     .item img.hover-img {
@@ -58,18 +59,19 @@
       border-radius: 8px;
       object-fit: cover;
       opacity: 0;
-      transition: opacity 0.4s ease;
+      transition: opacity 0.4s ease, transform 0.2s ease;
       pointer-events: none;
       z-index: 2;
     }
 
     .item:hover img.hover-img {
       opacity: 1;
+      transform: scale(1.05);
     }
 
     .item-name {
       font-weight: bold;
-      margin-bottom: 6px;
+      margin-top: 12px;
       font-size: 16px;
       color: #222;
       text-transform: uppercase;
@@ -80,7 +82,7 @@
       color: green;
       font-weight: bold;
       font-size: 18px;
-      margin-top: auto;
+      margin-top: 8px;
       z-index: 3;
     }
 
@@ -149,11 +151,12 @@
           const baseImg = document.createElement('img');
           baseImg.src = `assets/${name}/icon.png`;
           baseImg.alt = name;
+          baseImg.className = 'base-img';
 
           const hoverImg = document.createElement('img');
           hoverImg.src = `assets/${name}/icon2.png`;
           hoverImg.alt = name;
-          hoverImg.classList.add('hover-img');
+          hoverImg.className = 'hover-img';
 
           div.appendChild(baseImg);
           div.appendChild(hoverImg);
