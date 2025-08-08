@@ -1,275 +1,251 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
   <title>Stuff</title>
   <style>
-    body {
+    html, body {
       margin: 0;
+      padding: 0;
+      height: 100%;
       font-family: sans-serif;
-      color: black;
+      background-color: black;
       overflow: hidden;
+      color: black;
     }
 
-    #background {
+    #bg {
       position: fixed;
-      top: 0; left: 0;
-      width: 100vw;
-      height: 100vh;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
       object-fit: cover;
       z-index: -1;
     }
 
-    .container {
+    .main {
       display: flex;
-      justify-content: center;
+      height: 100%;
+      width: 100%;
       align-items: center;
-      height: 100vh;
+      justify-content: center;
       position: relative;
     }
 
     .button-panel {
       display: flex;
       flex-direction: column;
-      gap: 12px;
-      background: transparent;
-      padding: 10px;
-      border: none;
-      position: absolute;
-      transition: transform 0.6s ease;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      z-index: 5;
+      gap: 15px;
+      padding: 20px;
+      transition: transform 0.5s ease;
+      z-index: 10;
     }
 
     .button-panel.moved {
-      transform: translate(-300px, -50%);
+      transform: translateX(-200px);
     }
 
-    button {
-      padding: 12px 18px;
-      border: 2px solid black;
-      font-size: 16px;
+    .button {
       font-weight: bold;
-      cursor: pointer;
-      text-transform: uppercase;
-      outline: none;
-      transition: background 0.2s;
-      box-shadow:
-        inset 0 1px 0 rgba(255,255,255,0.7),
-        0 3px 5px rgba(0,0,0,0.4);
-    }
-
-    button:hover {
-      filter: brightness(1.1);
-    }
-
-    .neon1 { background: linear-gradient(180deg, #39ff14, #00cc00); }
-    .neon2 { background: linear-gradient(180deg, #ff6ec7, #ff1493); }
-    .neon3 { background: linear-gradient(180deg, #00ffff, #008b8b); }
-
-    .content-area {
-      width: 600px;
-      height: 80vh;
-      overflow: auto;
-      background: linear-gradient(180deg, #ffffff, #e0f4ff);
+      font-size: 16px;
+      padding: 14px 24px;
       border: 2px solid black;
-      box-shadow:
-        inset 0 1px 0 rgba(255,255,255,0.7),
-        0 3px 5px rgba(0,0,0,0.4);
-      padding: 20px;
-      position: absolute;
-      left: 300px;
-      top: 50%;
-      transform: translateY(-50%);
-      display: none;
-      z-index: 4;
+      background: linear-gradient(to bottom, #ffffff, #dddddd);
+      text-shadow: 0 1px 0 white;
+      cursor: pointer;
+      transition: background 0.3s;
+      box-shadow: 0 0 10px white;
     }
 
-    .fun-fact {
+    .button:hover {
+      outline: none;
+    }
+
+    .content-panel {
+      position: absolute;
+      left: 50%;
+      transform: translateX(100px);
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 80%;
+      overflow-y: auto;
+      background: rgba(255, 255, 255, 0.85);
+      padding: 20px;
+      border: 2px solid black;
+    }
+
+    .content-panel.active {
+      display: flex;
+    }
+
+    .art-image {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      cursor: pointer;
+    }
+
+    #zoomOverlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.9);
+      justify-content: center;
+      align-items: center;
+      z-index: 20;
+    }
+
+    #zoomImage {
+      max-width: 90%;
+      max-height: 90%;
+      transition: transform 0.1s;
+    }
+
+    #funfact {
       position: absolute;
       bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: linear-gradient(180deg, #ffffaa, #ffcc88);
-      padding: 12px 18px;
-      border: 2px solid black;
-      box-shadow:
-        inset 0 1px 0 rgba(255,255,255,0.7),
-        0 3px 5px rgba(0,0,0,0.4);
+      text-align: center;
+      width: 100%;
       font-weight: bold;
+      text-shadow: 0 1px 0 white;
     }
 
-    .image-gallery {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      justify-content: center;
-    }
-
-    .image-gallery img {
-      width: 120px;
-      height: auto;
-      cursor: zoom-in;
+    #backBtn {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      font-size: 14px;
+      padding: 6px 10px;
       border: 2px solid black;
-    }
-
-    .zoomed {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      max-width: 90vw;
-      max-height: 90vh;
-      transform: translate(-50%, -50%) scale(1);
-      z-index: 10;
-      border: 4px solid black;
-      background: white;
-      cursor: zoom-out;
-    }
-
-    .back-button {
-      position: fixed;
-      top: 20px;
-      left: 20px;
-      background: linear-gradient(180deg, #ffcc55, #dd9933);
-      color: black;
-      padding: 10px 16px;
-      border: 2px solid black;
-      font-weight: bold;
       cursor: pointer;
-      box-shadow:
-        inset 0 1px 0 rgba(255,255,255,0.7),
-        0 3px 5px rgba(0,0,0,0.4);
-      text-decoration: none;
-      z-index: 6;
+      background: linear-gradient(to bottom, #ffffff, #dddddd);
     }
   </style>
 </head>
 <body>
 
-<video autoplay muted loop id="background"></video>
-<a href="index.html" class="back-button">Back</a>
+  <img id="bg" src="" alt="Background">
 
-<div class="container">
-  <div class="button-panel" id="buttonPanel">
-    <button class="neon1" onclick="showContent('art')">Art</button>
-    <button class="neon2" onclick="showContent('favorites')">Favorites of Us</button>
-    <button class="neon3" onclick="showContent('todo')">Things 2 Do</button>
-  </div>
-
-  <div class="content-area" id="contentArea">
-    <div id="art" style="display:none;">
-      <div class="image-gallery" id="artGallery"></div>
+  <div class="main">
+    <div class="button-panel" id="buttonPanel">
+      <button class="button" style="background: linear-gradient(to bottom, #ff00ff, #cc00cc);" onclick="togglePanel('art')">Art</button>
+      <button class="button" style="background: linear-gradient(to bottom, #00ffff, #00cccc);" onclick="togglePanel('favorites')">Favorites of Us</button>
+      <button class="button" style="background: linear-gradient(to bottom, #00ff00, #00cc00);" onclick="togglePanel('todo')">Things 2 Do</button>
     </div>
 
-    <div id="favorites" style="display:none;">
-      <h2>Our Favorite Stuff</h2>
+    <div class="content-panel" id="artPanel"></div>
+    <div class="content-panel" id="favoritesPanel">
+      <div>🎵 Our Favorite Songs:</div>
       <ul>
-        <li>🎵 Song: “Electric Love”</li>
-        <li>📺 Show: “Adventure Time”</li>
-        <li>🎮 Game: “Minecraft”</li>
-        <li>🍕 Food: “Pepperoni Pizza”</li>
+        <li>Song 1</li>
+        <li>Song 2</li>
+        <li>Song 3</li>
+      </ul>
+      <div>💖 Other Faves:</div>
+      <ul>
+        <li>Color: Blue</li>
+        <li>Food: Pizza</li>
       </ul>
     </div>
-
-    <div id="todo" style="display:none;">
-      <h2>Things To Do</h2>
+    <div class="content-panel" id="todoPanel">
       <ul>
-        <li>Draw silly doodles</li>
-        <li>Listen to our playlist</li>
-        <li>Make a digital collage</li>
-        <li>Build something in a sandbox game</li>
-        <li>Write a short poem</li>
-        <li>Make a random recipe</li>
+        <li>Make a playlist</li>
+        <li>Draw together</li>
+        <li>Make a silly video</li>
       </ul>
     </div>
   </div>
-</div>
 
-<div class="fun-fact" id="funFact">Fun Fact: Loading...</div>
+  <div id="funfact"></div>
+  <button id="backBtn" onclick="goBack()">← Back</button>
 
-<script>
-  const gifList = [
-    "assets/gifbackground/bg1.gif",
-    "assets/gifbackground/bg2.gif",
-    "assets/gifbackground/bg3.gif"
-  ];
+  <div id="zoomOverlay" onclick="closeZoom()">
+    <img id="zoomImage" src="">
+  </div>
 
-  const bg = document.getElementById("background");
-  bg.src = gifList[Math.floor(Math.random() * gifList.length)];
+  <script>
+    const gifs = [
+      "assets/gifbackground/1.gif",
+      "assets/gifbackground/2.gif",
+      "assets/gifbackground/3.gif"
+    ];
+    document.getElementById("bg").src = gifs[Math.floor(Math.random() * gifs.length)];
 
-  const facts = [
-    "Did you know? The Eiffel Tower can grow 6 inches in summer.",
-    "Bananas are berries, but strawberries aren't!",
-    "Octopuses have three hearts.",
-    "You can hear a blue whale's heartbeat from 2 miles away.",
-    "Sloths can hold their breath longer than dolphins.",
-    "Some cats are allergic to humans.",
-    "Wombat poop is cube-shaped!"
-  ];
+    const funfacts = [
+      "Fun Fact: Penguins have knees!",
+      "Fun Fact: Bananas are berries.",
+      "Fun Fact: You blink 15-20 times a minute!",
+      "Fun Fact: Octopuses have three hearts."
+    ];
+    document.getElementById("funfact").innerText = funfacts[Math.floor(Math.random() * funfacts.length)];
 
-  function randomFact() {
-    const index = Math.floor(Math.random() * facts.length);
-    document.getElementById('funFact').textContent = "Fun Fact: " + facts[index];
-  }
+    const panelMap = {
+      art: "artPanel",
+      favorites: "favoritesPanel",
+      todo: "todoPanel"
+    };
 
-  randomFact();
+    function togglePanel(panelKey) {
+      const buttonPanel = document.getElementById("buttonPanel");
+      buttonPanel.classList.toggle("moved");
 
-  let lastType = "";
-  function showContent(type) {
-    const panel = document.getElementById('buttonPanel');
-    const contentArea = document.getElementById('contentArea');
-    const sections = ['art', 'favorites', 'todo'];
+      for (const key in panelMap) {
+        const panel = document.getElementById(panelMap[key]);
+        if (key === panelKey) {
+          panel.classList.toggle("active");
+        } else {
+          panel.classList.remove("active");
+        }
+      }
 
-    // Reset display
-    sections.forEach(id => document.getElementById(id).style.display = 'none');
-
-    // Show selected
-    document.getElementById(type).style.display = 'block';
-    contentArea.style.display = 'block';
-
-    // Animate again even if same
-    if (lastType === type) {
-      panel.classList.remove('moved');
-      void panel.offsetWidth; // force reflow
+      if (panelKey === "art") loadArtImages();
     }
-    panel.classList.add('moved');
-    lastType = type;
 
-    if (type === 'art') loadArt();
-  }
+    function loadArtImages() {
+      const artPanel = document.getElementById("artPanel");
+      if (artPanel.dataset.loaded === "true") return;
 
-  function loadArt() {
-    const gallery = document.getElementById('artGallery');
-    gallery.innerHTML = '';
-    for (let i = 1; i <= 10; i++) {
-      const img = document.createElement('img');
-      img.src = `assets/art/art${i}.jpg`;
-      img.alt = `Art ${i}`;
-      img.onerror = () => img.style.display = 'none';
-      img.onclick = () => zoomImage(img.src);
-      gallery.appendChild(img);
+      for (let i = 1; i <= 9; i++) {
+        const img = document.createElement("img");
+        img.src = `assets/art/art${i}.png`;
+        img.className = "art-image";
+        img.onclick = () => zoomImage(img.src);
+        artPanel.appendChild(img);
+      }
+
+      artPanel.dataset.loaded = "true";
     }
-  }
 
-  function zoomImage(src) {
-    const zoomed = document.createElement('img');
-    zoomed.src = src;
-    zoomed.className = 'zoomed';
-    zoomed.onclick = () => zoomed.remove();
-    document.body.appendChild(zoomed);
+    function zoomImage(src) {
+      const overlay = document.getElementById("zoomOverlay");
+      const zoomImg = document.getElementById("zoomImage");
+      zoomImg.src = src;
+      zoomImg.style.transform = "scale(1)";
+      overlay.style.display = "flex";
 
-    let scale = 1;
-    zoomed.addEventListener('wheel', e => {
-      e.preventDefault();
-      scale += e.deltaY * -0.001;
-      scale = Math.min(Math.max(0.5, scale), 3);
-      zoomed.style.transform = `translate(-50%, -50%) scale(${scale})`;
+      overlay.onwheel = (e) => {
+        e.preventDefault();
+        const scale = parseFloat(zoomImg.style.transform.replace("scale(", "").replace(")", "")) || 1;
+        const newScale = Math.min(Math.max(0.1, scale + (e.deltaY < 0 ? 0.1 : -0.1)), 5);
+        zoomImg.style.transform = `scale(${newScale})`;
+      };
+    }
+
+    function closeZoom() {
+      document.getElementById("zoomOverlay").style.display = "none";
+      document.getElementById("zoomOverlay").onwheel = null;
+    }
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") closeZoom();
     });
-  }
-</script>
 
+    function goBack() {
+      window.location.href = "index.html";
+    }
+  </script>
 </body>
 </html>
