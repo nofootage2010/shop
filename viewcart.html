@@ -8,6 +8,7 @@
       font-family: Arial, sans-serif;
       background: #fafafa;
       padding: 40px;
+      margin: 0;
     }
     .container {
       max-width: 600px;
@@ -16,6 +17,13 @@
       padding: 20px;
       border-radius: 12px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      border: 1px solid black;
+    }
+    h2 {
+      margin-top: 0;
+      text-align: center;
+      font-weight: 900;
+      letter-spacing: 1px;
     }
     .item {
       display: flex;
@@ -23,6 +31,12 @@
       align-items: center;
       border-bottom: 1px solid #ccc;
       padding: 10px 0;
+    }
+    .item:last-child {
+      border-bottom: none;
+    }
+    .item > div:first-child {
+      font-weight: 600;
     }
     .controls {
       display: flex;
@@ -32,46 +46,93 @@
     .controls button {
       padding: 4px 10px;
       cursor: pointer;
+      border: 1px solid black;
+      background: #eee;
+      font-weight: bold;
+      border-radius: 0;
+      box-shadow: none;
+      outline: none;
+      user-select: none;
+      transition: background-color 0.3s;
+      font-size: 14px;
+    }
+    .controls button:hover {
+      background: #ddd;
     }
     .delete {
       background: red;
       color: white;
-      border: none;
+      border: 1px solid black;
       border-radius: 6px;
       padding: 4px 10px;
-      cursor: pointer;
+      font-weight: bold;
+      user-select: none;
+      transition: background-color 0.3s;
     }
+    .delete:hover {
+      background: darkred;
+    }
+    /* Checkout button with early 2000s glossy green style */
     #checkoutBtn {
       margin-top: 20px;
       width: 100%;
       padding: 12px;
       font-size: 16px;
-      background: green;
+      background: linear-gradient(180deg, #55cc55, #117711);
       color: white;
-      border: none;
-      border-radius: 8px;
+      border: 1px solid black;
+      border-radius: 4px;
       cursor: pointer;
+      font-weight: 900;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.7),
+        0 3px 5px rgba(0,0,0,0.4);
+      position: relative;
+      overflow: hidden;
+      text-shadow: 0 1px 0 #004400;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      transition: background 0.3s ease;
+      user-select: none;
+    }
+    #checkoutBtn::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 50%;
+      background: rgba(255,255,255,0.3);
+      border-radius: 4px 4px 0 0;
+      pointer-events: none;
+      filter: blur(2px);
+      mix-blend-mode: screen;
     }
     #checkoutBtn:hover {
-      background: darkgreen;
+      background: linear-gradient(180deg, #66dd66, #228822);
     }
-
+    /* Home button glossy style */
     #homeBtn {
       position: fixed;
       top: 15px;
       left: 20px;
-      background-color: #007bff;
+      background: linear-gradient(180deg, #555, #222);
       color: white;
       padding: 10px 15px;
-      border: none;
-      border-radius: 5px;
+      border: 1px solid black;
+      border-radius: 4px;
       cursor: pointer;
       font-size: 14px;
       text-decoration: none;
+      font-weight: bold;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.3),
+        0 3px 5px rgba(0,0,0,0.4);
+      text-shadow: 0 1px 0 #000;
+      transition: background 0.3s ease;
+      user-select: none;
     }
-
     #homeBtn:hover {
-      background-color: #0056b3;
+      background: linear-gradient(180deg, #777, #444);
     }
   </style>
 </head>
@@ -101,7 +162,7 @@
       }
 
       cart.forEach((item, index) => {
-        const priceUSD = (item.price).toFixed(2); // Convert to fixed 2 decimals
+        const priceUSD = parseFloat(item.price).toFixed(2);
         const div = document.createElement("div");
         div.className = "item";
 
