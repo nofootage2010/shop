@@ -26,7 +26,7 @@
       background: #555;
       color: white;
       border: none;
-      border-radius: 6px;
+      border-radius: 0;
       cursor: pointer;
       font-weight: bold;
       z-index: 1000;
@@ -44,7 +44,7 @@
       background: transparent;
       padding: 30px 0;
       border-radius: 0;
-      flex-wrap: nowrap;
+      flex-wrap: wrap;
     }
 
     .product-image-gallery {
@@ -56,20 +56,18 @@
       width: 400px;
       padding-right: 0;
       border: none;
-      
-      /* Hide scrollbar but keep scrollable */
-      scrollbar-width: none; /* Firefox */
-      -ms-overflow-style: none;  /* IE 10+ */
-      overflow-x: hidden; /* No horizontal scroll */
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      overflow-x: hidden;
     }
 
     .product-image-gallery::-webkit-scrollbar {
-      display: none; /* Chrome, Safari, Opera */
+      display: none;
     }
 
     .product-image-gallery img {
       width: 100%;
-      border-radius: 8px;
+      border-radius: 0;
       cursor: pointer;
       object-fit: cover;
       transition: transform 0.2s;
@@ -85,12 +83,13 @@
       flex-direction: column;
       justify-content: flex-start;
       gap: 15px;
-      background: transparent; /* no background */
+      background: transparent;
       color: #222;
-      font-size: 22px; /* bigger text */
+      font-size: 22px;
       line-height: 1.5;
       padding-left: 10px;
-      min-width: 320px;
+      min-width: 300px;
+      max-width: 600px;
     }
 
     .product-info h1 {
@@ -127,7 +126,7 @@
       background: #ddd;
       border: none;
       cursor: pointer;
-      border-radius: 6px;
+      border-radius: 0;
       font-weight: bold;
       transition: background-color 0.3s;
     }
@@ -141,11 +140,11 @@
       background: black;
       color: white;
       border: none;
-      border-radius: 8px;
+      border-radius: 0;
       cursor: pointer;
       font-size: 18px;
       font-weight: 900;
-      box-shadow: none; /* no shadow */
+      box-shadow: none;
       align-self: flex-start;
       transition: background 0.3s ease;
       letter-spacing: 1px;
@@ -172,7 +171,7 @@
     .image-modal img {
       max-width: 95%;
       max-height: 95%;
-      border-radius: 10px;
+      border-radius: 0;
       transition: transform 0.2s;
     }
 
@@ -183,7 +182,7 @@
       transform: translate(-50%, -150%);
       background: white;
       padding: 20px 30px;
-      border-radius: 16px;
+      border-radius: 0;
       box-shadow: 0 8px 24px rgba(0,0,0,0.12);
       text-align: center;
       z-index: 1000;
@@ -213,7 +212,7 @@
       background: dodgerblue;
       color: white;
       border: none;
-      border-radius: 8px;
+      border-radius: 0;
       cursor: pointer;
       min-width: 90px;
       font-weight: 700;
@@ -225,23 +224,19 @@
       background: #1e90ffcc;
     }
 
-    /* Featured Items styles */
+    /* Featured Items */
     .featured-items {
-      margin-top: 40px;
       width: 100%;
-      color: #222;
-      font-weight: 700;
-      font-size: 24px;
+      margin-top: 40px;
       padding-left: 10px;
-      flex-basis: 100%;
-      /* Make sure it takes full width below product-info */
     }
 
     .featured-items h2 {
+      font-weight: 900;
+      font-size: 28px;
       margin-bottom: 15px;
       text-transform: uppercase;
-      font-weight: 900;
-      letter-spacing: 1.1px;
+      color: #222;
     }
 
     .featured-list {
@@ -259,10 +254,18 @@
     .featured-item {
       min-width: 140px;
       cursor: pointer;
-      background: transparent;
       color: #222;
       text-align: center;
       user-select: none;
+      border: 1px solid #ccc;
+      padding: 5px;
+      background: #fff;
+      border-radius: 0;
+      transition: box-shadow 0.2s;
+    }
+
+    .featured-item:hover {
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
     }
 
     .featured-item img {
@@ -273,10 +276,6 @@
       transition: transform 0.2s;
     }
 
-    .featured-item:hover img {
-      transform: scale(1.05);
-    }
-
     .featured-item-name {
       margin-top: 8px;
       font-size: 16px;
@@ -284,12 +283,6 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-    }
-
-    .featured-item-price {
-      font-weight: 900;
-      color: green;
-      font-size: 14px;
     }
   </style>
 </head>
@@ -311,12 +304,12 @@
         <button id="increase">+</button>
       </div>
       <button class="buy-btn" id="buyBtn">Add to Cart</button>
-    </div>
 
-    <!-- Featured Items below product-info -->
-    <div class="featured-items" id="featuredItems">
-      <h2>Featured Items</h2>
-      <div class="featured-list" id="featuredList"></div>
+      <!-- Featured Items Section -->
+      <div class="featured-items">
+        <h2>Featured Items</h2>
+        <div class="featured-list" id="featuredList"></div>
+      </div>
     </div>
   </div>
 
@@ -331,194 +324,206 @@
     <button id="checkOutBtn">Check Out</button>
   </div>
 
-<script>
-const item = JSON.parse(localStorage.getItem("selectedItem"));
-if (!item) {
-  alert("No item selected.");
-  location.href = "index.html";
-}
+  <!-- Firebase SDK (Make sure to replace with your config) -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
-document.getElementById("item-name").textContent = item.name;
-document.getElementById("item-creator").textContent = item.creator || "Unknown";
-document.getElementById("item-price").textContent = `$${parseFloat(item.price).toFixed(2)} USD`;
-document.getElementById("item-desc").textContent = item.description || "No description.";
-document.getElementById("item-quantity").textContent = item.quantity;
-
-const gallery = document.getElementById("imageGallery");
-const basePath = `assets/${item.name}/images/`;
-
-for (let i = 1; i <= 5; i++) {
-  const path = `${basePath}image${i}.jpg`;
-  const img = new Image();
-  img.onload = () => {
-    img.onclick = () => {
-      const modal = document.getElementById("imageModal");
-      const modalImage = document.getElementById("modalImage");
-      modalImage.src = path;
-      modalImage.style.transform = "scale(1)";
-      modalImage.style.transformOrigin = "center center";
-      modal.style.display = "flex";
-      zoomLevel = 1;
+  <script>
+    // Your Firebase config - REPLACE with your actual config!
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
     };
-    gallery.appendChild(img);
-  };
-  img.onerror = () => {};
-  img.src = path;
-}
 
-document.getElementById("imageModal").onclick = () => {
-  document.getElementById("imageModal").style.display = "none";
-};
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
 
-let zoomLevel = 1;
-const modalImage = document.getElementById("modalImage");
+    // Load selected item
+    const item = JSON.parse(localStorage.getItem("selectedItem"));
+    if (!item) {
+      alert("No item selected.");
+      location.href = "index.html";
+    }
 
-modalImage.addEventListener("wheel", (e) => {
-  e.preventDefault();
-  const rect = modalImage.getBoundingClientRect();
-  const offsetX = e.clientX - rect.left;
-  const offsetY = e.clientY - rect.top;
-  const xPercent = (offsetX / rect.width) * 100;
-  const yPercent = (offsetY / rect.height) * 100;
-  modalImage.style.transformOrigin = `${xPercent}% ${yPercent}%`;
+    document.getElementById("item-name").textContent = item.name;
+    document.getElementById("item-creator").textContent = item.creator || "Unknown";
+    document.getElementById("item-price").textContent = `$${parseFloat(item.price).toFixed(2)} USD`;
+    document.getElementById("item-desc").textContent = item.description || "No description.";
+    document.getElementById("item-quantity").textContent = item.quantity;
 
-  zoomLevel += e.deltaY < 0 ? 0.1 : -0.1;
-  zoomLevel = Math.max(0.5, Math.min(zoomLevel, 3));
-  modalImage.style.transform = `scale(${zoomLevel})`;
-});
+    const gallery = document.getElementById("imageGallery");
+    const basePath = `assets/${item.name}/images/`;
 
-let count = 1;
-const countDisplay = document.getElementById("count");
+    for (let i = 1; i <= 5; i++) {
+      const path = `${basePath}image${i}.jpg`;
+      const img = new Image();
+      img.onload = () => {
+        img.onclick = () => {
+          const modal = document.getElementById("imageModal");
+          const modalImage = document.getElementById("modalImage");
+          modalImage.src = path;
+          modalImage.style.transform = "scale(1)";
+          modalImage.style.transformOrigin = "center center";
+          modal.style.display = "flex";
+          zoomLevel = 1;
+        };
+        gallery.appendChild(img);
+      };
+      img.onerror = () => {};
+      img.src = path;
+    }
 
-document.getElementById("increase").onclick = () => {
-  if (count < item.quantity) {
-    count++;
-    countDisplay.textContent = count;
-  }
-};
+    document.getElementById("imageModal").onclick = () => {
+      document.getElementById("imageModal").style.display = "none";
+    };
 
-document.getElementById("decrease").onclick = () => {
-  if (count > 1) {
-    count--;
-    countDisplay.textContent = count;
-  }
-};
+    let zoomLevel = 1;
+    const modalImage = document.getElementById("modalImage");
 
-function getRandomOffset(max) {
-  return (Math.random() * 2 - 1) * max;
-}
+    modalImage.addEventListener("wheel", (e) => {
+      e.preventDefault();
+      const rect = modalImage.getBoundingClientRect();
+      const offsetX = e.clientX - rect.left;
+      const offsetY = e.clientY - rect.top;
+      const xPercent = (offsetX / rect.width) * 100;
+      const yPercent = (offsetY / rect.height) * 100;
+      modalImage.style.transformOrigin = `${xPercent}% ${yPercent}%`;
 
-document.getElementById("buyBtn").onclick = () => {
-  const cart = JSON.parse(localStorage.getItem("cart")) || [];
-  const existing = cart.find(i => i.name === item.name);
-
-  if (existing) {
-    existing.quantity = Math.min(existing.quantity + count, item.quantity);
-  } else {
-    cart.push({
-      name: item.name,
-      price: item.price,
-      quantity: count,
-      max: item.quantity
+      zoomLevel += e.deltaY < 0 ? 0.1 : -0.1;
+      zoomLevel = Math.max(0.5, Math.min(zoomLevel, 3));
+      modalImage.style.transform = `scale(${zoomLevel})`;
     });
-  }
 
-  localStorage.setItem("cart", JSON.stringify(cart));
-  const popup = document.getElementById("popup");
-  document.getElementById("popup-message").textContent = `Added ${count}x ${item.name} to cart`;
+    let count = 1;
+    const countDisplay = document.getElementById("count");
 
-  const baseTopPercent = 25;
-  const baseLeftPercent = 70;
-  const vpWidth = window.innerWidth;
-  const vpHeight = window.innerHeight;
+    document.getElementById("increase").onclick = () => {
+      if (count < item.quantity) {
+        count++;
+        countDisplay.textContent = count;
+      }
+    };
 
-  const offsetX = getRandomOffset(10);
-  const offsetY = getRandomOffset(10);
+    document.getElementById("decrease").onclick = () => {
+      if (count > 1) {
+        count--;
+        countDisplay.textContent = count;
+      }
+    };
 
-  let topPx = (baseTopPercent / 100) * vpHeight + offsetY;
-  let leftPx = (baseLeftPercent / 100) * vpWidth + offsetX;
+    function getRandomOffset(max) {
+      return (Math.random() * 2 - 1) * max;
+    }
 
-  topPx = Math.min(Math.max(50, topPx), vpHeight - 50);
-  leftPx = Math.min(Math.max(100, leftPx), vpWidth - 100);
+    document.getElementById("buyBtn").onclick = () => {
+      const cart = JSON.parse(localStorage.getItem("cart")) || [];
+      const existing = cart.find(i => i.name === item.name);
 
-  const topPercent = (topPx / vpHeight) * 100;
-  const leftPercent = (leftPx / vpWidth) * 100;
+      if (existing) {
+        existing.quantity = Math.min(existing.quantity + count, item.quantity);
+      } else {
+        cart.push({
+          name: item.name,
+          price: item.price,
+          quantity: count,
+          max: item.quantity
+        });
+      }
 
-  popup.style.top = topPercent + '%';
-  popup.style.left = leftPercent + '%';
-  popup.classList.add("show");
-};
+      localStorage.setItem("cart", JSON.stringify(cart));
+      const popup = document.getElementById("popup");
+      document.getElementById("popup-message").textContent = `Added ${count}x ${item.name} to cart`;
 
-document.getElementById("continueBtn").onclick = () => {
-  const popup = document.getElementById("popup");
-  popup.classList.remove("show");
-  popup.style.top = '25%';
-  popup.style.left = '70%';
-};
+      const baseTopPercent = 25;
+      const baseLeftPercent = 70;
+      const vpWidth = window.innerWidth;
+      const vpHeight = window.innerHeight;
 
-document.getElementById("viewCartBtn").onclick = () => {
-  location.href = "viewcart.html";
-};
+      const offsetX = getRandomOffset(10);
+      const offsetY = getRandomOffset(10);
 
-document.getElementById("checkOutBtn").onclick = () => {
-  location.href = "cart.html";
-};
+      let topPx = (baseTopPercent / 100) * vpHeight + offsetY;
+      let leftPx = (baseLeftPercent / 100) * vpWidth + offsetX;
 
-document.getElementById("homeBtn").onclick = () => {
-  location.href = "index.html";
-};
+      topPx = Math.min(Math.max(50, topPx), vpHeight - 50);
+      leftPx = Math.min(Math.max(100, leftPx), vpWidth - 100);
 
-// --- FEATURED ITEMS ---
+      const topPercent = (topPx / vpHeight) * 100;
+      const leftPercent = (leftPx / vpWidth) * 100;
 
-// Sample data for featured items (replace or fetch dynamically as needed)
-const allItems = [
-  { name: "ItemA", price: 29.99, creator: "Creator A", description: "Description A", quantity: 10, image: `assets/ItemA/images/image1.jpg` },
-  { name: "ItemB", price: 19.99, creator: "Creator B", description: "Description B", quantity: 5, image: `assets/ItemB/images/image1.jpg` },
-  { name: "ItemC", price: 39.99, creator: "Creator C", description: "Description C", quantity: 7, image: `assets/ItemC/images/image1.jpg` },
-  { name: "ItemD", price: 24.99, creator: "Creator D", description: "Description D", quantity: 8, image: `assets/ItemD/images/image1.jpg` },
-  { name: "ItemE", price: 14.99, creator: "Creator E", description: "Description E", quantity: 12, image: `assets/ItemE/images/image1.jpg` },
-  { name: "ItemF", price: 49.99, creator: "Creator F", description: "Description F", quantity: 4, image: `assets/ItemF/images/image1.jpg` }
-];
+      popup.style.top = topPercent + '%';
+      popup.style.left = leftPercent + '%';
+      popup.classList.add("show");
+    };
 
-// Exclude current item and shuffle
-const featuredCandidates = allItems.filter(i => i.name !== item.name);
+    document.getElementById("continueBtn").onclick = () => {
+      const popup = document.getElementById("popup");
+      popup.classList.remove("show");
+      popup.style.top = '25%';
+      popup.style.left = '70%';
+    };
 
-function shuffleArray(arr) {
-  for (let i = arr.length -1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
-}
+    document.getElementById("viewCartBtn").onclick = () => {
+      location.href = "viewcart.html";
+    };
 
-shuffleArray(featuredCandidates);
+    document.getElementById("checkOutBtn").onclick = () => {
+      location.href = "cart.html";
+    };
 
-const featuredToShow = featuredCandidates.slice(0, 4);
+    document.getElementById("homeBtn").onclick = () => {
+      location.href = "index.html";
+    };
 
-const featuredList = document.getElementById("featuredList");
+    // Fetch random featured items from Firebase Firestore
+    const featuredList = document.getElementById("featuredList");
 
-featuredToShow.forEach(fi => {
-  const div = document.createElement("div");
-  div.className = "featured-item";
-  div.title = fi.name;
-  div.innerHTML = `
-    <img src="${fi.image}" alt="${fi.name}" />
-    <div class="featured-item-name">${fi.name}</div>
-    <div class="featured-item-price">$${fi.price.toFixed(2)}</div>
-  `;
-  div.onclick = () => {
-    // Save selected featured item and reload page
-    localStorage.setItem("selectedItem", JSON.stringify({
-      name: fi.name,
-      price: fi.price,
-      creator: fi.creator,
-      description: fi.description,
-      quantity: fi.quantity
-    }));
-    location.reload();
-  };
-  featuredList.appendChild(div);
-});
-</script>
+    async function loadFeaturedItems() {
+      try {
+        const snapshot = await db.collection('items').get();
+        const allItems = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+        // Remove current item from featured (if exists)
+        const filteredItems = allItems.filter(i => i.name !== item.name);
+
+        // Shuffle and pick up to 5 random items
+        const shuffled = filteredItems.sort(() => 0.5 - Math.random());
+        const featured = shuffled.slice(0, 5);
+
+        featured.forEach(fItem => {
+          const div = document.createElement("div");
+          div.classList.add("featured-item");
+
+          // Image path: assuming same structure
+          const imgSrc = `assets/${fItem.name}/images/image1.jpg`;
+
+          div.innerHTML = `
+            <img src="${imgSrc}" alt="${fItem.name}" onerror="this.style.display='none'" />
+            <div class="featured-item-name">${fItem.name}</div>
+            <div class="price">$${parseFloat(fItem.price).toFixed(2)} USD</div>
+          `;
+
+          // Click to open item page for that item
+          div.onclick = () => {
+            localStorage.setItem("selectedItem", JSON.stringify(fItem));
+            location.href = "itempage.html"; // Change if your item page filename differs
+          };
+
+          featuredList.appendChild(div);
+        });
+
+      } catch (error) {
+        console.error("Error loading featured items:", error);
+      }
+    }
+
+    loadFeaturedItems();
+  </script>
 
 </body>
 </html>
