@@ -44,7 +44,6 @@
       background: transparent; /* no background */
       padding: 30px 0;
       border-radius: 0; /* no border radius */
-      /* no shadow */
     }
 
     .product-image-gallery {
@@ -55,7 +54,16 @@
       max-height: 600px;
       width: 400px;
       padding-right: 0;
-      border: none; /* no border */
+      border: none;
+      
+      /* Hide scrollbar but keep scrollable */
+      scrollbar-width: none; /* Firefox */
+      -ms-overflow-style: none;  /* IE 10+ */
+      overflow-x: hidden; /* No horizontal scroll */
+    }
+
+    .product-image-gallery::-webkit-scrollbar {
+      display: none; /* Chrome, Safari, Opera */
     }
 
     .product-image-gallery img {
@@ -81,7 +89,6 @@
       font-size: 22px; /* bigger text */
       line-height: 1.5;
       padding-left: 10px;
-      /* no shadow */
     }
 
     .product-info h1 {
