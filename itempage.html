@@ -557,7 +557,7 @@
     container.textContent = "Loading related items...";
 
     try {
-      const querySnapshot = await getDocs(collection(db, "items"));
+      const querySnapshot = await getDocs(collection(db, "catalog"));
       const items = [];
       querySnapshot.forEach(doc => {
         const data = doc.data();
