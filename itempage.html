@@ -25,11 +25,17 @@
       padding: 8px 14px;
       background: #555;
       color: white;
-      border: none;
+      border: 1px solid black;
       border-radius: 0;
       cursor: pointer;
       font-weight: bold;
       z-index: 1000;
+      outline: none;
+      box-shadow: none;
+    }
+
+    #homeBtn:hover {
+      background: #333;
     }
 
     .product-page {
@@ -44,6 +50,7 @@
       background: transparent;
       padding: 30px 0;
       border-radius: 0;
+      border: 1px solid black;
     }
 
     .product-image-gallery {
@@ -54,7 +61,7 @@
       max-height: 600px;
       width: 400px;
       padding-right: 0;
-      border: none;
+      border: 1px solid black;
 
       /* Hide scrollbar but keep scrollable */
       scrollbar-width: none; /* Firefox */
@@ -72,6 +79,8 @@
       cursor: pointer;
       object-fit: cover;
       transition: transform 0.2s;
+      border: 1px solid black;
+      background: white;
     }
 
     .product-image-gallery img:hover {
@@ -84,11 +93,13 @@
       flex-direction: column;
       justify-content: flex-start;
       gap: 15px;
-      background: transparent; /* no background */
+      background: transparent;
       color: #222;
-      font-size: 22px; /* bigger text */
+      font-size: 22px;
       line-height: 1.5;
       padding-left: 10px;
+      border: 1px solid black;
+      padding: 20px;
     }
 
     .product-info h1 {
@@ -97,11 +108,15 @@
       text-transform: uppercase;
       font-weight: 900;
       letter-spacing: 1.2px;
+      border-bottom: 1px solid black;
+      padding-bottom: 8px;
     }
 
     .product-info p {
       margin: 0;
       font-weight: 600;
+      border-bottom: 1px solid black;
+      padding-bottom: 8px;
     }
 
     .price {
@@ -109,6 +124,8 @@
       font-weight: 900;
       margin: 10px 0;
       color: green;
+      border-bottom: 1px solid black;
+      padding-bottom: 8px;
     }
 
     .count {
@@ -123,11 +140,13 @@
       height: 40px;
       font-size: 22px;
       background: #ddd;
-      border: none;
+      border: 1px solid black;
       cursor: pointer;
       border-radius: 0;
       font-weight: bold;
       transition: background-color 0.3s;
+      box-shadow: none;
+      outline: none;
     }
 
     .count button:hover {
@@ -136,21 +155,25 @@
 
     .buy-btn {
       padding: 12px 24px;
-      background: black;
+      background: linear-gradient(to bottom, #39b54a, #2e8b3a);
       color: white;
-      border: none;
+      border: 2px solid #1f5a28;
       border-radius: 0;
       cursor: pointer;
-      font-size: 18px;
+      font-size: 20px;
       font-weight: 900;
-      box-shadow: none; /* no shadow */
+      box-shadow: none;
       align-self: flex-start;
-      transition: background 0.3s ease;
-      letter-spacing: 1px;
+      letter-spacing: 1.2px;
+      text-shadow: 1px 1px 0 #145214;
+      user-select: none;
+      transition: background 0.2s ease;
+      font-family: 'Trebuchet MS', sans-serif;
+      text-transform: uppercase;
     }
 
     .buy-btn:hover {
-      background: #222;
+      background: linear-gradient(to bottom, #2e8b3a, #1f5a28);
     }
 
     .image-modal {
@@ -172,6 +195,8 @@
       max-height: 95%;
       border-radius: 0;
       transition: transform 0.2s;
+      border: 2px solid black;
+      background: white;
     }
 
     #popup {
@@ -192,6 +217,7 @@
       font-family: Arial, sans-serif;
       font-weight: 600;
       color: #222;
+      border: 1px solid black;
     }
 
     #popup.show {
@@ -210,13 +236,14 @@
       padding: 8px 16px;
       background: dodgerblue;
       color: white;
-      border: none;
+      border: 1px solid black;
       border-radius: 0;
       cursor: pointer;
       min-width: 90px;
       font-weight: 700;
       box-shadow: 0 4px 8px rgba(30, 144, 255, 0.5);
       transition: background-color 0.3s ease;
+      outline: none;
     }
 
     #popup button:hover {
@@ -241,7 +268,7 @@
         <span id="count">1</span>
         <button id="increase">+</button>
       </div>
-      <button class="buy-btn" id="buyBtn">Add to Cart</button>
+      <button class="buy-btn" id="buyBtn">BUY</button>
     </div>
   </div>
 
