@@ -124,14 +124,16 @@
     z-index: 9999;
     user-select: none;
     overflow: hidden;
+    justify-content: center;
+    align-items: center;
+    display: flex;
   }
   #zoomImage {
-    position: absolute;
-    top: 0; left: 0;
-    will-change: transform;
-    transform-origin: 0 0;
-    max-width: none;
-    max-height: none;
+    max-width: 90%;
+    max-height: 90%;
+    transition: transform 0.1s ease;
+    transform-origin: center center;
+    cursor: zoom-out;
   }
 
   /* Fun fact at bottom center */
@@ -219,12 +221,13 @@
 </div>
 
 <script>
-  // Random background GIF from assets/gifbackground (3 gifs)
-  const gifs = [
-    "assets/gifbackground/gif1.gif",
-    "assets/gifbackground/gif2.gif",
-    "assets/gifbackground/gif3.gif"
-  ];
+  // Configurable GIF count
+  const gifCount = 3;
+  const gifs = [];
+  for (let i = 1; i <= gifCount; i++) {
+    gifs.push(`assets/gifbackground/gif${i}.gif`);
+  }
+  // Set random bg
   document.getElementById('bg').src = gifs[Math.floor(Math.random() * gifs.length)];
 
   // Fun facts array
@@ -245,7 +248,6 @@
   }
   showFunFact();
 
-  // Elements & state
   const buttonPanel = document.getElementById('buttonPanel');
   const artPanel = document.getElementById('artPanel');
   const favoritesPanel = document.getElementById('favoritesPanel');
@@ -262,7 +264,7 @@
       img.alt = `Art ${i}`;
       img.className = 'art-image';
       img.onerror = () => img.style.display = 'none';
-      img.onclick = (e) => zoomImage(e, img.src);
+      img.onclick = () => zoomImage(img.src);
       artPanel.appendChild(img);
     }
     artPanel.dataset.loaded = "true";
@@ -271,7 +273,7 @@
   // Show content panel + tween buttons left
   function showContent(panel) {
     if (currentPanel === panel) {
-      // Same panel clicked: re-trigger tween (toggle off & on)
+      // Same panel clicked: re-trigger tween
       buttonPanel.classList.remove('moved');
       setTimeout(() => {
         buttonPanel.classList.add('moved');
@@ -295,41 +297,26 @@
     }
   }
 
-  // Zoom image with mouse position center + scroll zoom
-  function zoomImage(event, src) {
-    event.stopPropagation();
+  // Zoom image with scroll to zoom, centered on image, click overlay to close
+  function zoomImage(src) {
     const overlay = document.getElementById('zoomOverlay');
     const zoomImg = document.getElementById('zoomImage');
 
     overlay.style.display = 'flex';
     zoomImg.src = src;
-
+    zoomImg.style.transform = 'scale(1)';
     let scale = 1;
-    let posX = event.clientX;
-    let posY = event.clientY;
-
-    // Calculate initial offset so zoom center matches mouse
-    let rect = zoomImg.getBoundingClientRect();
-    let offsetX = posX - rect.left;
-    let offsetY = posY - rect.top;
-
-    // Initial transform origin in px
-    let originX = offsetX;
-    let originY = offsetY;
-
-    zoomImg.style.transformOrigin = `${originX}px ${originY}px`;
-    zoomImg.style.transform = `scale(${scale})`;
 
     function onWheel(e) {
       e.preventDefault();
-      const delta = e.deltaY < 0 ? 0.1 : -0.1;
-      scale = Math.min(Math.max(0.5, scale + delta), 5);
+      scale += e.deltaY * -0.001;
+      scale = Math.min(Math.max(0.5, scale), 5);
       zoomImg.style.transform = `scale(${scale})`;
     }
 
     overlay.addEventListener('wheel', onWheel);
 
-    // Remove zoom when clicking overlay
+    // Remove zoom on overlay click
     overlay.onclick = () => {
       overlay.style.display = 'none';
       overlay.removeEventListener('wheel', onWheel);
@@ -340,7 +327,7 @@
       todoPanel.style.display = 'none';
     };
 
-    // Escape key to exit zoom
+    // Escape key closes zoom
     function escListener(e) {
       if (e.key === 'Escape') {
         overlay.style.display = 'none';
