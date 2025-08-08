@@ -10,6 +10,17 @@
       background-size: cover;
       padding: 20px;
       margin: 0;
+      position: relative;
+    }
+
+    /* Overlay for better readability on GIF backgrounds */
+    #background-overlay {
+      position: fixed;
+      inset: 0;
+      background-color: rgba(255, 255, 255, 0.4);
+      pointer-events: none;
+      z-index: -1;
+      display: none; /* Initially hidden, shown only on GIF backgrounds */
     }
 
     #announcement-bar {
@@ -194,6 +205,9 @@
 
   <div id="catalog">Loading...</div>
 
+  <!-- Overlay for GIF background readability -->
+  <div id="background-overlay"></div>
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
     import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
@@ -213,8 +227,7 @@
     const catalogContainer = document.getElementById('catalog');
     const announcementBar = document.getElementById('announcement-bar');
     const searchInput = document.getElementById('search-input');
-
-    let catalogItems = [];
+    const backgroundOverlay = document.getElementById('background-overlay');
 
     function filterCatalog(query) {
       const lowerQuery = query.toLowerCase();
@@ -312,9 +325,24 @@
     }
 
     function setRandomBackground() {
-      const totalBackgrounds = 3;
-      const randIndex = Math.floor(Math.random() * totalBackgrounds) + 1;
-      document.body.style.backgroundImage = `url('assets/bg${randIndex}.jpg')`;
+      const useGif = Math.random() < 0.5; // 50% chance for GIF background
+
+      if (useGif) {
+        // Number of gif files inside assets/gifbackground/
+        const gifCount = 3;
+        const gifIndex = Math.floor(Math.random() * gifCount) + 1;
+        const gifPath = `assets/gifbackground/gif${gifIndex}.gif`;
+        document.body.style.backgroundImage = `url('${gifPath}')`;
+        // Show overlay for readability on gif backgrounds
+        backgroundOverlay.style.display = 'block';
+      } else {
+        const jpgCount = 5;
+        const jpgIndex = Math.floor(Math.random() * jpgCount) + 1;
+        const jpgPath = `assets/bg${jpgIndex}.jpg`;
+        document.body.style.backgroundImage = `url('${jpgPath}')`;
+        // Hide overlay for static backgrounds
+        backgroundOverlay.style.display = 'none';
+      }
     }
 
     loadAnnouncement();
