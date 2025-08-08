@@ -18,26 +18,34 @@
       position: relative;
     }
 
+    /* Home button with glossy style */
     #homeBtn {
       position: fixed;
       top: 15px;
       left: 15px;
       padding: 8px 14px;
-      background: #555;
+      background: linear-gradient(180deg, #555, #222);
       color: white;
       border: 1px solid black;
       cursor: pointer;
       font-weight: bold;
       z-index: 1000;
-      border-radius: 0;
-      box-shadow: none;
+      border-radius: 4px;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.3),
+        0 3px 5px rgba(0,0,0,0.4);
+      text-shadow: 0 1px 0 #000;
+      transition: background 0.3s ease;
       outline: none;
+    }
+    #homeBtn:hover {
+      background: linear-gradient(180deg, #777, #444);
     }
 
     .product-page {
       position: absolute;
       top: 50%;
-      left: 48%; /* shifted slightly left */
+      left: 50%;
       transform: translate(-50%, -50%);
       display: flex;
       gap: 30px;
@@ -71,7 +79,7 @@
       cursor: pointer;
       object-fit: cover;
       transition: transform 0.2s;
-      border: 1px solid black; /* black outline on images */
+      border: 1px solid black;
       background: white;
       border-radius: 0;
     }
@@ -92,7 +100,6 @@
       line-height: 1.5;
       padding-left: 10px;
       padding: 20px;
-      /* no border or outline here */
     }
 
     .product-info h1 {
@@ -133,7 +140,7 @@
       height: 40px;
       font-size: 22px;
       background: #ddd;
-      border: 1px solid black; /* outline on buttons */
+      border: 1px solid black;
       cursor: pointer;
       border-radius: 0;
       font-weight: bold;
@@ -146,25 +153,42 @@
       background: #bbb;
     }
 
+    /* Buy button with early 2000s glossy green style */
     .buy-btn {
       padding: 12px 24px;
-      background: #00aa00; /* bright green */
+      background: linear-gradient(180deg, #55cc55, #117711);
       color: white;
-      border: 1px solid black; /* black outline */
-      border-radius: 0;
+      border: 1px solid black;
+      border-radius: 4px;
       cursor: pointer;
       font-size: 18px;
       font-weight: 900;
-      box-shadow: none;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.7),
+        0 3px 5px rgba(0,0,0,0.4);
       align-self: flex-start;
       transition: background 0.3s ease;
       letter-spacing: 1px;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      text-shadow: 0 0 2px #004400;
+      position: relative;
+      overflow: hidden;
+      text-shadow: 0 1px 0 #004400;
     }
-
+    .buy-btn::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 50%;
+      background: rgba(255,255,255,0.3);
+      border-radius: 4px 4px 0 0;
+      pointer-events: none;
+      filter: blur(2px);
+      mix-blend-mode: screen;
+    }
     .buy-btn:hover {
-      background: #007700;
+      background: linear-gradient(180deg, #66dd66, #228822);
     }
 
     .image-modal {
