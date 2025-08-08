@@ -55,32 +55,36 @@
       flex: 1 0 auto;
     }
 
-   .product-image-gallery {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  gap: 10px;
-  max-height: 600px;
+  .product-image-gallery {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
   overflow-y: auto;
-  padding-right: 5px;
+  max-height: 600px;
   width: 400px;
-  scrollbar-width: thin;
-  -ms-overflow-style: auto;
+  padding-right: 0;
+  border: none;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE 10+ */
+  overflow-x: hidden;
+  scroll-snap-type: y mandatory;
 }
 
+.product-image-gallery::-webkit-scrollbar {
+  display: none;
+}
 
-    .product-image-gallery::-webkit-scrollbar {
-      display: none;
-    }
+.product-image-gallery img {
+  height: 400px;
+  width: 100%;
+  object-fit: cover;
+  cursor: pointer;
+  border: 1px solid black;
+  background: white;
+  transition: transform 0.2s;
+  scroll-snap-align: start;
+}
 
-    .product-image-gallery img {
-      width: 100%;
-      cursor: pointer;
-      object-fit: cover;
-      transition: transform 0.2s;
-      border: 1px solid black;
-      background: white;
-      border-radius: 0;
-    }
 
     .product-image-gallery img:hover {
       transform: scale(1.03);
