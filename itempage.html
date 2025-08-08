@@ -555,70 +555,79 @@
 
   // --- Related Items Section ---
 
-  async function loadRelatedItems() {
-    const container = document.getElementById("related-items");
-    container.textContent = "Loading related items...";
+async function loadRelatedItems() {
+  const container = document.getElementById("related-items");
+  container.textContent = "Loading related items...";
 
-    try {
-      const querySnapshot = await getDocs(collection(db, "catalog"));
-      const items = [];
-      querySnapshot.forEach(doc => {
-        const data = doc.data();
-        // Push only if it has a name, price, and quantity (filter out incomplete)
-        if (data.name && data.price && data.quantity) {
-          items.push(data);
-        }
-      });
-
-      if (items.length === 0) {
-        container.textContent = "No items found.";
-        return;
+  try {
+    const querySnapshot = await getDocs(collection(db, "catalog"));
+    const items = [];
+    querySnapshot.forEach(doc => {
+      const data = doc.data();
+      if (data.name && data.price && data.quantity) {
+        items.push(data);
       }
+    });
 
-      // Clear container
-      container.textContent = "";
-
-      items.forEach(it => {
-        // Skip current item
-        if (it.name === item.name) return;
-
-        const div = document.createElement("div");
-        div.className = "item";
-
-        // Image wrapper & image (fallback if no images)
-        const imgWrapper = document.createElement("div");
-        imgWrapper.className = "image-wrapper";
-
-        const img = new Image();
-        img.alt = it.name;
-        img.src = `assets/${it.name}/images/image1.jpg`;
-        imgWrapper.appendChild(img);
-
-        div.appendChild(imgWrapper);
-
-        const nameEl = document.createElement("p");
-        nameEl.className = "item-name";
-        nameEl.textContent = it.name;
-        div.appendChild(nameEl);
-
-        const priceEl = document.createElement("p");
-        priceEl.className = "item-price";
-        priceEl.textContent = `$${parseFloat(it.price).toFixed(2)} USD`;
-        div.appendChild(priceEl);
-
-        // Click loads that item page by storing to localStorage then reloading page
-        div.onclick = () => {
-          localStorage.setItem("selectedItem", JSON.stringify(it));
-          location.reload();  // reload same page with new item
-        };
-
-        container.appendChild(div);
-      });
-    } catch (err) {
-      console.error("Error loading related items:", err);
-      container.textContent = "Failed to load related items.";
+    if (items.length === 0) {
+      container.textContent = "No items found.";
+      return;
     }
+
+    // Shuffle items randomly
+    function shuffleArray(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+    }
+    shuffleArray(items);
+
+    // Clear container
+    container.textContent = "";
+
+    // Show up to 6 items that aren't the current item
+    let shown = 0;
+    for (const it of items) {
+      if (it.name === item.name) continue;
+      if (shown >= 6) break;
+
+      const div = document.createElement("div");
+      div.className = "item";
+
+      const imgWrapper = document.createElement("div");
+      imgWrapper.className = "image-wrapper";
+
+      const img = new Image();
+      img.alt = it.name;
+      img.src = `assets/${it.name}/images/image1.jpg`;
+      imgWrapper.appendChild(img);
+
+      div.appendChild(imgWrapper);
+
+      const nameEl = document.createElement("p");
+      nameEl.className = "item-name";
+      nameEl.textContent = it.name;
+      div.appendChild(nameEl);
+
+      const priceEl = document.createElement("p");
+      priceEl.className = "item-price";
+      priceEl.textContent = `$${parseFloat(it.price).toFixed(2)} USD`;
+      div.appendChild(priceEl);
+
+      div.onclick = () => {
+        localStorage.setItem("selectedItem", JSON.stringify(it));
+        location.reload(); // reload same page with new item
+      };
+
+      container.appendChild(div);
+      shown++;
+    }
+  } catch (err) {
+    console.error("Error loading related items:", err);
+    container.textContent = "Failed to load related items.";
   }
+}
 
   loadRelatedItems();
 
