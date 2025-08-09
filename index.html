@@ -163,6 +163,28 @@
       text-shadow: 0 1px 0 #0a0;
     }
 
+    /* NOT IN STOCK badge (bottom-left corner of each item card)
+       Positioned so it doesn't overlap the main name/price area.
+       Small and unobtrusive. */
+    .sold-out-badge {
+      position: absolute;
+      left: 8px;
+      bottom: 8px;
+      transform: translateZ(0);
+      background: rgba(0, 0, 0, 0.85);
+      color: #fff;
+      padding: 4px 6px;
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      border: 1px solid #222;
+      border-radius: 2px;
+      pointer-events: none; /* doesn't block clicks on the card */
+      z-index: 50;
+      box-shadow: 0 1px 0 rgba(255,255,255,0.06);
+    }
+
     #view-cart-button, #view-stuff-button {
       position: fixed;
       right: 20px;
@@ -262,8 +284,15 @@
 
         snapshot.forEach(doc => {
           const item = doc.data();
-          const name = item.name;
-          const price = item.price;
+          const name = item.name || "Unnamed";
+          const price = item.price ?? 0;
+          // Normalize quantity: could be number or string in Firestore
+          let quantity = 0;
+          if (item.hasOwnProperty('quantity')) {
+            // try parse as int, fallback to number coercion
+            const q = parseInt(item.quantity, 10);
+            quantity = Number.isNaN(q) ? (typeof item.quantity === 'number' ? item.quantity : 0) : q;
+          }
 
           const div = document.createElement('div');
           div.className = "item";
@@ -296,6 +325,17 @@
 
           div.appendChild(nameElem);
           div.appendChild(priceElem);
+
+          // If quantity is 0, add the NOT IN STOCK badge in the bottom-left corner.
+          if (quantity === 0) {
+            const soldOut = document.createElement('div');
+            soldOut.className = 'sold-out-badge';
+            soldOut.setAttribute('aria-hidden', 'true');
+            soldOut.textContent = 'NOT IN STOCK';
+            // append to the item so it visually appears in bottom-left of the card,
+            // without touching the price/name area.
+            div.appendChild(soldOut);
+          }
 
           div.addEventListener('click', () => {
             localStorage.setItem('selectedItem', JSON.stringify(item));
