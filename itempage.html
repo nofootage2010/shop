@@ -422,6 +422,11 @@
   document.getElementById("item-price").textContent = `$${parseFloat(item.price).toFixed(2)} USD`;
   document.getElementById("item-desc").textContent = item.description || "No description.";
   document.getElementById("item-quantity").textContent = item.quantity;
+  if (item.quantity <= 0) {
+    document.getElementById("item-quantity").textContent = "NOT IN STOCK";
+    document.getElementById("buyBtn").style.display = "none";
+    document.querySelector(".count").style.display = "none";
+  }
 
   // Load main images (up to 5)
   const gallery = document.getElementById("imageGallery");
