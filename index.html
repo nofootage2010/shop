@@ -13,14 +13,13 @@
       position: relative;
     }
 
-    /* Overlay for better readability on GIF backgrounds */
     #background-overlay {
       position: fixed;
       inset: 0;
       background-color: rgba(255, 255, 255, 0.4);
       pointer-events: none;
       z-index: -1;
-      display: none; /* Initially hidden, shown only on GIF backgrounds */
+      display: none;
     }
 
     #announcement-bar {
@@ -116,7 +115,7 @@
       position: relative;
       width: 170px;
       height: 170px;
-      border: 1px solid black;
+      /* removed border */
     }
 
     .image-wrapper img {
@@ -163,26 +162,21 @@
       text-shadow: 0 1px 0 #0a0;
     }
 
-    /* NOT IN STOCK badge (bottom-left corner of each item card)
-       Positioned so it doesn't overlap the main name/price area.
-       Small and unobtrusive. */
+    /* NOT IN STOCK badge in bottom-left of entire item card */
     .sold-out-badge {
       position: absolute;
-      left: 8px;
       bottom: 8px;
-      transform: translateZ(0);
+      left: 8px;
       background: rgba(0, 0, 0, 0.85);
       color: #fff;
-      padding: 4px 6px;
+      padding: 5px 8px;
       font-size: 11px;
       font-weight: 900;
       letter-spacing: 0.8px;
       text-transform: uppercase;
-      border: 1px solid #222;
       border-radius: 2px;
-      pointer-events: none; /* doesn't block clicks on the card */
+      pointer-events: none;
       z-index: 50;
-      box-shadow: 0 1px 0 rgba(255,255,255,0.06);
     }
 
     #view-cart-button, #view-stuff-button {
@@ -286,10 +280,8 @@
           const item = doc.data();
           const name = item.name || "Unnamed";
           const price = item.price ?? 0;
-          // Normalize quantity: could be number or string in Firestore
           let quantity = 0;
           if (item.hasOwnProperty('quantity')) {
-            // try parse as int, fallback to number coercion
             const q = parseInt(item.quantity, 10);
             quantity = Number.isNaN(q) ? (typeof item.quantity === 'number' ? item.quantity : 0) : q;
           }
@@ -326,14 +318,10 @@
           div.appendChild(nameElem);
           div.appendChild(priceElem);
 
-          // If quantity is 0, add the NOT IN STOCK badge in the bottom-left corner.
           if (quantity === 0) {
             const soldOut = document.createElement('div');
             soldOut.className = 'sold-out-badge';
-            soldOut.setAttribute('aria-hidden', 'true');
             soldOut.textContent = 'NOT IN STOCK';
-            // append to the item so it visually appears in bottom-left of the card,
-            // without touching the price/name area.
             div.appendChild(soldOut);
           }
 
@@ -374,22 +362,18 @@
     }
 
     function setRandomBackground() {
-      const useGif = Math.random() < 0.5; // 50% chance for GIF background
-
+      const useGif = Math.random() < 0.5;
       if (useGif) {
-        // Number of gif files inside assets/gifbackground/
         const gifCount = 3;
         const gifIndex = Math.floor(Math.random() * gifCount) + 1;
         const gifPath = `assets/gifbackground/gif${gifIndex}.gif`;
         document.body.style.backgroundImage = `url('${gifPath}')`;
-        // Show overlay for readability on gif backgrounds
         backgroundOverlay.style.display = 'block';
       } else {
         const jpgCount = 3;
         const jpgIndex = Math.floor(Math.random() * jpgCount) + 1;
         const jpgPath = `assets/bg${jpgIndex}.jpg`;
         document.body.style.backgroundImage = `url('${jpgPath}')`;
-        // Hide overlay for static backgrounds
         backgroundOverlay.style.display = 'none';
       }
     }
