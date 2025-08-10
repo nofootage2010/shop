@@ -434,8 +434,8 @@ body {
     document.querySelector(".count").style.display = "none";
   }
 
-  document.body.style.background = `url(assets/${item.name}/backgroundimg.png) no-repeat center center fixed`;
-  document.body.style.backgroundSize = "cover";
+  document.body.style.backgroundImage = `url(assets/${item.name}/backgroundimg.png)`;
+
 
   const gallery = document.getElementById("imageGallery");
   const basePath = `assets/${item.name}/images/`;
