@@ -416,7 +416,6 @@
 
   // Set page title to item name
   document.title = item.name + " - Item Page";
-
   // Populate main product info
   document.getElementById("item-name").textContent = item.name;
   document.getElementById("item-creator").textContent = item.creator || "Unknown";
@@ -429,7 +428,9 @@
     document.querySelector(".count").style.display = "none";
   }
 
-  // Load main images (up to 5)
+  document.body.style.background = `url(assets/${item.name}/backgroundimg.png) no-repeat center center fixed`;
+  document.body.style.backgroundSize = "cover";
+
   const gallery = document.getElementById("imageGallery");
   const basePath = `assets/${item.name}/images/`;
 
