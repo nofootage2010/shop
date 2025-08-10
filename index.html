@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <title>Catalog</title>
   <style>
     body {
@@ -48,7 +49,6 @@
       margin: 80px auto 10px auto;
       width: 350px;
       height: auto;
-      border: 1px solid black;
     }
 
     h1 {
@@ -67,20 +67,20 @@
       text-align: center;
     }
 
-    #search-input {
-      width: 300px;
-      padding: 10px;
-      font-size: 16px;
-      border: 2px solid black;
-      border-radius: 0;
-      font-weight: bold;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      box-shadow:
-        inset 0 1px 0 rgba(255,255,255,0.6),
-        0 2px 3px rgba(0,0,0,0.4);
-    }
-
+ #search-input {
+  width: 300px;
+  max-width: 90%;
+  padding: 10px;
+  font-size: 16px;
+  border: 2px solid black;
+  border-radius: 0;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.6),
+    0 2px 3px rgba(0,0,0,0.4);
+}
     #catalog {
       display: flex;
       flex-wrap: wrap;
@@ -115,7 +115,6 @@
       position: relative;
       width: 170px;
       height: 170px;
-      /* removed border */
     }
 
     .image-wrapper img {
