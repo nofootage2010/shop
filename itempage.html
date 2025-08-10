@@ -434,8 +434,9 @@ body {
     document.querySelector(".count").style.display = "none";
   }
 
-  document.body.style.backgroundImage = `url(assets/${item.name}/backgroundimg.png)`;
-
+ const bgPath = `assets/${item.name}/backgroundimg.png`;
+document.body.style.backgroundImage = `url('${encodeURI(bgPath)}')`;
+console.log("Background image path:", bgPath);
 
   const gallery = document.getElementById("imageGallery");
   const basePath = `assets/${item.name}/images/`;
